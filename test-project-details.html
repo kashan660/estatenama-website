@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Project Details</title>
+</head>
+<body>
+    <div id="detail-content">Loading...</div>
+    
+    <script>
+        // Test if project-details.js loads without errors
+        console.log('Testing project details loading...');
+        
+        // Simple test function
+        function testProjectData() {
+            console.log('Test function called');
+            document.getElementById('detail-content').innerHTML = '<h1>Test successful!</h1>';
+        }
+        
+        // Call test function
+        testProjectData();
+    </script>
+    
+    <script src="project-details.js"></script>
+</body>
+</html>

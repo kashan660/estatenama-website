@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Details - Estate Nama</title>
+    
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_estatenama/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_estatenama/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_estatenama/favicon-16x16.png">
+    <link rel="manifest" href="favicon_estatenama/site.webmanifest">
+    <link rel="shortcut icon" href="favicon_estatenama/favicon.ico">
+    
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="logoe_statenama.png" alt="EstateNama Logo" class="logo-img">
+                <h2>Estate<span>Nama</span></h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html#home" class="nav-link">Home</a></li>
+                <li><a href="index.html#about" class="nav-link">About</a></li>
+                <li><a href="index.html#projects" class="nav-link">Projects</a></li>
+                <li><a href="index.html#projects" class="nav-link">Eighteen</a></li>
+                <li><a href="index.html#services" class="nav-link">Services</a></li>
+                <li><a href="index.html#contact" class="nav-link">Contact</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Left Side Newsletter Widget -->
+    <div class="newsletter-widget">
+        <div class="widget-header">
+            <h3>🔥 Special Offers</h3>
+            <span class="widget-close" onclick="toggleNewsletterWidget()">×</span>
+        </div>
+        <div class="widget-content">
+            <div class="offer-item active">
+                <div class="offer-badge">🔥 HOT</div>
+                <h4>Bahria Town Phase 7</h4>
+                <p><strong>50% OFF Registration!</strong></p>
+                <p class="price">From PKR 25 Lac</p>
+                <button class="widget-btn" onclick="openWhatsApp()">Book Now!</button>
+            </div>
+            <div class="offer-item">
+                <div class="offer-badge">💎 NEW</div>
+                <h4>Kingdom Valley</h4>
+                <p><strong>3 Years Plan</strong></p>
+                <p class="price">From PKR 18 Lac</p>
+                <button class="widget-btn" onclick="openWhatsApp()">Get Details!</button>
+            </div>
+            <div class="offer-item">
+                <div class="offer-badge">⚡ FLASH</div>
+                <h4>Commercial Plots</h4>
+                <p><strong>30% ROI Guaranteed</strong></p>
+                <p class="price">From PKR 45 Lac</p>
+                <button class="widget-btn" onclick="openWhatsApp()">Invest Now!</button>
+            </div>
+            <div class="offer-item">
+                <div class="offer-badge">🎯 DEAL</div>
+                <h4>Faisal Town</h4>
+                <p><strong>Ready for Construction</strong></p>
+                <p class="price">From PKR 22 Lac</p>
+                <button class="widget-btn" onclick="openWhatsApp()">Call Now!</button>
+            </div>
+            <div class="offer-item">
+                <div class="offer-badge">🏆 FREE</div>
+                <h4>Free Consultation</h4>
+                <p><strong>Site Visit + Legal Docs</strong></p>
+                <p class="price">100% FREE</p>
+                <button class="widget-btn" onclick="openWhatsApp()">Book Visit!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Detail Section -->
+    <section class="project-detail">
+        <div class="container">
+            <div class="detail-header">
+                <button class="back-btn" onclick="history.back()">
+                    <i class="fas fa-arrow-left"></i> Back to Projects
+                </button>
+                <h1 id="project-title">Project Details</h1>
+            </div>
+
+            <div class="detail-content" id="detail-content">
+                <!-- Content will be dynamically loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact CTA -->
+    <section class="contact-cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Invest?</h2>
+                <p>Contact our expert team for personalized assistance and site visits</p>
+                <div class="cta-buttons">
+                    <button class="btn-primary" onclick="openWhatsApp('I want to schedule a site visit and get more information about this project')">
+                        <i class="fab fa-whatsapp"></i> WhatsApp Us
+                    </button>
+                    <a href="tel:03195547788" class="btn-secondary">
+                        <i class="fas fa-phone"></i> Call Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Estate Nama</h3>
+                    <p>Your trusted partner in real estate investment</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact Info</h4>
+                    <p><i class="fas fa-envelope"></i> info@estatenama.com</p>
+                    <p><i class="fas fa-phone"></i> 03195547788</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Phase 7, Anarkali Restaurant, Bahria Town</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Estate Nama. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="script.js"></script>
+    <script src="project-details.js"></script>
+</body>
+</html>

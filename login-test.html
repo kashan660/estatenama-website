@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Test - EstateNama Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h2>Admin Login & API Test</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" value="admin" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" value="admin123" required>
+            </div>
+            <button type="submit">Test Login</button>
+        </form>
+        
+        <button onclick="testAPI()">Test API Endpoints</button>
+        <button onclick="clearSession()">Clear Session</button>
+        <button onclick="goToDashboard()">Go to Dashboard</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Standalone AdminAPI class for testing
+        class TestAdminAPI {
+            constructor() {
+                this.baseURL = 'http://localhost:3002';
+                this.token = null;
+            }
+            
+            setToken(token) {
+                this.token = token;
+            }
+            
+            getHeaders() {
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+                if (this.token) {
+                    headers['Authorization'] = `Bearer ${this.token}`;
+                }
+                return headers;
+            }
+            
+            async request(endpoint, options = {}) {
+                const url = `${this.baseURL}/api/admin${endpoint}`;
+                const config = {
+                    headers: this.getHeaders(),
+                    ...options
+                };
+                
+                try {
+                    const response = await fetch(url, config);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    return await response.json();
+                } catch (error) {
+                    console.error('API request failed:', error);
+                    throw error;
+                }
+            }
+            
+            async login(username, password) {
+                try {
+                    const response = await fetch(`${this.baseURL}/api/admin/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ username, password })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        this.setToken(data.token);
+                        return data;
+                    } else {
+                        throw new Error(data.error || 'Login failed');
+                    }
+                } catch (error) {
+                    console.error('Login failed:', error);
+                    throw error;
+                }
+            }
+            
+            async getPosts() {
+                return await this.request('/posts');
+            }
+            
+            async getBlogs() {
+                return await this.request('/blogs');
+            }
+            
+            async getProjects() {
+                return await this.request('/projects');
+            }
+            
+            async getImages() {
+                return await this.request('/images');
+            }
+        }
+        
+        const api = new TestAdminAPI();
+        const resultDiv = document.getElementById('result');
+        
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                resultDiv.innerHTML = 'Testing login...';
+                
+                const response = await api.login(username, password);
+                
+                resultDiv.innerHTML = `Login Successful!\nToken: ${response.token ? 'Received' : 'Missing'}\nUser: ${response.user ? response.user.username : 'Unknown'}\nResponse: ${JSON.stringify(response, null, 2)}`;
+                resultDiv.className = 'result success';
+                
+                // Store session data
+                const sessionData = {
+                    token: response.token,
+                    user: response.user,
+                    loginTime: new Date().toISOString()
+                };
+                localStorage.setItem('adminSession', JSON.stringify(sessionData));
+                
+            } catch (error) {
+                resultDiv.innerHTML = `Login Failed!\nError: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        });
+        
+        async function testAPI() {
+            try {
+                resultDiv.innerHTML = 'Testing API endpoints...';
+                resultDiv.className = 'result';
+                
+                const posts = await api.getPosts();
+                const blogs = await api.getBlogs();
+                const projects = await api.getProjects();
+                const images = await api.getImages();
+                
+                resultDiv.innerHTML = `API Test Results:\nPosts: ${Array.isArray(posts) ? posts.length + ' items' : 'Invalid response'}\nBlogs: ${Array.isArray(blogs) ? blogs.length + ' items' : 'Invalid response'}\nProjects: ${Array.isArray(projects) ? projects.length + ' items' : 'Invalid response'}\nImages: ${Array.isArray(images) ? images.length + ' items' : 'Invalid response'}`;
+                resultDiv.className = 'result success';
+                
+            } catch (error) {
+                resultDiv.innerHTML = `API Test Failed!\nError: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+        
+        function clearSession() {
+            localStorage.removeItem('adminSession');
+            sessionStorage.removeItem('adminSession');
+            api.token = null;
+            resultDiv.innerHTML = 'Session cleared!';
+            resultDiv.className = 'result success';
+        }
+        
+        function goToDashboard() {
+            window.location.href = 'admin-dashboard.html';
+        }
+        
+        // Check if already logged in
+        window.addEventListener('load', () => {
+            const sessionData = localStorage.getItem('adminSession');
+            if (sessionData) {
+                try {
+                    const session = JSON.parse(sessionData);
+                    if (session.token) {
+                        api.setToken(session.token);
+                        resultDiv.innerHTML = `Already logged in as: ${session.user ? session.user.username : 'Unknown'}`;
+                        resultDiv.className = 'result success';
+                    }
+                } catch (error) {
+                    console.error('Failed to parse session data:', error);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

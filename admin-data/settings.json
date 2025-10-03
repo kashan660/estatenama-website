@@ -1,0 +1,18 @@
+{
+  "siteName": "EstateNama",
+  "siteDescription": "Your trusted real estate partner",
+  "contactEmail": "info@estatenama.com",
+  "contactPhone": "03195547788",
+  "address": "Phase 7, Anarkali Restaurant, Bahria Town",
+  "socialMedia": {
+    "facebook": "",
+    "twitter": "",
+    "instagram": "",
+    "linkedin": ""
+  },
+  "seoSettings": {
+    "metaTitle": "EstateNama - Real Estate Solutions",
+    "metaDescription": "Specializing in plots, residentials, commercial properties and installment plans. Your trusted real estate company.",
+    "keywords": "real estate, plots, residential, commercial, installments, property"
+  }
+}

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test</title>
+</head>
+<body>
+    <h1>Admin API Test</h1>
+    <div id="results"></div>
+    
+    <button onclick="testLogin()">Test Login</button>
+    <button onclick="testProjects()">Test Projects</button>
+    <button onclick="clearStorage()">Clear Storage</button>
+    
+    <script>
+        const results = document.getElementById('results');
+        
+        function log(message) {
+            results.innerHTML += '<p>' + message + '</p>';
+        }
+        
+        async function testLogin() {
+            try {
+                const response = await fetch('http://localhost:3001/api/admin/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: 'admin',
+                        password: 'admin123'
+                    })
+                });
+                
+                const data = await response.json();
+                log('Login response: ' + JSON.stringify(data));
+                
+                if (data.token) {
+                    localStorage.setItem('adminToken', data.token);
+                    log('Token saved to localStorage');
+                }
+            } catch (error) {
+                log('Login error: ' + error.message);
+            }
+        }
+        
+        async function testProjects() {
+            try {
+                const token = localStorage.getItem('adminToken');
+                log('Using token: ' + token);
+                
+                const response = await fetch('http://localhost:3001/api/admin/projects', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                log('Projects response status: ' + response.status);
+                const data = await response.json();
+                log('Projects data: ' + JSON.stringify(data));
+            } catch (error) {
+                log('Projects error: ' + error.message);
+            }
+        }
+        
+        function clearStorage() {
+            localStorage.clear();
+            sessionStorage.clear();
+            log('Storage cleared');
+        }
+    </script>
+</body>
+</html>
