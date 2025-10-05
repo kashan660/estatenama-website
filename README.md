@@ -166,7 +166,7 @@ estatenama.com/
 ### Partner Projects
 - [Faisal Town](https://faisaltown.com.pk/projects/)
 - [Eighteen Luxury Society](https://www.eighteen.com/)
-- [Kingdom Valley](https://kingdomvalleypvtltd.com/)
+- [Ruden Enclave](https://rudnenclave.com/)
 
 ## Security Notes
 

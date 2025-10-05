@@ -169,65 +169,6 @@ const projectsData = {
             'Educational Institutions - Nearby'
         ]
     },
-    'kingdom-valley': {
-        title: 'Kingdom Valley',
-        location: 'Near M-2 Motorway, Chakri Road Rawalpindi',
-        status: 'New Launch',
-        developer: 'Kingdom Group',
-        totalArea: '25,000 Kanals',
-        description: 'Kingdom Valley is a modern housing society with innovative design and comprehensive facilities, offering a royal lifestyle with excellent connectivity to major highways.',
-        image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-        features: [
-            'Kingdom Villas',
-            'Green Spaces',
-            'Motorway Access',
-            'Healthcare Facilities',
-            'Educational Institute',
-            'Commercial Areas',
-            'Theme Park',
-            'Golf Course'
-        ],
-        plotSizes: {
-            residential: [
-                { size: '3.5 Marla', price: 'PKR 15-18 Lac', dimensions: '20x40 ft' },
-                { size: '5 Marla', price: 'PKR 22-28 Lac', dimensions: '25x45 ft' },
-                { size: '7 Marla', price: 'PKR 30-38 Lac', dimensions: '28x55 ft' },
-                { size: '10 Marla', price: 'PKR 45-55 Lac', dimensions: '35x70 ft' },
-                { size: '1 Kanal', price: 'PKR 85-1.1 Crore', dimensions: '50x90 ft' }
-            ],
-            villas: [
-                { size: 'Villa Plots (1 Kanal)', price: 'PKR 1.2 Crore', dimensions: '50x90 ft' },
-                { size: 'Premium Villas (2 Kanal)', price: 'PKR 2.5 Crore', dimensions: '100x90 ft' }
-            ],
-            commercial: [
-                { size: '4 Marla Commercial', price: 'PKR 30 Lac', dimensions: '20x45 ft' },
-                { size: '8 Marla Commercial', price: 'PKR 55 Lac', dimensions: '30x60 ft' }
-            ]
-        },
-        paymentPlan: {
-            duration: '60 Months (5 Years)',
-            downPayment: '15%',
-            installments: 'Quarterly',
-            discount: 'Flexible Terms Available'
-        },
-        amenities: [
-            'Central Theme Park',
-            'Golf Course',
-            'Hospital',
-            'Educational Facilities',
-            'Shopping Mall',
-            'Mosque',
-            'Community Center',
-            'Sports Complex'
-        ],
-        connectivity: [
-            'M-2 Motorway - 5 minutes',
-            'Chakri Road - Direct Access',
-            'New Islamabad Airport - 20 minutes',
-            'Rawalpindi - 30 minutes',
-            'Lahore - 2 hours via Motorway'
-        ]
-    },
     'bahria-town-phase-8': {
         title: 'Bahria Town Phase 8',
         location: 'Rawalpindi',
