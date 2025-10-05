@@ -622,6 +622,13 @@ html {
     margin-bottom: 0.5rem;
 }
 
+.feature p {
+    color: #2c3e50;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
 .about-stats {
     display: grid;
     gap: 2rem;
@@ -2391,6 +2398,18 @@ html {
 
     .feature {
         font-size: 0.8rem;
+    }
+
+    .feature p {
+        color: #1a1a1a !important;
+        font-weight: 600 !important;
+        font-size: 0.95rem !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature h4 {
+        color: #1a1a1a !important;
+        font-weight: 700 !important;
         padding: 6px 12px;
     }
 
