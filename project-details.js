@@ -277,6 +277,364 @@ const projectsData = {
             'Lahore - 3 hours',
             'Major Highways - Easy Access'
         ]
+    },
+
+    // New Faisal Town Projects
+    'faisal-town-ft': {
+        title: 'Faisal Town (FT)',
+        location: 'Near Tarnol Interchange, Motorway M-1',
+        status: 'Active',
+        developer: 'Faisal Town',
+        totalArea: 'Multiple Phases',
+        description: 'Faisal Town, RDA-approved, is located near Tarnol Interchange, Motorway M-1. Its grand gates reflect Gandhara and Mughal architecture.',
+        image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+        features: [
+            'RDA-approved project',
+            'Gandhara and Mughal architecture',
+            'Strategic location near Motorway M-1',
+            'Grand entrance gates',
+            'Easy access to Islamabad'
+        ],
+        plotSizes: {
+            residential: [
+                { size: '5 Marla', price: 'Contact for pricing', dimensions: '25x45 ft' },
+                { size: '10 Marla', price: 'Contact for pricing', dimensions: '35x70 ft' },
+                { size: '1 Kanal', price: 'Contact for pricing', dimensions: '50x90 ft' }
+            ]
+        },
+        paymentPlan: {
+            duration: 'Flexible Plans Available',
+            downPayment: 'Contact for details',
+            installments: 'Available',
+            discount: 'Special offers available'
+        },
+        amenities: [
+            'Modern infrastructure',
+            'Security system',
+            'Utilities available',
+            'Road network',
+            'Commercial areas'
+        ],
+        connectivity: [
+            'Motorway M-1 - Direct access',
+            'Tarnol Interchange - 2 minutes',
+            'Islamabad - 20 minutes',
+            'Airport - 30 minutes'
+        ]
+    },
+
+    'faisal-hills-fh': {
+        title: 'Faisal Hills (FH)',
+        location: 'Near Margalla Hills, Islamabad',
+        status: 'Active',
+        developer: 'Faisal Town',
+        totalArea: 'Premium Development',
+        description: 'Faisal Hills offers luxury living near the scenic Margalla Hills, blending modern design with premium facilities in a secure, gated community close to Islamabad.',
+        image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+        features: [
+            'Luxury gated community',
+            'Near scenic Margalla Hills',
+            'Modern design architecture',
+            'Premium facilities',
+            'Secure environment',
+            'Close to Islamabad'
+        ],
+        plotSizes: {
+            residential: [
+                { size: '5 Marla', price: 'Contact for pricing', dimensions: '25x45 ft' },
+                { size: '8 Marla', price: 'Contact for pricing', dimensions: '30x60 ft' },
+                { size: '10 Marla', price: 'Contact for pricing', dimensions: '35x70 ft' },
+                { size: '1 Kanal', price: 'Contact for pricing', dimensions: '50x90 ft' }
+            ]
+        },
+        paymentPlan: {
+            duration: 'Flexible payment options',
+            downPayment: 'Contact for details',
+            installments: 'Available',
+            discount: 'Early bird discounts'
+        },
+        amenities: [
+            'Luxury amenities',
+            'Gated security',
+            'Premium infrastructure',
+            'Landscaped areas',
+            'Community facilities'
+        ],
+        connectivity: [
+            'Margalla Hills - Adjacent',
+            'Islamabad - 15 minutes',
+            'Airport - 25 minutes',
+            'Major roads - Easy access'
+        ]
+    },
+
+    'faisal-villas-fv': {
+        title: 'Faisal Villas (FV)',
+        location: 'Prime location in Islamabad region',
+        status: 'Active',
+        developer: 'Faisal Town',
+        totalArea: 'Exclusive Villa Community',
+        description: 'Faisal Villas represents the pinnacle of luxury living with exclusive villa plots and premium amenities in a prestigious location.',
+        image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+        features: [
+            'Exclusive villa community',
+            'Premium location',
+            'Luxury amenities',
+            'High-end infrastructure',
+            'Prestigious neighborhood',
+            'Modern facilities'
+        ],
+        plotSizes: {
+            residential: [
+                { size: '10 Marla Villa', price: 'Contact for pricing', dimensions: '35x70 ft' },
+                { size: '1 Kanal Villa', price: 'Contact for pricing', dimensions: '50x90 ft' },
+                { size: '2 Kanal Villa', price: 'Contact for pricing', dimensions: '70x126 ft' }
+            ]
+        },
+        paymentPlan: {
+            duration: 'Premium payment plans',
+            downPayment: 'Contact for details',
+            installments: 'Flexible options',
+            discount: 'VIP member benefits'
+        },
+        amenities: [
+            'Villa-style living',
+            'Premium security',
+            'Luxury facilities',
+            'Exclusive community',
+            'High-end amenities'
+        ],
+        connectivity: [
+            'Prime location access',
+            'Major highways nearby',
+            'City center connectivity',
+            'Airport accessibility'
+        ]
+    },
+
+    'sea-square': {
+        title: 'SEA Square',
+        location: 'Strategic commercial location',
+        status: 'Active',
+        developer: 'Faisal Town',
+        totalArea: 'Commercial Development',
+        description: 'SEA Square is a modern commercial development offering prime business opportunities with state-of-the-art facilities and strategic location.',
+        image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+        features: [
+            'Commercial development',
+            'Strategic location',
+            'Modern facilities',
+            'Business opportunities',
+            'Prime investment',
+            'Professional environment'
+        ],
+        plotSizes: {
+            commercial: [
+                { size: 'Shop', price: 'Contact for pricing', dimensions: 'Various sizes' },
+                { size: 'Office Space', price: 'Contact for pricing', dimensions: 'Flexible layouts' },
+                { size: 'Commercial Plot', price: 'Contact for pricing', dimensions: 'Custom sizes' }
+            ]
+        },
+        paymentPlan: {
+            duration: 'Commercial payment plans',
+            downPayment: 'Contact for details',
+            installments: 'Business-friendly terms',
+            discount: 'Early investor benefits'
+        },
+        amenities: [
+            'Commercial facilities',
+            'Business center',
+            'Modern infrastructure',
+            'Parking facilities',
+            'Security systems'
+        ],
+        connectivity: [
+            'Business district access',
+            'Major roads connectivity',
+            'Public transport',
+            'Commercial hubs nearby'
+        ]
+    },
+
+    'faisal-margalla-city-fmc': {
+        title: 'Faisal Margalla City (FMC)',
+        location: 'Near Margalla Hills, Islamabad',
+        status: 'Active',
+        developer: 'Faisal Town',
+        totalArea: 'Integrated City Development',
+        description: 'Faisal Margalla City is an integrated development near the beautiful Margalla Hills, offering a complete lifestyle with residential, commercial, and recreational facilities.',
+        image: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+        features: [
+            'Integrated city development',
+            'Near Margalla Hills',
+            'Complete lifestyle',
+            'Mixed-use development',
+            'Modern planning',
+            'Scenic location'
+        ],
+        plotSizes: {
+            residential: [
+                { size: '5 Marla', price: 'Contact for pricing', dimensions: '25x45 ft' },
+                { size: '10 Marla', price: 'Contact for pricing', dimensions: '35x70 ft' },
+                { size: '1 Kanal', price: 'Contact for pricing', dimensions: '50x90 ft' }
+            ],
+            commercial: [
+                { size: 'Commercial Plot', price: 'Contact for pricing', dimensions: 'Various sizes' }
+            ]
+        },
+        paymentPlan: {
+            duration: 'City development plans',
+            downPayment: 'Contact for details',
+            installments: 'Long-term options',
+            discount: 'Foundation member benefits'
+        },
+        amenities: [
+            'City-level amenities',
+            'Recreational facilities',
+            'Educational institutions',
+            'Healthcare facilities',
+            'Shopping centers'
+        ],
+        connectivity: [
+            'Margalla Hills - Adjacent',
+            'Islamabad city - Connected',
+            'Major highways - Access',
+            'Airport - Convenient'
+        ]
+    },
+
+    'faisal-residencia-fr': {
+        title: 'Faisal Residencia (FR)',
+        location: 'Premium residential area',
+        status: 'Active',
+        developer: 'Faisal Town',
+        totalArea: 'Residential Community',
+        description: 'Faisal Residencia offers premium residential living with modern amenities and excellent connectivity in a well-planned community environment.',
+        image: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+        features: [
+            'Premium residential community',
+            'Modern amenities',
+            'Well-planned layout',
+            'Family-friendly environment',
+            'Quality infrastructure',
+            'Peaceful location'
+        ],
+        plotSizes: {
+            residential: [
+                { size: '3 Marla', price: 'Contact for pricing', dimensions: '20x37.5 ft' },
+                { size: '5 Marla', price: 'Contact for pricing', dimensions: '25x45 ft' },
+                { size: '8 Marla', price: 'Contact for pricing', dimensions: '30x60 ft' },
+                { size: '10 Marla', price: 'Contact for pricing', dimensions: '35x70 ft' }
+            ]
+        },
+        paymentPlan: {
+            duration: 'Residential payment plans',
+            downPayment: 'Contact for details',
+            installments: 'Family-friendly terms',
+            discount: 'Resident benefits'
+        },
+        amenities: [
+            'Residential amenities',
+            'Community center',
+            'Parks and playgrounds',
+            'Security services',
+            'Utility services'
+        ],
+        connectivity: [
+            'Residential area access',
+            'Schools and hospitals nearby',
+            'Shopping areas',
+            'Public transport'
+        ]
+    },
+
+    'faisal-tower': {
+        title: 'Faisal Tower',
+        location: 'Commercial district',
+        status: 'Active',
+        developer: 'Faisal Town',
+        totalArea: 'High-rise Development',
+        description: 'Faisal Tower is a prestigious high-rise development offering premium office spaces and commercial opportunities in a prime location.',
+        image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+        features: [
+            'High-rise tower',
+            'Premium office spaces',
+            'Commercial opportunities',
+            'Prime location',
+            'Modern architecture',
+            'Professional environment'
+        ],
+        plotSizes: {
+            commercial: [
+                { size: 'Office Suite', price: 'Contact for pricing', dimensions: 'Various layouts' },
+                { size: 'Floor Space', price: 'Contact for pricing', dimensions: 'Full floor options' },
+                { size: 'Retail Space', price: 'Contact for pricing', dimensions: 'Ground floor' }
+            ]
+        },
+        paymentPlan: {
+            duration: 'Commercial tower plans',
+            downPayment: 'Contact for details',
+            installments: 'Professional terms',
+            discount: 'Corporate benefits'
+        },
+        amenities: [
+            'High-rise amenities',
+            'Professional facilities',
+            'Modern elevators',
+            'Parking garage',
+            'Security systems'
+        ],
+        connectivity: [
+            'Commercial district',
+            'Business centers nearby',
+            'Major roads access',
+            'Public transport'
+        ]
+    },
+
+    'faisal-town-phase-ii': {
+        title: 'Faisal Town Phase II',
+        location: 'Extension of Faisal Town',
+        status: 'Active',
+        developer: 'Faisal Town',
+        totalArea: 'Phase II Development',
+        description: 'Faisal Town Phase II continues the legacy of quality development with enhanced features and modern planning for contemporary living.',
+        image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+        features: [
+            'Phase II development',
+            'Enhanced features',
+            'Modern planning',
+            'Quality construction',
+            'Improved amenities',
+            'Contemporary design'
+        ],
+        plotSizes: {
+            residential: [
+                { size: '5 Marla', price: 'Contact for pricing', dimensions: '25x45 ft' },
+                { size: '8 Marla', price: 'Contact for pricing', dimensions: '30x60 ft' },
+                { size: '10 Marla', price: 'Contact for pricing', dimensions: '35x70 ft' },
+                { size: '1 Kanal', price: 'Contact for pricing', dimensions: '50x90 ft' }
+            ]
+        },
+        paymentPlan: {
+            duration: 'Phase II payment plans',
+            downPayment: 'Contact for details',
+            installments: 'Flexible options',
+            discount: 'Phase launch benefits'
+        },
+        amenities: [
+            'Phase II amenities',
+            'Enhanced infrastructure',
+            'Modern facilities',
+            'Community services',
+            'Quality utilities'
+        ],
+        connectivity: [
+            'Phase I connectivity',
+            'Extended road network',
+            'Improved access',
+            'Transportation links'
+        ]
     }
 };
 

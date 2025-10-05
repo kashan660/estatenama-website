@@ -1,1 +1,288 @@
-[]
+[
+  {
+    "id": "faisal-town-ft",
+    "name": "Faisal Town (FT)",
+    "developer": "Faisal Town",
+    "location": "Near Tarnol Interchange, Motorway M-1",
+    "type": "Residential",
+    "status": "Active",
+    "description": "Faisal Town, RDA-approved, is located near Tarnol Interchange, Motorway M-1. Its grand gates reflect Gandhara and Mughal architecture.",
+    "features": [
+      "RDA-approved project",
+      "Gandhara and Mughal architecture",
+      "Strategic location near Motorway M-1",
+      "Grand entrance gates",
+      "Easy access to Islamabad"
+    ],
+    "amenities": [
+      "Modern infrastructure",
+      "Security system",
+      "Utilities available",
+      "Road network",
+      "Commercial areas"
+    ],
+    "plotSizes": ["5 Marla", "10 Marla", "1 Kanal"],
+    "priceRange": "Contact for pricing",
+    "installmentPlan": "Available",
+    "contact": {
+      "phone": "03195547788",
+      "email": "info@estatenama.com",
+      "whatsapp": "923195547788"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+    ]
+  },
+  {
+    "id": "faisal-hills-fh",
+    "name": "Faisal Hills (FH)",
+    "developer": "Faisal Town",
+    "location": "Near Margalla Hills, Islamabad",
+    "type": "Luxury Residential",
+    "status": "Active",
+    "description": "Faisal Hills offers luxury living near the scenic Margalla Hills, blending modern design with premium facilities in a secure, gated community close to Islamabad.",
+    "features": [
+      "Luxury gated community",
+      "Near scenic Margalla Hills",
+      "Modern design architecture",
+      "Premium facilities",
+      "Secure environment",
+      "Close to Islamabad"
+    ],
+    "amenities": [
+      "Gated community security",
+      "Modern amenities",
+      "Natural terrain",
+      "Hospital access",
+      "School facilities",
+      "Utilities"
+    ],
+    "plotSizes": ["5 Marla", "10 Marla", "1 Kanal", "2 Kanal"],
+    "priceRange": "Premium pricing",
+    "installmentPlan": "Flexible payment plans",
+    "contact": {
+      "phone": "03195547788",
+      "email": "info@estatenama.com",
+      "whatsapp": "923195547788"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+    ]
+  },
+  {
+    "id": "faisal-villas-fv",
+    "name": "Faisal Villas (FV)",
+    "developer": "Faisal Town",
+    "location": "Islamabad",
+    "type": "Luxury Villas",
+    "status": "Active",
+    "description": "Faisal Villas offer luxurious, earthquake-resistant homes with elegant interiors, modern amenities, and advanced security, providing the perfect blend of comfort and community living.",
+    "features": [
+      "Earthquake-resistant construction",
+      "Elegant interior design",
+      "Modern amenities",
+      "Advanced security systems",
+      "Community living concept",
+      "Luxury finishing"
+    ],
+    "amenities": [
+      "Advanced security",
+      "Modern amenities",
+      "Community facilities",
+      "Elegant interiors",
+      "Safety features",
+      "Premium construction"
+    ],
+    "plotSizes": ["Villa Units"],
+    "priceRange": "Luxury pricing",
+    "installmentPlan": "Available",
+    "contact": {
+      "phone": "03195547788",
+      "email": "info@estatenama.com",
+      "whatsapp": "923195547788"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+    ]
+  },
+  {
+    "id": "sea-square",
+    "name": "SEA Square",
+    "developer": "Faisal Town",
+    "location": "B-17, Islamabad",
+    "type": "Mixed Development",
+    "status": "Active",
+    "description": "Sea Square, located in B-17, offers a perfect blend of luxury, style, and top-tier management, featuring a mix of residential, commercial, and educational facilities for a modern lifestyle.",
+    "features": [
+      "Mixed-use development",
+      "Luxury and style blend",
+      "Top-tier management",
+      "Modern lifestyle facilities",
+      "Strategic B-17 location",
+      "Comprehensive planning"
+    ],
+    "amenities": [
+      "Residential facilities",
+      "Commercial areas",
+      "Educational facilities",
+      "Modern lifestyle amenities",
+      "Professional management",
+      "Mixed-use convenience"
+    ],
+    "plotSizes": ["Commercial", "Residential", "Mixed"],
+    "priceRange": "Competitive pricing",
+    "installmentPlan": "Flexible plans",
+    "contact": {
+      "phone": "03195547788",
+      "email": "info@estatenama.com",
+      "whatsapp": "923195547788"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+    ]
+  },
+  {
+    "id": "faisal-margalla-city-fmc",
+    "name": "Faisal Margalla City (FMC)",
+    "developer": "Faisal Town",
+    "location": "Near Margalla Hills and B-17",
+    "type": "Gated Community",
+    "status": "Active",
+    "description": "Faisal Margalla City, a gated community near the lush Margalla Hills and B-17, offers stunning views and direct access via G.T. Road N-5, perfect for nature lovers.",
+    "features": [
+      "Gated community",
+      "Near lush Margalla Hills",
+      "Stunning natural views",
+      "Direct G.T. Road N-5 access",
+      "Perfect for nature lovers",
+      "Premium location"
+    ],
+    "amenities": [
+      "Gated security",
+      "Natural surroundings",
+      "Scenic views",
+      "Easy road access",
+      "Community facilities",
+      "Nature-friendly environment"
+    ],
+    "plotSizes": ["5 Marla", "10 Marla", "1 Kanal"],
+    "priceRange": "Market competitive",
+    "installmentPlan": "Easy installments",
+    "contact": {
+      "phone": "03195547788",
+      "email": "info@estatenama.com",
+      "whatsapp": "923195547788"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+    ]
+  },
+  {
+    "id": "faisal-residencia-fr",
+    "name": "Faisal Residencia (FR)",
+    "developer": "Faisal Town",
+    "location": "CDA Sector E-17 near F-17 Tele Gardens",
+    "type": "Deluxe Residential",
+    "status": "Active",
+    "description": "Faisal Residencia, located in CDA Sector E-17 near F-17 Tele Gardens, offers deluxe living with expert design and construction, ideal for comfortable living and investment growth.",
+    "features": [
+      "CDA approved sector",
+      "Expert design and construction",
+      "Deluxe living standards",
+      "Investment growth potential",
+      "Strategic location",
+      "Professional development"
+    ],
+    "amenities": [
+      "Deluxe facilities",
+      "Expert construction",
+      "CDA approved",
+      "Investment potential",
+      "Modern design",
+      "Quality living"
+    ],
+    "plotSizes": ["5 Marla", "10 Marla", "1 Kanal"],
+    "priceRange": "Affordable luxury",
+    "installmentPlan": "Investor friendly",
+    "contact": {
+      "phone": "03195547788",
+      "email": "info@estatenama.com",
+      "whatsapp": "923195547788"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+    ]
+  },
+  {
+    "id": "faisal-tower",
+    "name": "Faisal Tower",
+    "developer": "Faisal Town",
+    "location": "Islamabad",
+    "type": "Commercial",
+    "status": "Active",
+    "description": "A new beginning Faisal Tower for our business partners, valued customers and our passionate employees. Faisal Tower is one of the best development provisions of all modern facilities.",
+    "features": [
+      "Commercial development",
+      "Modern facilities",
+      "Business-oriented",
+      "Professional environment",
+      "Strategic location",
+      "Contemporary design"
+    ],
+    "amenities": [
+      "Modern business facilities",
+      "Professional environment",
+      "Contemporary amenities",
+      "Business support services",
+      "Modern infrastructure",
+      "Commercial conveniences"
+    ],
+    "plotSizes": ["Commercial Units", "Office Spaces"],
+    "priceRange": "Commercial rates",
+    "installmentPlan": "Business friendly",
+    "contact": {
+      "phone": "03195547788",
+      "email": "info@estatenama.com",
+      "whatsapp": "923195547788"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+    ]
+  },
+  {
+    "id": "faisal-town-phase-ii",
+    "name": "Faisal Town Phase II",
+    "developer": "Faisal Town",
+    "location": "Near Islamabad",
+    "type": "Residential",
+    "status": "Active",
+    "description": "Faisal Town-II offers stylish living with modern amenities, stunning views, and essential facilities like hospitals, schools, and utilities, all near Islamabad's natural beauty and serene surroundings.",
+    "features": [
+      "Stylish living concept",
+      "Modern amenities",
+      "Stunning natural views",
+      "Essential facilities nearby",
+      "Near Islamabad",
+      "Serene surroundings"
+    ],
+    "amenities": [
+      "Hospital facilities",
+      "School access",
+      "Modern utilities",
+      "Natural beauty",
+      "Serene environment",
+      "Essential services"
+    ],
+    "plotSizes": ["5 Marla", "10 Marla", "1 Kanal"],
+    "priceRange": "Reasonable pricing",
+    "installmentPlan": "Easy payment plans",
+    "contact": {
+      "phone": "03195547788",
+      "email": "info@estatenama.com",
+      "whatsapp": "923195547788"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+    ]
+  }
+]

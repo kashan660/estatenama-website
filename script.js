@@ -34,6 +34,34 @@ function initNavigation() {
         });
     });
 
+    // Dropdown functionality for mobile
+    const dropdownToggle = document.querySelector('.dropdown-toggle');
+    const dropdown = document.querySelector('.dropdown');
+    
+    if (dropdownToggle && dropdown) {
+        dropdownToggle.addEventListener('click', function(e) {
+            // Only prevent default on mobile
+            if (window.innerWidth <= 768) {
+                e.preventDefault();
+                dropdown.classList.toggle('active');
+            }
+        });
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (dropdown && !dropdown.contains(e.target)) {
+            dropdown.classList.remove('active');
+        }
+    });
+
+    // Handle window resize to reset dropdown state
+    window.addEventListener('resize', function() {
+        if (dropdown && window.innerWidth > 768) {
+            dropdown.classList.remove('active');
+        }
+    });
+
     // Navbar scroll effect
     window.addEventListener('scroll', function() {
         const navbar = document.querySelector('.navbar');
@@ -654,6 +682,142 @@ function openWhatsApp(message = '') {
     const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
     window.open(whatsappURL, '_blank');
 }
+
+// Hero section responsiveness handler
+function initHeroResponsiveness() {
+    const hero = document.querySelector('.hero');
+    if (!hero) return;
+
+    function updateHeroBackground() {
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        
+        // Force background recalculation
+        hero.style.backgroundSize = 'cover';
+        hero.style.backgroundPosition = 'center center';
+        hero.style.backgroundRepeat = 'no-repeat';
+        
+        // Trigger a reflow to ensure background updates
+        hero.offsetHeight;
+        
+        // Additional responsive adjustments based on viewport
+        if (viewportWidth < 768) {
+            hero.style.backgroundSize = 'cover';
+            hero.style.minHeight = '100vh';
+        } else if (viewportWidth >= 1400) {
+            hero.style.backgroundSize = 'cover';
+            hero.style.minHeight = '100vh';
+        } else {
+            hero.style.backgroundSize = 'cover';
+            hero.style.minHeight = '100vh';
+        }
+    }
+
+    // Update on window resize
+    window.addEventListener('resize', updateHeroBackground);
+    
+    // Update on orientation change (mobile)
+    window.addEventListener('orientationchange', function() {
+        setTimeout(updateHeroBackground, 100);
+    });
+    
+    // Initial update
+    updateHeroBackground();
+}
+
+// Dynamic Projects Loading
+async function loadFaisalTownProjects() {
+    try {
+        const response = await fetch('./admin-data/projects.json');
+        const projects = await response.json();
+        
+        // Filter Faisal Town projects
+        const faisalTownProjects = projects.filter(project => 
+            project.developer && project.developer.toLowerCase().includes('faisal town')
+        );
+        
+        if (faisalTownProjects.length > 0) {
+            displayFaisalTownProjects(faisalTownProjects);
+        }
+    } catch (error) {
+        console.log('Projects data not available, using static content');
+    }
+}
+
+function displayFaisalTownProjects(projects) {
+    const faisalTownGrid = document.querySelector('.project-category:first-child .projects-grid');
+    
+    if (!faisalTownGrid) return;
+    
+    // Clear existing content
+    faisalTownGrid.innerHTML = '';
+    
+    projects.forEach(project => {
+        const projectCard = createProjectCard(project);
+        faisalTownGrid.appendChild(projectCard);
+    });
+}
+
+function createProjectCard(project) {
+    const card = document.createElement('div');
+    card.className = 'project-card detailed';
+    card.setAttribute('data-aos', 'fade-up');
+    card.setAttribute('data-aos-delay', '200');
+    
+    // Generate plot sizes HTML
+    const plotSizesHTML = project.plotSizes && project.plotSizes.length > 0 
+        ? project.plotSizes.map(plot => `<div class="plot-item">${plot.size} - ${plot.price}</div>`).join('')
+        : '<div class="plot-item">Contact for pricing details</div>';
+    
+    // Generate features HTML
+    const featuresHTML = project.features && project.features.length > 0
+        ? project.features.slice(0, 4).map(feature => `<span class="feature">✅ ${feature}</span>`).join('')
+        : '<span class="feature">✅ Premium Location</span>';
+    
+    // Generate amenities for payment plan
+    const paymentPlan = project.installmentPlan || 'Flexible payment plans available';
+    
+    card.innerHTML = `
+        <div class="project-image">
+            <img src="${project.image || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'}" 
+                 alt="${project.name}" loading="lazy">
+            <div class="project-overlay">
+                <div class="project-status">${project.status || 'Available'}</div>
+            </div>
+        </div>
+        <div class="project-content">
+            <h4>${project.name}</h4>
+            <p class="project-location">📍 ${project.location}</p>
+            <p class="project-description">${project.description}</p>
+            
+            <div class="plot-details">
+                <h5>📋 Available Plot Sizes:</h5>
+                <div class="plot-grid">
+                    ${plotSizesHTML}
+                </div>
+            </div>
+            
+            <div class="project-features">
+                ${featuresHTML}
+            </div>
+            
+            <div class="payment-plan">
+                <h5>💳 Payment Plan</h5>
+                <p>${paymentPlan}</p>
+            </div>
+            
+            <a href="project-details.html?project=${project.id}" class="btn-secondary project-btn">Get Complete Details</a>
+        </div>
+    `;
+    
+    return card;
+}
+
+// Add project loading to DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+    initHeroResponsiveness();
+    loadFaisalTownProjects();
+});
 
 console.log('%c🏠 Welcome to Estate Nama! 🏠', 'color: #e74c3c; font-size: 20px; font-weight: bold;');
 console.log('%cYour trusted real estate partner in Pakistan', 'color: #2c3e50; font-size: 14px;');

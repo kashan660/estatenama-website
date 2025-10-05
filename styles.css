@@ -282,6 +282,86 @@ html {
     width: 100%;
 }
 
+/* Dropdown Styles */
+.dropdown {
+    position: relative;
+}
+
+.dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dropdown-icon {
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+}
+
+.dropdown:hover .dropdown-icon {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #fff;
+    min-width: 200px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    padding: 0.5rem 0;
+    list-style: none;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    border: 1px solid #e0e0e0;
+}
+
+.dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-link {
+    display: block;
+    padding: 0.75rem 1.5rem;
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.dropdown-link:last-child {
+    border-bottom: none;
+}
+
+.dropdown-link:hover {
+    background: #f8f9fa;
+    color: #e74c3c;
+    padding-left: 2rem;
+}
+
+.dropdown-link::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: #e74c3c;
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+}
+
+.dropdown-link:hover::before {
+    transform: scaleY(1);
+}
+
 .hamburger {
     display: none;
     flex-direction: column;
@@ -299,14 +379,24 @@ html {
 /* Hero Section */
 .hero {
     min-height: 100vh;
+    height: 100vh;
     display: flex;
     align-items: center;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%), 
-                url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&h=1080&fit=crop&crop=center') center/cover no-repeat;
+    background-image: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%), 
+                      url('https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
     color: white;
     padding: 160px 20px 50px;
     position: relative;
     overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    background-origin: padding-box;
+    background-clip: border-box;
 }
 
 .hero::before {
@@ -963,6 +1053,24 @@ html {
 
 .footer-section span {
     color: #e74c3c;
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.footer-logo-img {
+    width: 40px;
+    height: 40px;
+}
+
+.footer-logo h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0;
 }
 
 .footer-section h4 {
@@ -1654,6 +1762,45 @@ html {
         left: 0;
     }
 
+    /* Mobile Dropdown Styles */
+    .dropdown-menu {
+        position: static;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        box-shadow: none;
+        border: none;
+        border-radius: 0;
+        background: #f8f9fa;
+        margin-top: 0.5rem;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+
+    .dropdown.active .dropdown-menu {
+        max-height: 300px;
+    }
+
+    .dropdown-link {
+        padding: 1rem 2rem;
+        border-bottom: 1px solid #e0e0e0;
+        font-size: 0.9rem;
+    }
+
+    .dropdown-link:hover {
+        padding-left: 2.5rem;
+        background: #e9ecef;
+    }
+
+    .dropdown-icon {
+        transition: transform 0.3s ease;
+    }
+
+    .dropdown.active .dropdown-icon {
+        transform: rotate(180deg);
+    }
+
     .hamburger {
         display: flex;
     }
@@ -1747,6 +1894,9 @@ html {
         flex-direction: column;
         text-align: center;
         padding: 140px 20px 50px;
+        background-attachment: scroll;
+        background-size: cover;
+        background-position: center center;
     }
 
     .hero-title {
@@ -1947,4 +2097,63 @@ html {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* Enhanced viewport responsiveness for hero section */
+@media screen and (min-width: 1400px) {
+    .hero {
+        background-size: 100% auto;
+        background-position: center center;
+        min-height: 100vh;
+    }
+}
+
+@media screen and (max-width: 1399px) and (min-width: 1200px) {
+    .hero {
+        background-size: cover;
+        background-position: center center;
+        min-height: 100vh;
+    }
+}
+
+@media screen and (max-width: 1199px) and (min-width: 992px) {
+    .hero {
+        background-size: cover;
+        background-position: center center;
+        min-height: 100vh;
+    }
+}
+
+@media screen and (max-width: 991px) and (min-width: 768px) {
+    .hero {
+        background-size: cover;
+        background-position: center center;
+        min-height: 100vh;
+    }
+}
+
+@media screen and (max-width: 767px) and (min-width: 576px) {
+    .hero {
+        background-size: cover;
+        background-position: center center;
+        min-height: 100vh;
+        padding: 140px 20px 50px;
+    }
+}
+
+@media screen and (max-width: 575px) {
+    .hero {
+        background-size: cover;
+        background-position: center center;
+        min-height: 100vh;
+        height: auto;
+        padding: 120px 15px 40px;
+    }
+}
+
+/* Force background image to be responsive on all viewport changes */
+@media screen {
+    .hero {
+        background-attachment: scroll !important;
+    }
 }
