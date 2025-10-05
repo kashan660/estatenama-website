@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initSmoothScrolling();
     initLoadingScreen();
     initCounterAnimation();
+    initRandomHeroImages();
 });
 
 
@@ -818,6 +819,37 @@ document.addEventListener('DOMContentLoaded', function() {
     initHeroResponsiveness();
     loadFaisalTownProjects();
 });
+
+// Random Hero Images Functionality
+function initRandomHeroImages() {
+    const heroImages = document.querySelectorAll('.hero-bg-image');
+    
+    if (heroImages.length === 0) return;
+    
+    let currentImageIndex = 0;
+    
+    // Function to show random image
+    function showRandomImage() {
+        // Remove active class from all images
+        heroImages.forEach(img => img.classList.remove('active'));
+        
+        // Get random index different from current
+        let randomIndex;
+        do {
+            randomIndex = Math.floor(Math.random() * heroImages.length);
+        } while (randomIndex === currentImageIndex && heroImages.length > 1);
+        
+        // Show the random image
+        heroImages[randomIndex].classList.add('active');
+        currentImageIndex = randomIndex;
+    }
+    
+    // Show first random image immediately
+    showRandomImage();
+    
+    // Change image every 5 seconds
+    setInterval(showRandomImage, 5000);
+}
 
 console.log('%c🏠 Welcome to Estate Nama! 🏠', 'color: #e74c3c; font-size: 20px; font-weight: bold;');
 console.log('%cYour trusted real estate partner in Pakistan', 'color: #2c3e50; font-size: 14px;');
