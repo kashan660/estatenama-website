@@ -44,7 +44,7 @@ html {
 /* Newsletter Widget Styles */
 .newsletter-widget {
     position: fixed;
-    left: -300px; /* Start hidden off-screen */
+    right: -300px; /* Start hidden off-screen on the right */
     top: 50%;
     transform: translateY(-50%);
     width: 280px;
@@ -52,7 +52,7 @@ html {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    z-index: 1000;
+    z-index: 900; /* keep below floating buttons */
     overflow: hidden;
     transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     border: 2px solid rgba(255,255,255,0.2);
@@ -60,12 +60,12 @@ html {
 }
 
 .newsletter-widget.show {
-    left: 20px;
+    right: 20px;
     opacity: 1;
 }
 
 .newsletter-widget.hide {
-    left: -300px;
+    right: -300px;
     opacity: 0;
 }
 

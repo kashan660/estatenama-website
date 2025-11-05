@@ -1,59 +1,5 @@
 // Project Details Data
 const projectsData = {
-    'faisal-town-phase-1': {
-        title: 'Faisal Town Phase 1 (F-18)',
-        location: 'Rawalpindi-Kohat Road, Near M-1 Motorway',
-        status: 'RDA Approved',
-        developer: 'Faisal Town (Pvt) Ltd',
-        totalArea: '15,000 Kanals',
-        description: 'Faisal Town Phase 1 is a fully developed premium housing society with world-class amenities and excellent connectivity. Located strategically on Rawalpindi-Kohat Road near M-1 Motorway, it offers a perfect blend of modern living and convenience.',
-        image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-        features: [
-            'NOC Approved by RDA',
-            '4 Developed Blocks (A, B, B1, C)',
-            'Commercial Areas Available',
-            'Direct GT Road Access',
-            'Developed Infrastructure',
-            '24/7 Security',
-            'Mosque & Community Center',
-            'Parks & Green Areas'
-        ],
-        plotSizes: {
-            residential: [
-                { size: '5 Marla', price: 'PKR 25-30 Lac', dimensions: '25x45 ft' },
-                { size: '8 Marla', price: 'PKR 40-50 Lac', dimensions: '30x60 ft' },
-                { size: '10 Marla', price: 'PKR 55-70 Lac', dimensions: '35x70 ft' },
-                { size: '1 Kanal', price: 'PKR 1.2-1.5 Crore', dimensions: '50x90 ft' }
-            ],
-            commercial: [
-                { size: 'Shop (Marla)', price: 'PKR 60-80 Lac', dimensions: '20x40 ft' },
-                { size: 'Plaza Plot', price: 'PKR 1.5-2 Crore', dimensions: '40x80 ft' }
-            ]
-        },
-        paymentPlan: {
-            duration: '54 Months (4.5 Years)',
-            downPayment: '20%',
-            installments: 'Quarterly',
-            discount: '20% Lump Sum Discount Available'
-        },
-        amenities: [
-            'Gated Community',
-            'Wide Roads (60-120 ft)',
-            'Underground Electricity',
-            'Water Supply System',
-            'Sewerage System',
-            'Street Lights',
-            'Boundary Wall',
-            'Main Gate with Security'
-        ],
-        connectivity: [
-            'GT Road - 2 minutes',
-            'M-1 Motorway - 5 minutes',
-            'Islamabad Airport - 45 minutes',
-            'Rawalpindi City - 20 minutes',
-            'Peshawar - 2 hours via Motorway'
-        ]
-    },
     'faisal-town-phase-2': {
         title: 'Faisal Town Phase 2',
         location: 'Near Thalian Interchange, M-2 Motorway',

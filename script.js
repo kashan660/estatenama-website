@@ -240,16 +240,8 @@ function initContactForm() {
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
                 
-                // Create WhatsApp link
-                const whatsappMessage = `Hello Estate Nama!\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nProperty Type: ${propertyType}\nMessage: ${message}`;
-                const whatsappUrl = `https://wa.me/923195547788?text=${encodeURIComponent(whatsappMessage)}`;
-                
-                // Show option to contact via WhatsApp
-                setTimeout(() => {
-                    if (confirm('Would you like to continue the conversation on WhatsApp?')) {
-                        window.open(whatsappUrl, '_blank');
-                    }
-                }, 2000);
+                // Do not auto-open WhatsApp from the contact form.
+                // WhatsApp should only open when an explicit WhatsApp button/link is clicked.
                 
             }, 2000);
         });
@@ -389,19 +381,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Add click to call functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const allElements = document.querySelectorAll('p, span, div');
-    
-    allElements.forEach(element => {
-        if (element.textContent.includes('03195547788')) {
-            element.style.cursor = 'pointer';
-            element.addEventListener('click', function() {
-                window.location.href = 'tel:+923195547788';
-            });
-        }
-    });
-});
+// Removed global click-to-call on plain number text to prevent unintended triggers.
+// Calls should only be initiated via explicit call buttons/links (e.g., <a href="tel:+923195547788">).
 
 // Add email click functionality
 document.addEventListener('DOMContentLoaded', function() {
@@ -423,7 +404,9 @@ function createWhatsAppButton() {
     whatsappBtn.href = 'https://wa.me/923195547788';
     whatsappBtn.target = '_blank';
     whatsappBtn.className = 'whatsapp-float';
-    whatsappBtn.innerHTML = '<i class="fab fa-whatsapp"></i>';
+    whatsappBtn.id = 'whatsapp-float';
+    whatsappBtn.setAttribute('aria-label', 'Contact us on WhatsApp');
+    whatsappBtn.innerHTML = '<i class="fab fa-whatsapp" aria-hidden="true"></i>';
     
     // Add styles
     whatsappBtn.style.cssText = `
@@ -469,6 +452,39 @@ function createWhatsAppButton() {
     
     document.head.appendChild(style);
     document.body.appendChild(whatsappBtn);
+
+    // Prevent overlaying important contact areas (like footer/contact-section)
+    function adjustWhatsAppButtonPosition() {
+        const btn = document.getElementById('whatsapp-float');
+        if (!btn) return;
+
+        const footer = document.querySelector('footer');
+        const contactSection = document.querySelector('#contact, .contact-section');
+        const rectBtn = btn.getBoundingClientRect();
+        let overlap = false;
+
+        const candidates = [contactSection, footer].filter(Boolean);
+        for (const el of candidates) {
+            const rectEl = el.getBoundingClientRect();
+            const verticallyOverlaps = rectBtn.top < rectEl.bottom && rectBtn.bottom > rectEl.top;
+            const horizontallyOverlaps = rectBtn.left < rectEl.right && rectBtn.right > rectEl.left;
+            if (verticallyOverlaps && horizontallyOverlaps) {
+                overlap = true;
+                break;
+            }
+        }
+
+        // Base offset depending on viewport size
+        const baseBottom = window.innerWidth < 576 ? 30 : 40;
+        const elevatedBottom = window.innerWidth < 576 ? 120 : 140;
+
+        btn.style.bottom = overlap ? `${elevatedBottom}px` : `${baseBottom}px`;
+    }
+
+    // Initial adjustment and on scroll/resize
+    adjustWhatsAppButtonPosition();
+    window.addEventListener('scroll', adjustWhatsAppButtonPosition, { passive: true });
+    window.addEventListener('resize', adjustWhatsAppButtonPosition);
 }
 
 // Initialize WhatsApp button
