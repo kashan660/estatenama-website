@@ -1032,6 +1032,27 @@ html {
     margin-bottom: 0.25rem;
 }
 
+/* Prevent contact email from appearing clickable */
+.contact-email-no-click {
+    cursor: text !important;
+    color: inherit !important;
+    text-decoration: none !important;
+}
+
+.contact-item:hover .contact-email-no-click {
+    color: inherit !important;
+}
+
+.contact-info .contact-item {
+    cursor: default !important;
+}
+
+.contact-info p {
+    cursor: text !important;
+    color: inherit !important;
+    text-decoration: none !important;
+}
+
 .contact-form {
     background: #f8f9fa;
     padding: 2.5rem;
@@ -2596,4 +2617,34 @@ html {
     .hero {
         background-attachment: scroll !important;
     }
+}
+
+/* WhatsApp Button Styles */
+.whatsapp-social-btn {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.whatsapp-social-btn:hover {
+    color: #25d366 !important;
+}
+
+.whatsapp-contact-btn:hover {
+    color: #128c7e !important;
+}
+
+.call-btn:hover {
+    color: #0056b3 !important;
+}
+
+/* Prevent phone numbers from being clickable */
+.phone-number {
+    cursor: default;
+    user-select: text;
+}
+
+.phone-number:hover {
+    text-decoration: none;
+    cursor: default;
 }

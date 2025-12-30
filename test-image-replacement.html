@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Replacement Test - Estate Nama</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #1e3c72;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        
+        .test-title {
+            color: #2a5298;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .image-preview {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .image-item {
+            text-align: center;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        
+        .image-item:hover {
+            border-color: #2a5298;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(42, 82, 152, 0.2);
+        }
+        
+        .image-item img {
+            width: 200px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .image-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .image-path {
+            font-size: 0.8em;
+            color: #666;
+            word-break: break-all;
+        }
+        
+        .test-instructions {
+            background: #e3f2fd;
+            border-left: 4px solid #2a5298;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .test-instructions h4 {
+            color: #1e3c72;
+            margin-top: 0;
+        }
+        
+        .test-instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .test-instructions li {
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2a5298;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: #1e3c72;
+            transform: translateX(-2px);
+        }
+        
+        .refresh-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .refresh-btn:hover {
+            background: #218838;
+        }
+        
+        @media (max-width: 768px) {
+            .test-container {
+                padding: 15px;
+            }
+            
+            .image-preview {
+                justify-content: center;
+            }
+            
+            .image-item img {
+                width: 150px;
+                height: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+        Back to Website
+    </a>
+
+    <div class="test-container">
+        <div class="test-header">
+            <h1><i class="fas fa-images"></i> Image Replacement Test</h1>
+            <p>Test the new image folder structure and replacement functionality</p>
+        </div>
+
+        <div class="test-instructions">
+            <h4><i class="fas fa-info-circle"></i> Testing Instructions:</h4>
+            <ol>
+                <li>Check that all images are loading correctly from their new folder locations</li>
+                <li>Verify that the image paths match the new folder structure</li>
+                <li>Test image replacement by uploading new images to the admin panel</li>
+                <li>Ensure broken images show placeholder images</li>
+                <li>Verify that all project images are organized in their respective folders</li>
+            </ol>
+        </div>
+
+        <button class="refresh-btn" onclick="location.reload()">
+            <i class="fas fa-sync-alt"></i> Refresh Test
+        </button>
+
+        <!-- Homepage Images Test -->
+        <div class="test-section">
+            <div class="test-title">
+                <i class="fas fa-home"></i> Homepage Hero Images
+                <span class="status-indicator" id="homepage-status">Testing...</span>
+            </div>
+            <div class="image-preview" id="homepage-preview">
+                <!-- Homepage images will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Logo Images Test -->
+        <div class="test-section">
+            <div class="test-title">
+                <i class="fas fa-trademark"></i> Logo Images
+                <span class="status-indicator" id="logo-status">Testing...</span>
+            </div>
+            <div class="image-preview" id="logo-preview">
+                <!-- Logo images will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Favicon Images Test -->
+        <div class="test-section">
+            <div class="test-title">
+                <i class="fas fa-star"></i> Favicon Images
+                <span class="status-indicator" id="favicon-status">Testing...</span>
+            </div>
+            <div class="image-preview" id="favicon-preview">
+                <!-- Favicon images will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Project Images Test -->
+        <div class="test-section">
+            <div class="test-title">
+                <i class="fas fa-building"></i> Project Images
+                <span class="status-indicator" id="project-status">Testing...</span>
+            </div>
+            <div class="image-preview" id="project-preview">
+                <!-- Project images will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Admin Images Test -->
+        <div class="test-section">
+            <div class="test-title">
+                <i class="fas fa-user-shield"></i> Admin Images
+                <span class="status-indicator" id="admin-status">Testing...</span>
+            </div>
+            <div class="image-preview" id="admin-preview">
+                <!-- Admin images will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="test-section">
+            <div class="test-title">
+                <i class="fas fa-chart-bar"></i> Test Summary
+            </div>
+            <div id="test-summary">
+                <!-- Test results will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class ImageTest {
+            constructor() {
+                this.testResults = {
+                    total: 0,
+                    passed: 0,
+                    failed: 0,
+                    details: []
+                };
+                
+                this.runTests();
+            }
+
+            async runTests() {
+                console.log('🏞️ Starting image replacement tests...');
+                
+                await this.testHomepageImages();
+                await this.testLogoImages();
+                await this.testFaviconImages();
+                await this.testProjectImages();
+                await this.testAdminImages();
+                
+                this.displaySummary();
+            }
+
+            async testImage(src, elementId, testName) {
+                this.testResults.total++;
+                
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    
+                    img.onload = () => {
+                        this.testResults.passed++;
+                        document.getElementById(elementId).innerHTML = `
+                            <div class="image-item">
+                                <img src="${src}" alt="${testName}">
+                                <div class="image-label">✅ ${testName}</div>
+                                <div class="image-path">${src}</div>
+                            </div>
+                        `;
+                        document.querySelector(`#${elementId.replace('-preview', '-status')}`).className = 'status-indicator status-success';
+                        document.querySelector(`#${elementId.replace('-preview', '-status')}`).textContent = 'Working';
+                        resolve(true);
+                    };
+                    
+                    img.onerror = () => {
+                        this.testResults.failed++;
+                        document.getElementById(elementId).innerHTML = `
+                            <div class="image-item">
+                                <img src="https://via.placeholder.com/200x150?text=Broken+Image" alt="${testName}">
+                                <div class="image-label">❌ ${testName}</div>
+                                <div class="image-path">${src}</div>
+                            </div>
+                        `;
+                        document.querySelector(`#${elementId.replace('-preview', '-status')}`).className = 'status-indicator status-error';
+                        document.querySelector(`#${elementId.replace('-preview', '-status')}`).textContent = 'Broken';
+                        resolve(false);
+                    };
+                    
+                    img.src = src;
+                });
+            }
+
+            async testHomepageImages() {
+                const tests = [
+                    { src: 'images/homepage/home1.png', name: 'Hero Image 1' },
+                    { src: 'images/homepage/home2.png', name: 'Hero Image 2' }
+                ];
+
+                for (const test of tests) {
+                    await this.testImage(test.src, 'homepage-preview', test.name);
+                }
+            }
+
+            async testLogoImages() {
+                const tests = [
+                    { src: 'images/logos/logoe_statenama.png', name: 'Main Logo' }
+                ];
+
+                for (const test of tests) {
+                    await this.testImage(test.src, 'logo-preview', test.name);
+                }
+            }
+
+            async testFaviconImages() {
+                const tests = [
+                    { src: 'images/favicons/favicon-32x32.png', name: 'Favicon 32x32' },
+                    { src: 'images/favicons/apple-touch-icon.png', name: 'Apple Touch Icon' }
+                ];
+
+                for (const test of tests) {
+                    await this.testImage(test.src, 'favicon-preview', test.name);
+                }
+            }
+
+            async testProjectImages() {
+                const tests = [
+                    { src: 'images/projects/faisal-town/project1.jpg', name: 'Faisal Town Project' },
+                    { src: 'images/projects/ruden-enclave/project1.jpg', name: 'Ruden Enclave Project' },
+                    { src: 'images/projects/eighteen/project1.jpg', name: 'Eighteen Project' },
+                    { src: 'images/projects/bahria-town-phase8/project1.jpg', name: 'Bahria Town Phase 8 Project' }
+                ];
+
+                for (const test of tests) {
+                    await this.testImage(test.src, 'project-preview', test.name);
+                }
+            }
+
+            async testAdminImages() {
+                const tests = [
+                    { src: 'images/admin/estate-nama-office.jpg', name: 'Office Image' }
+                ];
+
+                for (const test of tests) {
+                    await this.testImage(test.src, 'admin-preview', test.name);
+                }
+            }
+
+            displaySummary() {
+                const summary = document.getElementById('test-summary');
+                const successRate = Math.round((this.testResults.passed / this.testResults.total) * 100);
+                
+                let statusClass = 'status-success';
+                let statusText = 'Excellent';
+                
+                if (successRate < 70) {
+                    statusClass = 'status-error';
+                    statusText = 'Needs Attention';
+                } else if (successRate < 90) {
+                    statusClass = 'status-warning';
+                    statusText = 'Good';
+                }
+
+                summary.innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <h3 style="color: #1e3c72; margin-bottom: 20px;">Test Results</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 2em; font-weight: bold; color: #2a5298;">${this.testResults.total}</div>
+                                <div style="color: #666;">Total Tests</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 2em; font-weight: bold; color: #28a745;">${this.testResults.passed}</div>
+                                <div style="color: #666;">Passed</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 2em; font-weight: bold; color: #dc3545;">${this.testResults.failed}</div>
+                                <div style="color: #666;">Failed</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 2em; font-weight: bold; color: ${successRate >= 90 ? '#28a745' : successRate >= 70 ? '#ffc107' : '#dc3545'};">${successRate}%</div>
+                                <div style="color: #666;">Success Rate</div>
+                            </div>
+                        </div>
+                        <div class="status-indicator ${statusClass}" style="font-size: 1.2em; padding: 10px 20px;">
+                            Overall Status: ${statusText}
+                        </div>
+                        <p style="margin-top: 15px; color: #666;">
+                            ${successRate === 100 ? '🎉 All images are working perfectly!' : 
+                              successRate >= 90 ? '👍 Most images are working correctly.' :
+                              successRate >= 70 ? '⚠️ Some images need attention.' :
+                              '❌ Several images are broken and need to be replaced.'}
+                        </p>
+                    </div>
+                `;
+
+                console.log(`🏞️ Image Test Complete: ${this.testResults.passed}/${this.testResults.total} passed (${successRate}%)`);
+            }
+        }
+
+        // Initialize the test when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new ImageTest();
+        });
+
+        // Add helpful console commands
+        window.testHelp = () => {
+            console.log(`
+🏞️ Estate Nama Image Test System
+
+This page tests the new image folder structure:
+• Homepage hero images (images/homepage/)
+• Logo images (images/logos/)
+• Favicon images (images/favicons/)
+• Project images (images/projects/{project}/)
+• Admin images (images/admin/)
+
+Commands:
+• testHelp() - Show this help
+• location.reload() - Refresh the test
+
+The test will automatically check all images and show:
+✅ Green = Working images
+❌ Red = Broken images that need replacement
+            `);
+        };
+
+        console.log('🏞️ Image Test System loaded! Type testHelp() for help.');
+    </script>
+</body>
+</html>

@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Click Behavior Test - Estate Nama</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #1e3c72;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        
+        .test-title {
+            color: #2a5298;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .test-item {
+            margin: 10px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+            position: relative;
+        }
+        
+        .test-item:hover {
+            border-color: #2a5298;
+            background: #f8f9ff;
+        }
+        
+        .test-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .test-content {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .test-result {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        .test-pass {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .test-fail {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .test-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2a5298;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: #1e3c72;
+            transform: translateX(-2px);
+        }
+        
+        .refresh-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .refresh-btn:hover {
+            background: #218838;
+        }
+        
+        .console-output {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8em;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        
+        .console-entry {
+            margin: 2px 0;
+        }
+        
+        .console-info {
+            color: #63b3ed;
+        }
+        
+        .console-success {
+            color: #68d391;
+        }
+        
+        .console-error {
+            color: #fc8181;
+        }
+        
+        .console-warning {
+            color: #f6ad55;
+        }
+        
+        @media (max-width: 768px) {
+            .test-container {
+                padding: 15px;
+            }
+            
+            .test-item {
+                margin: 8px 0;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+        Back to Website
+    </a>
+
+    <div class="test-container">
+        <div class="test-header">
+            <h1><i class="fas fa-mouse-pointer"></i> Click Behavior Test</h1>
+            <p>Verify that WhatsApp and email functions only activate on intended elements</p>
+        </div>
+
+        <button class="refresh-btn" onclick="location.reload()">
+            <i class="fas fa-sync-alt"></i> Refresh Test
+        </button>
+
+        <div class="test-section">
+            <div class="test-title">
+                <i class="fas fa-whatsapp"></i> WhatsApp Button Tests
+            </div>
+            
+            <div class="test-item" id="test-whatsapp-float">
+                <div class="test-label">WhatsApp Floating Button</div>
+                <div class="test-content">Should open WhatsApp when clicked</div>
+                <div class="test-result test-warning" id="result-whatsapp-float">Testing...</div>
+            </div>
+            
+            <div class="test-item" id="test-whatsapp-widget">
+                <div class="test-label">Widget WhatsApp Button</div>
+                <div class="test-content">Should open WhatsApp when clicked</div>
+                <div class="test-result test-warning" id="result-whatsapp-widget">Testing...</div>
+            </div>
+            
+            <div class="test-item" id="test-whatsapp-footer">
+                <div class="test-label">Footer WhatsApp Button</div>
+                <div class="test-content">Should open WhatsApp when clicked</div>
+                <div class="test-result test-warning" id="result-whatsapp-footer">Testing...</div>
+            </div>
+            
+            <div class="test-item" id="test-phone-number">
+                <div class="test-label">Plain Phone Number (03195547788)</div>
+                <div class="test-content">Should NOT trigger WhatsApp</div>
+                <div class="test-result test-warning" id="result-phone-number">Testing...</div>
+            </div>
+            
+            <div class="test-item" id="test-phone-link">
+                <div class="test-label">Phone Link (tel:)</div>
+                <div class="test-content">Should trigger phone call, not WhatsApp</div>
+                <div class="test-result test-warning" id="result-phone-link">Testing...</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">
+                <i class="fas fa-envelope"></i> Email Tests
+            </div>
+            
+            <div class="test-item" id="test-email-text">
+                <div class="test-label">Plain Email Text (info@estatenama.com)</div>
+                <div class="test-content">Should open email client when clicked</div>
+                <div class="test-result test-warning" id="result-email-text">Testing...</div>
+            </div>
+            
+            <div class="test-item" id="test-email-link">
+                <div class="test-label">Email Link (mailto:)</div>
+                <div class="test-content">Should open email client when clicked</div>
+                <div class="test-result test-warning" id="result-email-link">Testing...</div>
+            </div>
+            
+            <div class="test-item" id="test-address">
+                <div class="test-label">Address Text</div>
+                <div class="test-content">Should NOT trigger email or WhatsApp</div>
+                <div class="test-result test-warning" id="result-address">Testing...</div>
+            </div>
+            
+            <div class="test-item" id="test-regular-text">
+                <div class="test-label">Regular Text</div>
+                <div class="test-content">Should NOT trigger any function</div>
+                <div class="test-result test-warning" id="result-regular-text">Testing...</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">
+                <i class="fas fa-terminal"></i> Console Output
+            </div>
+            <div class="console-output" id="console-output">
+                <div class="console-entry console-info">🧪 Starting click behavior tests...</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">
+                <i class="fas fa-chart-bar"></i> Test Summary
+            </div>
+            <div id="test-summary">
+                <!-- Test results will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class ClickBehaviorTest {
+            constructor() {
+                this.testResults = {
+                    total: 0,
+                    passed: 0,
+                    failed: 0,
+                    details: []
+                };
+                
+                this.originalOpenWhatsApp = window.openWhatsApp;
+                this.originalLocationHref = window.location.href;
+                this.interceptedCalls = [];
+                
+                this.setupInterceptors();
+                this.runTests();
+            }
+
+            setupInterceptors() {
+                // Intercept WhatsApp calls
+                window.openWhatsApp = (message) => {
+                    this.interceptedCalls.push({
+                        type: 'whatsapp',
+                        message: message || 'default',
+                        timestamp: new Date().toISOString()
+                    });
+                    this.log(`📱 WhatsApp intercepted: ${message || 'default'}`, 'success');
+                    return true;
+                };
+
+                // Intercept location changes (for mailto and tel)
+                const originalHref = Object.getOwnPropertyDescriptor(window.location, 'href');
+                let self = this;
+                Object.defineProperty(window.location, 'href', {
+                    get: function() { return self.originalLocationHref; },
+                    set: function(newHref) {
+                        if (newHref.startsWith('mailto:')) {
+                            self.interceptedCalls.push({
+                                type: 'email',
+                                href: newHref,
+                                timestamp: new Date().toISOString()
+                            });
+                            self.log(`📧 Email intercepted: ${newHref}`, 'success');
+                        } else if (newHref.startsWith('tel:')) {
+                            self.interceptedCalls.push({
+                                type: 'phone',
+                                href: newHref,
+                                timestamp: new Date().toISOString()
+                            });
+                            self.log(`📞 Phone call intercepted: ${newHref}`, 'success');
+                        } else {
+                            self.originalLocationHref = newHref;
+                        }
+                    }
+                });
+            }
+
+            log(message, type = 'info') {
+                const consoleOutput = document.getElementById('console-output');
+                const entry = document.createElement('div');
+                entry.className = `console-entry console-${type}`;
+                entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+                consoleOutput.appendChild(entry);
+                consoleOutput.scrollTop = consoleOutput.scrollHeight;
+            }
+
+            async testElement(elementId, testName, expectedBehavior, shouldTrigger = false) {
+                this.testResults.total++;
+                this.interceptedCalls = []; // Reset intercepted calls
+                
+                const element = document.getElementById(elementId);
+                if (!element) {
+                    this.log(`❌ Element not found: ${elementId}`, 'error');
+                    this.testResults.failed++;
+                    document.getElementById(`result-${elementId.replace('test-', '')}`).className = 'test-result test-fail';
+                    document.getElementById(`result-${elementId.replace('test-', '')}`).textContent = 'Element not found';
+                    return false;
+                }
+
+                // Simulate click
+                this.log(`🧪 Testing: ${testName}`, 'info');
+                element.click();
+                
+                // Wait a bit for async operations
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                // Check results
+                const triggered = this.interceptedCalls.length > 0;
+                const result = shouldTrigger === triggered;
+                
+                if (result) {
+                    this.testResults.passed++;
+                    this.log(`✅ Test passed: ${testName}`, 'success');
+                    document.getElementById(`result-${elementId.replace('test-', '')}`).className = 'test-result test-pass';
+                    document.getElementById(`result-${elementId.replace('test-', '')}`).textContent = 'Passed';
+                } else {
+                    this.testResults.failed++;
+                    this.log(`❌ Test failed: ${testName} - Expected: ${shouldTrigger ? 'triggered' : 'not triggered'}, Got: ${triggered ? 'triggered' : 'not triggered'}`, 'error');
+                    document.getElementById(`result-${elementId.replace('test-', '')}`).className = 'test-result test-fail';
+                    document.getElementById(`result-${elementId.replace('test-', '')}`).textContent = 'Failed';
+                }
+                
+                return result;
+            }
+
+            async runTests() {
+                this.log('🧪 Starting comprehensive click behavior tests...', 'info');
+                
+                // Create test elements
+                this.createTestElements();
+                
+                // Wait for elements to be created
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                // Run WhatsApp tests
+                await this.testWhatsAppElements();
+                
+                // Run email tests
+                await this.testEmailElements();
+                
+                // Display summary
+                this.displaySummary();
+            }
+
+            createTestElements() {
+                // Create test elements that match the website structure
+                const testContainer = document.createElement('div');
+                testContainer.style.display = 'none';
+                testContainer.innerHTML = `
+                    <!-- WhatsApp floating button replica -->
+                    <button id="test-whatsapp-float" class="whatsapp-float" style="position: absolute; top: 0; left: 0;">
+                        <i class="fab fa-whatsapp"></i>
+                    </button>
+                    
+                    <!-- WhatsApp widget button replica -->
+                    <button id="test-whatsapp-widget" class="widget-btn" onclick="openWhatsApp()">
+                        Book Now!
+                    </button>
+                    
+                    <!-- WhatsApp footer button replica -->
+                    <button id="test-whatsapp-footer" class="whatsapp-contact-btn" onclick="openWhatsApp('I need details')">
+                        Chat on WhatsApp
+                    </button>
+                    
+                    <!-- Plain phone number -->
+                    <p id="test-phone-number">Call us at 03195547788 for more information</p>
+                    
+                    <!-- Phone link -->
+                    <a id="test-phone-link" href="tel:03195547788">Click to call 03195547788</a>
+                    
+                    <!-- Plain email text -->
+                    <p id="test-email-text">Contact us at info@estatenama.com</p>
+                    
+                    <!-- Email link -->
+                    <a id="test-email-link" href="mailto:info@estatenama.com">Email us</a>
+                    
+                    <!-- Address -->
+                    <p id="test-address">Phase 7, Anarkali Restaurant, Bahria Town</p>
+                    
+                    <!-- Regular text -->
+                    <p id="test-regular-text">This is regular text that should not trigger anything</p>
+                `;
+                document.body.appendChild(testContainer);
+                
+                this.log('📋 Test elements created', 'info');
+            }
+
+            async testWhatsAppElements() {
+                this.log('📱 Testing WhatsApp elements...', 'info');
+                
+                // Test WhatsApp floating button
+                await this.testElement('test-whatsapp-float', 'WhatsApp Floating Button', 'Should trigger WhatsApp', true);
+                
+                // Test WhatsApp widget button
+                await this.testElement('test-whatsapp-widget', 'WhatsApp Widget Button', 'Should trigger WhatsApp', true);
+                
+                // Test WhatsApp footer button
+                await this.testElement('test-whatsapp-footer', 'WhatsApp Footer Button', 'Should trigger WhatsApp', true);
+                
+                // Test plain phone number (should NOT trigger WhatsApp)
+                await this.testElement('test-phone-number', 'Plain Phone Number', 'Should NOT trigger WhatsApp', false);
+                
+                // Test phone link (should trigger phone call, not WhatsApp)
+                await this.testElement('test-phone-link', 'Phone Link', 'Should trigger phone call, not WhatsApp', false);
+            }
+
+            async testEmailElements() {
+                this.log('📧 Testing email elements...', 'info');
+                
+                // Test plain email text (should trigger email)
+                await this.testElement('test-email-text', 'Plain Email Text', 'Should trigger email', true);
+                
+                // Test email link (should trigger email)
+                await this.testElement('test-email-link', 'Email Link', 'Should trigger email', true);
+                
+                // Test address (should NOT trigger anything)
+                await this.testElement('test-address', 'Address Text', 'Should NOT trigger anything', false);
+                
+                // Test regular text (should NOT trigger anything)
+                await this.testElement('test-regular-text', 'Regular Text', 'Should NOT trigger anything', false);
+            }
+
+            displaySummary() {
+                const summary = document.getElementById('test-summary');
+                const successRate = Math.round((this.testResults.passed / this.testResults.total) * 100);
+                
+                let statusClass = 'test-result test-pass';
+                let statusText = 'Excellent';
+                
+                if (successRate < 70) {
+                    statusClass = 'test-result test-fail';
+                    statusText = 'Needs Attention';
+                } else if (successRate < 90) {
+                    statusClass = 'test-result test-warning';
+                    statusText = 'Good';
+                }
+
+                summary.innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <h3 style="color: #1e3c72; margin-bottom: 20px;">Click Behavior Test Results</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 2em; font-weight: bold; color: #2a5298;">${this.testResults.total}</div>
+                                <div style="color: #666;">Total Tests</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 2em; font-weight: bold; color: #28a745;">${this.testResults.passed}</div>
+                                <div style="color: #666;">Passed</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 2em; font-weight: bold; color: #dc3545;">${this.testResults.failed}</div>
+                                <div style="color: #666;">Failed</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 2em; font-weight: bold; color: ${successRate >= 90 ? '#28a745' : successRate >= 70 ? '#ffc107' : '#dc3545'};">${successRate}%</div>
+                                <div style="color: #666;">Success Rate</div>
+                            </div>
+                        </div>
+                        <div class="${statusClass}" style="font-size: 1.2em; padding: 10px 20px; display: inline-block;">
+                            Overall Status: ${statusText}
+                        </div>
+                        <p style="margin-top: 15px; color: #666;">
+                            ${successRate === 100 ? '🎉 All click behaviors are working correctly!' : 
+                              successRate >= 90 ? '👍 Most behaviors are working correctly.' :
+                              successRate >= 70 ? '⚠️ Some behaviors need attention.' :
+                              '❌ Several behaviors are incorrect and need fixing.'}
+                        </p>
+                    </div>
+                `;
+
+                this.log(`🏁 Test complete: ${this.testResults.passed}/${this.testResults.total} passed (${successRate}%)`, 'info');
+                
+                // Restore original functions
+                window.openWhatsApp = this.originalOpenWhatsApp;
+            }
+        }
+
+        // Initialize the test when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new ClickBehaviorTest();
+        });
+
+        // Add helpful console commands
+        window.testHelp = () => {
+            console.log(`
+🧪 Estate Nama Click Behavior Test System
+
+This page tests the onclick behavior to ensure:
+• WhatsApp only activates on WhatsApp buttons
+• Email only activates on email elements
+• Phone numbers don't trigger WhatsApp
+• Addresses don't trigger email
+• Regular text doesn't trigger anything
+
+Commands:
+• testHelp() - Show this help
+• location.reload() - Refresh the test
+
+The test will automatically check all behaviors and show:
+✅ Green = Correct behavior
+❌ Red = Incorrect behavior
+⚠️ Yellow = Warning/needs attention
+            `);
+        };
+
+        console.log('🧪 Click Behavior Test System loaded! Type testHelp() for help.');
+    </script>
+</body>
+</html>

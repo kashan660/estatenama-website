@@ -77,7 +77,7 @@ function showProjectDetails(projectTitle) {
                 <p>Contact us for more information and site visits.</p>
                 <div class="modal-contact">
                     <a href="tel:03195547788" class="modal-btn">Call Now</a>
-                    <a href="https://wa.me/923195547788" class="modal-btn">WhatsApp</a>
+                    <button onclick="openWhatsApp()" class="modal-btn" style="background: none; border: none; color: #25d366; cursor: pointer; text-decoration: underline;">WhatsApp</button>
                 </div>
             </div>
         </div>

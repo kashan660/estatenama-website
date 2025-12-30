@@ -1,0 +1,44 @@
+{
+  "homepage": {
+    "hero": {
+      "image1": "images/homepage/home1.png",
+      "image2": "images/homepage/home2.png",
+      "alt1": "Estate Nama Real Estate",
+      "alt2": "Estate Nama Properties"
+    },
+    "office": "images/admin/estate-nama-office.jpg"
+  },
+  "logos": {
+    "main": "images/logos/logoe_statenama.png",
+    "alt": "Estate Nama - Real Estate Company"
+  },
+  "favicons": {
+    "apple-touch": "images/favicons/apple-touch-icon.png",
+    "32x32": "images/favicons/favicon-32x32.png",
+    "16x16": "images/favicons/favicon-16x16.png",
+    "ico": "images/favicons/favicon.ico",
+    "manifest": "images/favicons/site.webmanifest"
+  },
+  "projects": {
+    "faisal-town": {
+      "folder": "images/projects/faisal-town/",
+      "default": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+    },
+    "ruden-enclave": {
+      "folder": "images/projects/ruden-enclave/",
+      "default": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+    },
+    "eighteen": {
+      "folder": "images/projects/eighteen/",
+      "default": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+    },
+    "bahria-town-phase8": {
+      "folder": "images/projects/bahria-town-phase8/",
+      "default": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+    }
+  },
+  "admin": {
+    "uploads": "images/admin/",
+    "office": "images/admin/estate-nama-office.jpg"
+  }
+}

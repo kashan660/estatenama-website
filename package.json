@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "admin": "node admin-server.js",
-    "dev": "concurrently \"node server.js\" \"node admin-server.js\"",
+    "images": "node image-server.js",
+    "dev": "concurrently \"node server.js\" \"node admin-server.js\" \"node image-server.js\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

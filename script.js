@@ -384,14 +384,41 @@ document.addEventListener('DOMContentLoaded', function() {
 // Removed global click-to-call on plain number text to prevent unintended triggers.
 // Calls should only be initiated via explicit call buttons/links (e.g., <a href="tel:+923195547788">).
 
-// Add email click functionality
+// Add email click functionality - only for specific email elements, not entire sections
 document.addEventListener('DOMContentLoaded', function() {
-    const allElements = document.querySelectorAll('p, span, div, a');
+    // Remove any existing click handlers from contact sections first
+    const contactSections = document.querySelectorAll('.contact-info, .contact-section, footer');
+    contactSections.forEach(section => {
+        section.style.cursor = 'default';
+        // Remove any click handlers that might have been added
+        section.removeEventListener('click', arguments.callee);
+    });
     
-    allElements.forEach(element => {
-        if (element.textContent.includes('info@estatenama.com')) {
+    // Only target email elements that are meant to be clickable
+    // Look for email text in specific contexts, not in contact forms or sections
+    const emailElements = document.querySelectorAll('p, span, div');
+    
+    emailElements.forEach(element => {
+        // Very specific criteria - only exact email match, not containers
+        // Exclude contact sections, forms, and their children
+        if (element.textContent.trim() === 'info@estatenama.com' && 
+            !element.closest('.contact-info') && // Exclude contact info sections
+            !element.closest('.contact-form') && // Exclude contact forms
+            !element.closest('form') && // Exclude any forms
+            !element.closest('footer') && // Exclude footer sections
+            !element.classList.contains('contact-email-no-click') && // Exclude specifically marked elements
+            !element.closest('a[href^="mailto:"]') && // Not already a mailto link
+            element.tagName.toLowerCase() !== 'a') { // Not an anchor tag
+            
+            // Make it look clickable
             element.style.cursor = 'pointer';
-            element.addEventListener('click', function() {
+            element.style.color = '#007bff';
+            element.style.textDecoration = 'underline';
+            
+            // Add click handler
+            element.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent event bubbling
+                e.preventDefault();
                 window.location.href = 'mailto:info@estatenama.com';
             });
         }
@@ -400,9 +427,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // WhatsApp floating button
 function createWhatsAppButton() {
-    const whatsappBtn = document.createElement('a');
-    whatsappBtn.href = 'https://wa.me/923195547788';
-    whatsappBtn.target = '_blank';
+    const whatsappBtn = document.createElement('button');
     whatsappBtn.className = 'whatsapp-float';
     whatsappBtn.id = 'whatsapp-float';
     whatsappBtn.setAttribute('aria-label', 'Contact us on WhatsApp');
@@ -428,6 +453,8 @@ function createWhatsAppButton() {
         text-decoration: none;
         transition: all 0.3s ease;
         animation: pulse 2s infinite;
+        border: none;
+        cursor: pointer;
     `;
     
     // Add pulse animation
@@ -452,6 +479,11 @@ function createWhatsAppButton() {
     
     document.head.appendChild(style);
     document.body.appendChild(whatsappBtn);
+    
+    // Use openWhatsApp function instead of direct href
+    whatsappBtn.addEventListener('click', function() {
+        openWhatsApp();
+    });
 
     // Prevent overlaying important contact areas (like footer/contact-section)
     function adjustWhatsAppButtonPosition() {
