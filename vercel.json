@@ -8,13 +8,33 @@
     {
       "src": "admin-server-prod.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "index.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.css",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.js",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "images/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "uploads/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
-    {
-      "src": "/admin/(.*)",
-      "dest": "/admin-$1"
-    },
     {
       "src": "/api/admin/(.*)",
       "dest": "/admin-server-prod.js"
@@ -22,6 +42,42 @@
     {
       "src": "/admin-api/(.*)",
       "dest": "/admin-server-prod.js"
+    },
+    {
+      "src": "/admin-login.html",
+      "dest": "/admin-login.html"
+    },
+    {
+      "src": "/admin-dashboard.html",
+      "dest": "/admin-dashboard.html"
+    },
+    {
+      "src": "/admin-images.html",
+      "dest": "/admin-images.html"
+    },
+    {
+      "src": "/admin-styles.css",
+      "dest": "/admin-styles.css"
+    },
+    {
+      "src": "/admin-auth.js",
+      "dest": "/admin-auth.js"
+    },
+    {
+      "src": "/admin-dashboard.js",
+      "dest": "/admin-dashboard.js"
+    },
+    {
+      "src": "/admin-api.js",
+      "dest": "/admin-api.js"
+    },
+    {
+      "src": "/index.html",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/admin/(.*)",
+      "dest": "/admin-$1"
     },
     {
       "src": "/images/(.*)",
@@ -32,7 +88,7 @@
       "dest": "/uploads/$1"
     },
     {
-      "src": "/(.*\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|html))",
+      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|html))",
       "dest": "/$1"
     },
     {

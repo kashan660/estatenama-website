@@ -80,6 +80,11 @@ class AdminDashboard {
     handleNavigation(e) {
         const section = e.currentTarget.dataset.section;
         if (section) {
+            // Handle image manager separately - redirect to dedicated page
+            if (section === 'images') {
+                window.location.href = 'admin-images.html';
+                return;
+            }
             this.switchSection(section);
         }
     }
@@ -107,6 +112,7 @@ class AdminDashboard {
             blogs: 'Manage Blogs',
             projects: 'Manage Projects',
             gallery: 'Manage Gallery',
+            images: 'Image Manager',
             settings: 'Website Settings'
         };
         const pageTitle = document.querySelector('.page-title');

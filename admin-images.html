@@ -290,9 +290,9 @@
     </style>
 </head>
 <body>
-    <a href="admin.html" class="back-btn">
+    <a href="admin-dashboard.html" class="back-btn">
         <i class="fas fa-arrow-left"></i>
-        Back to Admin
+        Back to Dashboard
     </a>
 
     <div class="admin-container">
@@ -404,7 +404,14 @@
         <div id="statusMessage" class="status-message"></div>
     </div>
 
+    <script src="/admin-auth.js?v=20260115"></script>
     <script>
+        // Check authentication before loading
+        const auth = new AdminAuth();
+        if (!auth.isLoggedIn()) {
+            window.location.href = 'admin-login.html';
+        }
+
         // Image Management System
         class ImageManager {
             constructor() {

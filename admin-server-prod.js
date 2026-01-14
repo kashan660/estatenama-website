@@ -41,9 +41,9 @@ const upload = multer({
 
 // Admin credentials - In production, use environment variables
 const ADMIN_CREDENTIALS = [
-    { username: 'admin', password: 'admin123' },
-    { username: 'estatenama', password: 'estate2024' },
-    { username: 'manager', password: 'manager123' }
+    { username: 'admin@estatenama.com', password: 'EstateNama@8088' },
+    { username: 'estatenama@estatenama.com', password: 'Estatenama@8088' },
+    { username: 'manager@estatenama.com', password: 'Manager@8088' }
 ];
 
 // Session storage (simple in-memory, in production use Redis or database)
