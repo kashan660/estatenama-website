@@ -1,21 +1,20 @@
 {
-  "name": "estatenama-admin",
+  "name": "estatenama-website",
   "version": "1.0.0",
-  "description": "EstateNama Real Estate Website with Admin Panel",
+  "description": "EstateNama Real Estate Website",
   "main": "server.js",
   "scripts": {
+    "dev": "node server.js",
+    "build": "echo 'Building EstateNama website...'",
     "start": "node server.js",
     "admin": "node admin-server.js",
     "images": "node image-server.js",
-    "dev": "concurrently \"node server.js\" \"node admin-server.js\" \"node image-server.js\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "vercel-build": "echo 'Vercel build completed' && node -e \"console.log('✅ Build successful')\""
   },
   "keywords": [
     "real-estate",
-    "admin-panel",
-    "nodejs",
-    "express",
-    "cms"
+    "website",
+    "estatenama"
   ],
   "author": "EstateNama Team",
   "license": "MIT",
@@ -33,13 +32,5 @@
   "engines": {
     "node": ">=14.0.0",
     "npm": ">=6.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/estatenama/website.git"
-  },
-  "bugs": {
-    "url": "https://github.com/estatenama/website/issues"
-  },
-  "homepage": "https://estatenama.com"
+  }
 }

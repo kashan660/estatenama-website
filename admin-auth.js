@@ -85,8 +85,15 @@ class AdminAuth {
         submitBtn.disabled = true;
 
         try {
+            // Get the base URL for the API call - works for both local and live deployment
+            const baseUrl = window.location.origin;
+            const apiUrl = baseUrl + '/api/admin/login';
+            
+            console.log('Attempting login to:', apiUrl);
+            console.log('Username:', username);
+            
             // Call server authentication API
-            const response = await fetch('http://localhost:3002/api/admin/login', {
+            const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -94,7 +101,16 @@ class AdminAuth {
                 body: JSON.stringify({ username, password })
             });
 
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            
+            if (!response.ok) {
+                console.error('HTTP error! status:', response.status);
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
             const data = await response.json();
+            console.log('Response data:', data);
 
             if (response.ok && data.success) {
                 // Store session with token
@@ -122,7 +138,16 @@ class AdminAuth {
                 throw new Error(data.error || 'Invalid credentials');
             }
         } catch (error) {
-            this.showNotification('Invalid username or password. Please try again.', 'error');
+            console.error('Login error:', error);
+            console.error('Error details:', error.message);
+            
+            if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
+                this.showNotification('Network error: Cannot connect to server. Please check if the admin server is running.', 'error');
+            } else if (error.message.includes('HTTP error')) {
+                this.showNotification(`Server error: ${error.message}. Please try again later.`, 'error');
+            } else {
+                this.showNotification('Invalid username or password. Please try again.', 'error');
+            }
         } finally {
             // Restore button state
             submitBtn.innerHTML = originalText;

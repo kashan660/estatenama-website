@@ -60,11 +60,108 @@
                     Back to Website
                 </a>
             </div>
+            
+            <!-- Debug Section -->
+            <div class="debug-section" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
+                <h3 style="margin: 0 0 10px 0; color: #495057; font-size: 14px;">
+                    <i class="fas fa-bug"></i> Debug Tools
+                </h3>
+                <button onclick="testServerHealth()" style="margin: 5px; padding: 8px 12px; background: #28a745; color: white; border: none; border-radius: 4px; font-size: 12px; cursor: pointer;">
+                    Test Server Health
+                </button>
+                <button onclick="showDebugInfo()" style="margin: 5px; padding: 8px 12px; background: #17a2b8; color: white; border: none; border-radius: 4px; font-size: 12px; cursor: pointer;">
+                    Show Debug Info
+                </button>
+                <button onclick="clearDebugOutput()" style="margin: 5px; padding: 8px 12px; background: #6c757d; color: white; border: none; border-radius: 4px; font-size: 12px; cursor: pointer;">
+                    Clear Output
+                </button>
+                <div id="debugOutput" style="margin-top: 10px; padding: 10px; background: #212529; color: #28a745; font-family: 'Courier New', monospace; font-size: 11px; border-radius: 4px; max-height: 200px; overflow-y: auto; display: none;"></div>
+            </div>
         </div>
     </div>
     
     <div id="notification" class="notification"></div>
     
-    <script src="/admin-auth.js"></script>
+    <script src="/admin-auth.js?v=20260115"></script>
+    <script>
+        // Debug functions
+        function logDebug(message, type = 'info') {
+            const debugOutput = document.getElementById('debugOutput');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#dc3545' : type === 'success' ? '#28a745' : '#17a2b8';
+            debugOutput.innerHTML += `<div style="color: ${color};">[${timestamp}] ${message}</div>`;
+            debugOutput.scrollTop = debugOutput.scrollHeight;
+        }
+        
+        async function testServerHealth() {
+            const debugOutput = document.getElementById('debugOutput');
+            debugOutput.style.display = 'block';
+            
+            logDebug('Testing server health...', 'info');
+            
+            try {
+                const baseUrl = window.location.origin;
+                const healthUrl = baseUrl + '/api/admin/health';
+                
+                logDebug(`Making request to: ${healthUrl}`, 'info');
+                
+                const response = await fetch(healthUrl);
+                const data = await response.json();
+                
+                logDebug(`Response status: ${response.status}`, response.status === 200 ? 'success' : 'error');
+                logDebug(`Server status: ${data.status}`, 'success');
+                logDebug(`Available endpoints: ${data.endpoints.join(', ')}`, 'info');
+                
+                if (response.status === 200) {
+                    logDebug('✅ Server is healthy and responding!', 'success');
+                } else {
+                    logDebug(`❌ Server returned status: ${response.status}`, 'error');
+                }
+                
+            } catch (error) {
+                logDebug(`❌ Health check failed: ${error.message}`, 'error');
+                logDebug('This usually means the admin server is not running or not properly configured.', 'error');
+                logDebug(`Current domain: ${window.location.origin}`, 'info');
+                logDebug(`Current pathname: ${window.location.pathname}`, 'info');
+            }
+        }
+        
+        function showDebugInfo() {
+            const debugOutput = document.getElementById('debugOutput');
+            debugOutput.style.display = 'block';
+            
+            logDebug('=== Debug Information ===', 'info');
+            logDebug(`Current URL: ${window.location.href}`, 'info');
+            logDebug(`Domain: ${window.location.origin}`, 'info');
+            logDebug(`Path: ${window.location.pathname}`, 'info');
+            logDebug(`User Agent: ${navigator.userAgent}`, 'info');
+            logDebug(`Timestamp: ${new Date().toISOString()}`, 'info');
+            
+            // Test API endpoint
+            const baseUrl = window.location.origin;
+            const apiUrl = baseUrl + '/api/admin/login';
+            logDebug(`Expected API endpoint: ${apiUrl}`, 'info');
+            
+            logDebug('=== End Debug Info ===', 'info');
+        }
+        
+        function clearDebugOutput() {
+            document.getElementById('debugOutput').innerHTML = '';
+            document.getElementById('debugOutput').style.display = 'none';
+        }
+        
+        // Override console.log to also show in debug output
+        const originalConsoleLog = console.log;
+        console.log = function(...args) {
+            originalConsoleLog.apply(console, args);
+            logDebug(args.join(' '), 'info');
+        };
+        
+        const originalConsoleError = console.error;
+        console.error = function(...args) {
+            originalConsoleError.apply(console, args);
+            logDebug(args.join(' '), 'error');
+        };
+    </script>
 </body>
 </html>
