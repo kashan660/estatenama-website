@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en-PK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Details - Estate Nama</title>
+    <!-- Dynamic Meta Tags will be injected via JS -->
+    <meta name="description" content="Read the latest real estate news and insights from Estate Nama.">
+    
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        .blog-header {
+            height: 60vh;
+            min-height: 400px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            margin-top: 80px;
+        }
+        
+        .blog-header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+        }
+        
+        .blog-header-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 0;
+        }
+        
+        .blog-header-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            padding: 20px;
+        }
+        
+        .blog-category-badge {
+            background: #e74c3c;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        
+        .blog-title-large {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .blog-meta-large {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .blog-body {
+            max-width: 900px;
+            margin: 60px auto;
+            padding: 0 20px;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #2c3e50;
+        }
+        
+        .blog-body img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        
+        .blog-body h2, .blog-body h3 {
+            margin-top: 40px;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        
+        .share-section {
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+            padding: 30px 0;
+            margin: 50px 0;
+            text-align: center;
+        }
+        
+        .share-buttons button {
+            background: none;
+            border: 2px solid #ddd;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            margin: 0 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+        
+        .share-buttons button:hover {
+            border-color: #e74c3c;
+            color: #e74c3c;
+            transform: translateY(-3px);
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            color: #666;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .back-btn i {
+            margin-right: 10px;
+        }
+        
+        .back-btn:hover {
+            color: #e74c3c;
+        }
+
+        .loading-container {
+            height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            margin-top: 80px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="images/logos/images/logos/logoe_statenama.png" alt="Estate Nama" class="logo-img">
+                <h2>Estate<span>Nama</span></h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html#home" class="nav-link">Home</a></li>
+                <li><a href="index.html#about" class="nav-link">About</a></li>
+                <li class="dropdown">
+                    <a href="index.html#projects" class="nav-link dropdown-toggle">
+                        Projects <i class="fas fa-chevron-down dropdown-icon"></i>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="index.html#projects" class="dropdown-link">All Projects</a></li>
+                        <li><a href="faisal-town-projects.html" class="dropdown-link">Faisal Town</a></li>
+                        <li><a href="eighteen-projects.html" class="dropdown-link">Eighteen</a></li>
+                        <li><a href="bahria-town-phase8-projects.html" class="dropdown-link">Bahria Town Phase 8</a></li>
+                        <li><a href="ruden-enclave-projects.html" class="dropdown-link">Ruden Enclave</a></li>
+                        <li><a href="project-details.html?project=kingdom-valley" class="dropdown-link">Kingdom Valley</a></li>
+                    </ul>
+                </li>
+                <li><a href="index.html#services" class="nav-link">Services</a></li>
+                <li><a href="blog.html" class="nav-link active">Blog</a></li>
+                <li><a href="index.html#contact" class="nav-link">Contact</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <div id="blog-content">
+        <div class="loading-container">
+            <i class="fas fa-spinner fa-spin fa-3x" style="color: #e74c3c; margin-bottom: 20px;"></i>
+            <h2>Loading article...</h2>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>Estate Nama</h3>
+                    <p><strong>Premium Real Estate | Houses for Sale | Commercial Property | Land Plots | Investment Opportunities | Trusted Real Estate Agent Pakistan</strong></p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" onclick="openWhatsApp()" class="whatsapp-social-btn"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html#home">Home</a></li>
+                        <li><a href="index.html#about">About</a></li>
+                        <li><a href="index.html#projects">Projects</a></li>
+                        <li><a href="index.html#services">Services</a></li>
+                        <li><a href="blog.html">Blog</a></li>
+                        <li><a href="index.html#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Our Projects</h4>
+                    <ul>
+                        <li><a href="faisal-town-projects.html">Faisal Town</a></li>
+                        <li><a href="eighteen-projects.html">Eighteen | The Luxury Society</a></li>
+                        <li><a href="ruden-enclave-projects.html">Ruden Enclave</a></li>
+                        <li><a href="project-details.html?project=kingdom-valley">Kingdom Valley</a></li>
+                        <li><a href="bahria-town-phase8-projects.html">Bahria Town Phase 8</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Contact Info</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> Phase 7, Anarkali Restaurant, Bahria Town</p>
+                    <p><i class="fas fa-phone"></i> <strong>03195547788</strong></p>
+                    <p><i class="fas fa-envelope"></i> <a href="mailto:info@estatenama.com">info@estatenama.com</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Estate Nama. All rights reserved.</p>
+                <a href="admin-login.html" class="admin-link" style="color: #666; text-decoration: none; font-size: 12px; margin-left: 20px;">Admin</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="blog-script.js"></script>
+    <script>
+        // Initialize blog details page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadBlogDetails();
+        });
+    </script>
+</body>
+</html>

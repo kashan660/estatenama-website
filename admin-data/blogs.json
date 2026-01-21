@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "id": "1",
+    "title": "Welcome to Estate Nama Blog",
+    "slug": "welcome-to-estatenama",
+    "excerpt": "Welcome to our new blog section where we share the latest real estate insights and news.",
+    "content": "<p>Welcome to the Estate Nama blog! We are excited to share the latest news, market trends, and investment tips with you.</p><h3>What to Expect</h3><p>In this blog, we will cover:</p><ul><li>Market Analysis</li><li>Investment Opportunities</li><li>Project Updates</li><li>Real Estate Tips</li></ul>",
+    "category": "Real Estate News",
+    "status": "published",
+    "author": "Admin",
+    "date": "2024-01-21T12:00:00.000Z",
+    "featuredImage": "images/homepage/home1.png",
+    "metaTitle": "Welcome to Estate Nama Blog",
+    "metaDescription": "Welcome to the Estate Nama blog - your source for real estate news in Pakistan."
+  }
+]

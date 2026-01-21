@@ -1,5 +1,64 @@
 // Project Details Data
 const projectsData = {
+    'kingdom-valley': {
+        title: 'Kingdom Valley',
+        location: 'Near Chakri Interchange, M-2 Motorway',
+        status: 'Active',
+        developer: 'Kingdom Group',
+        totalArea: 'Master Planned Community',
+        description: 'Kingdom Valley Islamabad is a flagship project of the Kingdom Group, offering affordable housing solutions under the Naya Pakistan Housing Scheme. Located near the Chakri Interchange, it provides a secure and modern lifestyle.',
+        image: 'https://images.unsplash.com/photo-1592595896551-12b371d546d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+        features: [
+            'Naya Pakistan Housing Scheme',
+            'Gated Community',
+            'Near Chakri Interchange',
+            'Affordable Installment Plans',
+            'Modern Infrastructure',
+            'Grand Mosque',
+            'Theme Park',
+            'Educational Complex'
+        ],
+        plotSizes: {
+            residential: [
+                { size: '5 Marla', price: 'Contact for pricing', dimensions: '25x45 ft' },
+                { size: '8 Marla', price: 'Contact for pricing', dimensions: '30x60 ft' },
+                { size: '10 Marla', price: 'Contact for pricing', dimensions: '35x70 ft' },
+                { size: '1 Kanal', price: 'Contact for pricing', dimensions: '50x90 ft' }
+            ],
+            commercial: [
+                { size: '2 Marla', price: 'Contact for pricing', dimensions: 'Various sizes' },
+                { size: '4 Marla', price: 'Contact for pricing', dimensions: 'Various sizes' },
+                { size: '8 Marla', price: 'Contact for pricing', dimensions: 'Various sizes' }
+            ],
+            farmhouses: [
+                 { size: '2 Kanal', price: 'Contact for pricing', dimensions: 'Farmhouse' },
+                 { size: '4 Kanal', price: 'Contact for pricing', dimensions: 'Farmhouse' },
+                 { size: '8 Kanal', price: 'Contact for pricing', dimensions: 'Farmhouse' }
+            ]
+        },
+        paymentPlan: {
+            duration: '4 Year Payment Plan',
+            downPayment: 'Affordable Down Payment',
+            installments: 'Monthly & Bi-Annual Installments',
+            discount: 'Special Discounts Available'
+        },
+        amenities: [
+            'Grand Mosque',
+            'Hospital & Medical Center',
+            'Schools & University',
+            'Theme Park',
+            'Civic Center',
+            '24/7 Security',
+            'Gas & Electricity',
+            'Sewerage System'
+        ],
+        connectivity: [
+            'Chakri Interchange - 5 km',
+            'New Islamabad Airport - 15 min drive',
+            'Rawalpindi Ring Road - Nearby',
+            'M-2 Motorway - Direct Access'
+        ]
+    },
     'faisal-town-phase-2': {
         title: 'Faisal Town Phase 2',
         location: 'Near Thalian Interchange, M-2 Motorway',

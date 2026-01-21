@@ -190,6 +190,201 @@ app.post('/api/admin/data', authenticateAdmin, async (req, res) => {
     }
 });
 
+// Posts API
+app.get('/api/admin/posts', authenticateAdmin, async (req, res) => {
+    try {
+        const posts = await readJsonFile(POSTS_FILE);
+        res.json(posts);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch posts' });
+    }
+});
+
+app.post('/api/admin/posts', authenticateAdmin, async (req, res) => {
+    try {
+        const posts = await readJsonFile(POSTS_FILE);
+        const newPost = {
+            id: Date.now().toString(),
+            ...req.body,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+        posts.unshift(newPost);
+        await writeJsonFile(POSTS_FILE, posts);
+        res.json(newPost);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to create post' });
+    }
+});
+
+app.put('/api/admin/posts/:id', authenticateAdmin, async (req, res) => {
+    try {
+        const posts = await readJsonFile(POSTS_FILE);
+        const postIndex = posts.findIndex(p => p.id === req.params.id);
+        
+        if (postIndex === -1) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+        
+        posts[postIndex] = {
+            ...posts[postIndex],
+            ...req.body,
+            updatedAt: new Date().toISOString()
+        };
+        
+        await writeJsonFile(POSTS_FILE, posts);
+        res.json(posts[postIndex]);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to update post' });
+    }
+});
+
+app.delete('/api/admin/posts/:id', authenticateAdmin, async (req, res) => {
+    try {
+        const posts = await readJsonFile(POSTS_FILE);
+        const filteredPosts = posts.filter(p => p.id !== req.params.id);
+        
+        if (posts.length === filteredPosts.length) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+        
+        await writeJsonFile(POSTS_FILE, filteredPosts);
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to delete post' });
+    }
+});
+
+// Blogs API
+app.get('/api/admin/blogs', authenticateAdmin, async (req, res) => {
+    try {
+        const blogs = await readJsonFile(BLOGS_FILE);
+        res.json(blogs);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch blogs' });
+    }
+});
+
+app.post('/api/admin/blogs', authenticateAdmin, async (req, res) => {
+    try {
+        const blogs = await readJsonFile(BLOGS_FILE);
+        const newBlog = {
+            id: Date.now().toString(),
+            ...req.body,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+        blogs.unshift(newBlog);
+        await writeJsonFile(BLOGS_FILE, blogs);
+        res.json(newBlog);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to create blog' });
+    }
+});
+
+app.put('/api/admin/blogs/:id', authenticateAdmin, async (req, res) => {
+    try {
+        const blogs = await readJsonFile(BLOGS_FILE);
+        const blogIndex = blogs.findIndex(b => b.id === req.params.id);
+        
+        if (blogIndex === -1) {
+            return res.status(404).json({ error: 'Blog not found' });
+        }
+        
+        blogs[blogIndex] = {
+            ...blogs[blogIndex],
+            ...req.body,
+            updatedAt: new Date().toISOString()
+        };
+        
+        await writeJsonFile(BLOGS_FILE, blogs);
+        res.json(blogs[blogIndex]);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to update blog' });
+    }
+});
+
+app.delete('/api/admin/blogs/:id', authenticateAdmin, async (req, res) => {
+    try {
+        const blogs = await readJsonFile(BLOGS_FILE);
+        const filteredBlogs = blogs.filter(b => b.id !== req.params.id);
+        
+        if (blogs.length === filteredBlogs.length) {
+            return res.status(404).json({ error: 'Blog not found' });
+        }
+        
+        await writeJsonFile(BLOGS_FILE, filteredBlogs);
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to delete blog' });
+    }
+});
+
+// Projects API
+app.get('/api/admin/projects', authenticateAdmin, async (req, res) => {
+    try {
+        const projects = await readJsonFile(PROJECTS_FILE);
+        res.json(projects);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch projects' });
+    }
+});
+
+app.post('/api/admin/projects', authenticateAdmin, async (req, res) => {
+    try {
+        const projects = await readJsonFile(PROJECTS_FILE);
+        const newProject = {
+            id: Date.now().toString(),
+            ...req.body,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+        projects.unshift(newProject);
+        await writeJsonFile(PROJECTS_FILE, projects);
+        res.json(newProject);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to create project' });
+    }
+});
+
+app.put('/api/admin/projects/:id', authenticateAdmin, async (req, res) => {
+    try {
+        const projects = await readJsonFile(PROJECTS_FILE);
+        const projectIndex = projects.findIndex(p => p.id === req.params.id);
+        
+        if (projectIndex === -1) {
+            return res.status(404).json({ error: 'Project not found' });
+        }
+        
+        projects[projectIndex] = {
+            ...projects[projectIndex],
+            ...req.body,
+            updatedAt: new Date().toISOString()
+        };
+        
+        await writeJsonFile(PROJECTS_FILE, projects);
+        res.json(projects[projectIndex]);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to update project' });
+    }
+});
+
+app.delete('/api/admin/projects/:id', authenticateAdmin, async (req, res) => {
+    try {
+        const projects = await readJsonFile(PROJECTS_FILE);
+        const filteredProjects = projects.filter(p => p.id !== req.params.id);
+        
+        if (projects.length === filteredProjects.length) {
+            return res.status(404).json({ error: 'Project not found' });
+        }
+        
+        await writeJsonFile(PROJECTS_FILE, filteredProjects);
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to delete project' });
+    }
+});
+
 // File upload endpoint
 app.post('/api/admin/upload', authenticateAdmin, upload.single('file'), (req, res) => {
     try {

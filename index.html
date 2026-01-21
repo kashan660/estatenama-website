@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-PK">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +7,14 @@
     <meta name="description" content="🏆 Pakistan's Leading Real Estate Company | Buy Premium Plots, Houses for Sale, Commercial Property | Bahria Town Phase 8, Ruden Enclave, Faisal Town | Easy Installments | Trusted Realtors | Call 03195547788">
     <meta name="keywords" content="real estate, property, houses for sale near me, homes for sale near me, houses for sale, installments, commercial property for sale, land for sale, real estate agent, realtors near me, new homes near me, property for sale, buy house, real estate near me, mansions for sale, commercial real estate, apartments for sale, rental properties near me, investment property for sale, estate nama, bahria town phase 8, ruden enclave, faisal town, rawalpindi, islamabad">
     <meta name="author" content="Estate Nama">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="index, follow, noodp">
+    
+    <!-- Geo Tags for Local SEO -->
+    <meta name="geo.region" content="PK-PB" />
+    <meta name="geo.placename" content="Rawalpindi" />
+    <meta name="geo.position" content="33.5253;73.0955" />
+    <meta name="ICBM" content="33.5253, 73.0955" />
+    
     <meta property="og:title" content="Estate Nama | Houses for Sale, Commercial Property, Real Estate Near Me">
     <meta property="og:description" content="🏆 Find Houses for Sale Near Me, Commercial Property, Land for Sale | Trusted Real Estate Agents | Easy Installments | Bahria Town, Ruden Enclave, Faisal Town">
     <meta property="og:type" content="website">
@@ -15,8 +22,9 @@
     <meta property="og:image" content="https://estatenama.com/images/homepage/home1.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Estate Nama | Houses for Sale, Commercial Property, Real Estate Near Me">
-    <meta name="twitter:description" content="🏆 Find Houses for Sale Near Me, Commercial Property, Land for Sale | Trusted Real Estate Agents | Easy Installments"
+    <meta name="twitter:description" content="🏆 Find Houses for Sale Near Me, Commercial Property, Land for Sale | Trusted Real Estate Agents | Easy Installments">
     <link rel="canonical" href="https://estatenama.com">
+    <link rel="alternate" hreflang="en-PK" href="https://estatenama.com" />
     
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="images/favicons/apple-touch-icon.png">
@@ -78,10 +86,11 @@
                         <li><a href="eighteen-projects.html" class="dropdown-link">Eighteen</a></li>
                         <li><a href="bahria-town-phase8-projects.html" class="dropdown-link">Bahria Town Phase 8</a></li>
                         <li><a href="ruden-enclave-projects.html" class="dropdown-link">Ruden Enclave</a></li>
+                        <li><a href="project-details.html?project=kingdom-valley" class="dropdown-link">Kingdom Valley</a></li>
                     </ul>
                 </li>
                 <li><a href="#services" class="nav-link">Services</a></li>
-                <li><a href="#blog" class="nav-link">Blog</a></li>
+                <li><a href="blog.html" class="nav-link">Blog</a></li>
                 <li><a href="#contact" class="nav-link">Contact</a></li>
             </ul>
             <div class="hamburger">
@@ -395,6 +404,22 @@
         </div>
     </section>
 
+    <!-- Blog Section -->
+    <section id="blog" class="blog-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>📰 Latest Real Estate News & Insights</h2>
+                <p>Stay updated with the latest market trends, investment tips, and property news.</p>
+            </div>
+            <div id="blog-posts" class="blog-grid">
+                <!-- Blog posts will be inserted here by script.js -->
+            </div>
+            <div class="blog-pagination" style="text-align: center; margin-top: 30px;">
+                <button class="btn btn-secondary" onclick="window.location.href='blog.html'">View All News</button>
+            </div>
+        </div>
+    </section>
+
     <!-- Contact Section -->
     <section id="contact" class="contact">
         <div class="container">
@@ -487,16 +512,17 @@
                         <li><a href="#about">About</a></li>
                         <li><a href="#projects">Projects</a></li>
                         <li><a href="#services">Services</a></li>
+                        <li><a href="#blog">Blog</a></li>
                         <li><a href="#contact">Contact</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4>Our Projects</h4>
                     <ul>
-                        <li><a href="https://faisaltown.com.pk/projects/" target="_blank" rel="noopener">Faisal Town</a></li>
-                        <li><a href="https://www.eighteen.com/" target="_blank" rel="noopener">Eighteen | The Luxury Society</a></li>
-                        <li><a href="https://rudnenclave.com/" target="_blank" rel="noopener">Ruden Enclave</a></li>
-                        <li><a href="https://kingdomvalleypvtltd.com/" target="_blank" rel="noopener">Kingdom Valley</a></li>
+                        <li><a href="faisal-town-projects.html">Faisal Town</a></li>
+                        <li><a href="eighteen-projects.html">Eighteen | The Luxury Society</a></li>
+                        <li><a href="ruden-enclave-projects.html">Ruden Enclave</a></li>
+                        <li><a href="project-details.html?project=kingdom-valley">Kingdom Valley</a></li>
                         <li><a href="bahria-town-phase8-projects.html">Bahria Town Phase 8</a></li>
                     </ul>
                 </div>
@@ -510,7 +536,7 @@
             </div>
             <div class="footer-bottom">
                 <p>&copy; 2024 Estate Nama. All rights reserved.</p>
-                <a href="http://localhost:3001/admin" class="admin-link" style="color: #666; text-decoration: none; font-size: 12px; margin-left: 20px;">Admin</a>
+                <a href="admin-login.html" class="admin-link" style="color: #666; text-decoration: none; font-size: 12px; margin-left: 20px;">Admin</a>
             </div>
         </div>
     </footer>

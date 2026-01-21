@@ -9,6 +9,7 @@
     "start": "node server.js",
     "admin": "node admin-server.js",
     "images": "node image-server.js",
+    "sitemap": "node generate-sitemap.js",
     "vercel-build": "echo 'Vercel build completed' && node -e \"console.log('✅ Build successful')\""
   },
   "keywords": [

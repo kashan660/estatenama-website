@@ -390,8 +390,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const contactSections = document.querySelectorAll('.contact-info, .contact-section, footer');
     contactSections.forEach(section => {
         section.style.cursor = 'default';
-        // Remove any click handlers that might have been added
-        section.removeEventListener('click', arguments.callee);
+        // cloning the node to remove all event listeners is a drastic measure, 
+        // but since we can't remove anonymous listeners, we'll just ensure our new logic applies correctly.
+        // The previous code using arguments.callee was incorrect and did nothing.
     });
     
     // Only target email elements that are meant to be clickable
@@ -1104,9 +1105,54 @@ const blogPosts = [
     }
 ];
 
-let currentPostsDisplayed = 6;
+let currentPostsDisplayed = 3;
 
 function initBlogPosts() {
+    fetchAndDisplayBlogPosts();
+}
+
+async function fetchAndDisplayBlogPosts() {
+    try {
+        const [blogsResponse, postsResponse] = await Promise.all([
+            fetch('/admin-data/blogs.json').catch(() => ({ ok: false })),
+            fetch('/admin-data/posts.json').catch(() => ({ ok: false }))
+        ]);
+
+        let fetchedPosts = [];
+
+        if (blogsResponse.ok) {
+            const blogs = await blogsResponse.json();
+            fetchedPosts = [...fetchedPosts, ...blogs];
+        }
+
+        if (postsResponse.ok) {
+            const posts = await postsResponse.json();
+            fetchedPosts = [...fetchedPosts, ...posts];
+        }
+
+        if (fetchedPosts.length > 0) {
+            // Map fetched posts to match structure if needed, or replace
+            // Here we append fetched posts to the start of blogPosts array
+            const mappedPosts = fetchedPosts.filter(p => p.status === 'published').map(p => ({
+                id: p.id,
+                title: p.title,
+                excerpt: p.excerpt || p.content.substring(0, 100) + '...',
+                content: p.content,
+                category: p.category,
+                date: p.date,
+                image: p.featuredImage || p.image,
+                keywords: p.metaKeywords ? p.metaKeywords.split(',').map(k => k.trim()) : [],
+                slug: p.slug
+            }));
+            
+            // Merge with existing static posts, prioritizing new dynamic posts
+            // Filter out duplicates based on ID or Slug if necessary, though simple concatenation is fine for now
+            blogPosts = [...mappedPosts, ...blogPosts];
+        }
+    } catch (error) {
+        console.warn('Failed to fetch dynamic blogs, using static fallback');
+    }
+    
     displayBlogPosts();
 }
 
@@ -1125,17 +1171,20 @@ function displayBlogPosts() {
             <div class="blog-content">
                 <div class="blog-meta">
                     <span class="blog-date">${formatDate(post.date)}</span>
-                    <span class="blog-keywords">${post.keywords.slice(0, 2).join(', ')}</span>
+                    <span class="blog-keywords">${post.keywords && post.keywords.length ? post.keywords.slice(0, 2).join(', ') : ''}</span>
                 </div>
                 <h3 class="blog-title">${post.title}</h3>
                 <p class="blog-excerpt">${post.excerpt}</p>
                 <div class="blog-footer">
-                    <button class="btn btn-outline" onclick="readMore(${post.id})">Read More</button>
+                    ${post.slug ? 
+                        `<button class="btn btn-outline" onclick="window.location.href='blog-details.html?slug=${post.slug}'">Read More</button>` :
+                        `<button class="btn btn-outline" onclick="readMore('${post.id}')">Read More</button>`
+                    }
                     <div class="blog-share">
-                        <button onclick="sharePost(${post.id}, 'whatsapp')" title="Share on WhatsApp">
+                        <button onclick="sharePost('${post.id}', 'whatsapp')" title="Share on WhatsApp">
                             <i class="fab fa-whatsapp"></i>
                         </button>
-                        <button onclick="sharePost(${post.id}, 'facebook')" title="Share on Facebook">
+                        <button onclick="sharePost('${post.id}', 'facebook')" title="Share on Facebook">
                             <i class="fab fa-facebook"></i>
                         </button>
                     </div>
