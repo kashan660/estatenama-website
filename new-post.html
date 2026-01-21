@@ -95,6 +95,31 @@
                         <input type="file" id="postFeaturedImage" name="featuredImage" accept="image/*">
                     </div>
 
+                    <div class="seo-section">
+                        <h2 class="section-title"><i class="fas fa-search"></i> SEO Settings</h2>
+                        <div class="form-group">
+                            <label for="metaTitle">Meta Title</label>
+                            <input type="text" id="metaTitle" name="metaTitle" placeholder="SEO Title (leave empty to use Post Title)">
+                            <small class="form-text">Recommended length: 50-60 characters</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="metaDescription">Meta Description</label>
+                            <textarea id="metaDescription" name="metaDescription" rows="3" placeholder="Brief summary for search engines..."></textarea>
+                            <small class="form-text">Recommended length: 150-160 characters</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="metaKeywords">Meta Keywords</label>
+                            <input type="text" id="metaKeywords" name="metaKeywords" placeholder="keyword1, keyword2, keyword3">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="canonicalUrl">Canonical URL</label>
+                            <input type="url" id="canonicalUrl" name="canonicalUrl" placeholder="https://www.estatenama.com/posts/your-post-slug">
+                        </div>
+                    </div>
+
                     <div class="form-actions">
                         <button type="button" class="btn btn-secondary" onclick="window.location.href='admin-dashboard.html'">
                             Cancel
@@ -133,15 +158,61 @@
         document.getElementById('postForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const formData = new FormData(this);
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
             
             try {
+                // 1. Handle Image Upload if selected
+                let featuredImageUrl = '';
+                const imageInput = document.getElementById('postFeaturedImage');
+                
+                if (imageInput.files.length > 0) {
+                    const imageFormData = new FormData();
+                    imageFormData.append('images', imageInput.files[0]);
+                    
+                    const uploadResponse = await fetch('/api/admin/images/upload', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${auth.getToken()}`
+                        },
+                        body: imageFormData
+                    });
+                    
+                    if (!uploadResponse.ok) throw new Error('Failed to upload image');
+                    
+                    const uploadResult = await uploadResponse.json();
+                    if (uploadResult && uploadResult.length > 0) {
+                        featuredImageUrl = uploadResult[0].url;
+                    }
+                }
+
+                // 2. Prepare Post Data
+                const postData = {
+                    title: document.getElementById('postTitle').value,
+                    slug: document.getElementById('postSlug').value,
+                    excerpt: document.getElementById('postExcerpt').value,
+                    content: document.getElementById('postContent').value,
+                    category: document.getElementById('postCategory').value,
+                    status: document.getElementById('postStatus').value,
+                    featuredImage: featuredImageUrl,
+                    seo: {
+                        metaTitle: document.getElementById('metaTitle').value || document.getElementById('postTitle').value,
+                        metaDescription: document.getElementById('metaDescription').value,
+                        metaKeywords: document.getElementById('metaKeywords').value,
+                        canonicalUrl: document.getElementById('canonicalUrl').value
+                    }
+                };
+
+                // 3. Create Post
                 const response = await fetch('/api/admin/posts', {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${auth.getToken()}`
+                        'Authorization': `Bearer ${auth.getToken()}`,
+                        'Content-Type': 'application/json'
                     },
-                    body: formData
+                    body: JSON.stringify(postData)
                 });
 
                 if (response.ok) {
@@ -152,7 +223,9 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error creating post. Please try again.');
+                alert('Error creating post: ' + error.message);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
             }
         });
 

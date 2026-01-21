@@ -144,15 +144,63 @@
         document.getElementById('blogForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const formData = new FormData(this);
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
             
             try {
+                // 1. Handle Image Upload if selected
+                let featuredImageUrl = '';
+                const imageInput = document.getElementById('blogFeaturedImage');
+                
+                if (imageInput.files.length > 0) {
+                    const imageFormData = new FormData();
+                    imageFormData.append('images', imageInput.files[0]);
+                    
+                    const uploadResponse = await fetch('/api/admin/images/upload', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${auth.getToken()}`
+                        },
+                        body: imageFormData
+                    });
+                    
+                    if (!uploadResponse.ok) throw new Error('Failed to upload image');
+                    
+                    const uploadResult = await uploadResponse.json();
+                    if (uploadResult && uploadResult.length > 0) {
+                        featuredImageUrl = uploadResult[0].url;
+                    }
+                }
+
+                // 2. Prepare Blog Data
+                const blogData = {
+                    title: document.getElementById('blogTitle').value,
+                    slug: document.getElementById('blogSlug').value,
+                    author: document.getElementById('blogAuthor').value,
+                    excerpt: document.getElementById('blogExcerpt').value,
+                    content: document.getElementById('blogContent').value,
+                    category: document.getElementById('blogCategory').value,
+                    status: document.getElementById('blogStatus').value,
+                    tags: document.getElementById('blogTags').value,
+                    featuredImage: featuredImageUrl,
+                    seo: {
+                        metaTitle: document.getElementById('metaTitle').value || document.getElementById('blogTitle').value,
+                        metaDescription: document.getElementById('metaDescription').value,
+                        metaKeywords: document.getElementById('metaKeywords').value,
+                        canonicalUrl: document.getElementById('canonicalUrl').value
+                    }
+                };
+
+                // 3. Create Blog
                 const response = await fetch('/api/admin/blogs', {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${auth.getToken()}`
+                        'Authorization': `Bearer ${auth.getToken()}`,
+                        'Content-Type': 'application/json'
                     },
-                    body: formData
+                    body: JSON.stringify(blogData)
                 });
 
                 if (response.ok) {
@@ -163,7 +211,9 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error creating blog. Please try again.');
+                alert('Error creating blog: ' + error.message);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
             }
         });
 
