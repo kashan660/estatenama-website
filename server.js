@@ -3,7 +3,10 @@ const fs = require('fs');
 const path = require('path');
 
 const server = http.createServer((req, res) => {
-    let filePath = '.' + req.url;
+    // Parse URL to handle query parameters correctly
+    const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
+    let filePath = '.' + parsedUrl.pathname;
+    
     if (filePath === './') {
         filePath = './index.html';
     }

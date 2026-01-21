@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Project - EstateNama Admin</title>
+    <link rel="stylesheet" href="admin-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="admin-body">
+    <!-- Admin Header -->
+    <header class="admin-header">
+        <nav class="admin-nav">
+            <a href="admin-dashboard.html" class="admin-logo">
+                <i class="fas fa-building"></i>
+                <h1>Estate<span>Nama</span></h1>
+            </a>
+            
+            <div class="admin-user">
+                <div class="user-info">
+                    <div class="user-avatar">A</div>
+                    <span id="currentUser">Admin</span>
+                </div>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <div class="admin-container">
+        <!-- Back to Dashboard -->
+        <div class="back-nav">
+            <a href="admin-dashboard.html" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="page-header">
+                <h1 class="page-title">Add New Project</h1>
+                <p class="page-subtitle">Create a new real estate project listing</p>
+            </div>
+
+            <div class="admin-content">
+                <form id="projectForm" class="content-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="projectName">Project Name *</label>
+                            <input type="text" id="projectName" name="name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="projectSlug">URL Slug *</label>
+                            <input type="text" id="projectSlug" name="slug" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="projectLocation">Location *</label>
+                            <input type="text" id="projectLocation" name="location" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="projectType">Project Type</label>
+                            <select id="projectType" name="type">
+                                <option value="residential">Residential</option>
+                                <option value="commercial">Commercial</option>
+                                <option value="plots">Plots</option>
+                                <option value="farmhouse">Farmhouse</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="projectDescription">Description *</label>
+                        <textarea id="projectDescription" name="description" rows="4" required placeholder="Describe the project features, amenities, and benefits..."></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="projectPrice">Starting Price</label>
+                            <input type="text" id="projectPrice" name="price" placeholder="e.g., 25,00,000 PKR">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="projectSize">Plot Sizes</label>
+                            <input type="text" id="projectSize" name="size" placeholder="e.g., 5 Marla, 10 Marla">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="projectFeatures">Key Features</label>
+                        <textarea id="projectFeatures" name="features" rows="3" placeholder="List key features (one per line)"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="projectAmenities">Amenities</label>
+                        <textarea id="projectAmenities" name="amenities" rows="3" placeholder="List amenities (one per line)"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="projectStatus">Project Status</label>
+                        <select id="projectStatus" name="status">
+                            <option value="upcoming">Upcoming</option>
+                            <option value="ongoing">Ongoing</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="projectImages">Project Images</label>
+                        <input type="file" id="projectImages" name="images" accept="image/*" multiple>
+                        <small>Upload multiple images for the project gallery</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="projectBrochure">Brochure (PDF)</label>
+                        <input type="file" id="projectBrochure" name="brochure" accept=".pdf">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='admin-dashboard.html'">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Add Project
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="/admin-auth.js?v=20260121"></script>
+    <script>
+        // Check authentication
+        const auth = new AdminAuth();
+        if (!auth.isLoggedIn()) {
+            window.location.href = 'admin-login.html';
+        }
+
+        // Set current user
+        document.getElementById('currentUser').textContent = auth.getUsername();
+
+        // Auto-generate slug from name
+        document.getElementById('projectName').addEventListener('input', function() {
+            const name = this.value.trim();
+            const slug = name.toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+            document.getElementById('projectSlug').value = slug;
+        });
+
+        // Form submission
+        document.getElementById('projectForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            try {
+                const response = await fetch('/api/admin/projects', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${auth.getToken()}`
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    alert('Project created successfully!');
+                    window.location.href = 'admin-dashboard.html';
+                } else {
+                    throw new Error('Failed to create project');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error creating project. Please try again.');
+            }
+        });
+
+        function logout() {
+            auth.logout();
+            window.location.href = 'admin-login.html';
+        }
+    </script>
+</body>
+</html>

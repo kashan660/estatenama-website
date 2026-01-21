@@ -131,9 +131,9 @@ app.post('/api/admin/login', async (req, res) => {
     
     // Simple authentication (in production, use proper password hashing)
     const validCredentials = [
-        { username: 'admin', password: 'admin123' },
-        { username: 'estatenama', password: 'estate2024' },
-        { username: 'manager', password: 'manager123' }
+        { username: 'admin@estatenama.com', password: 'EstateNama@8088' },
+        { username: 'estatenama@estatenama.com', password: 'Estatenama@8088' },
+        { username: 'manager@estatenama.com', password: 'Manager@8088' }
     ];
     
     const isValid = validCredentials.some(cred => 
@@ -497,9 +497,9 @@ const startServer = async () => {
             console.log('   ✅ Settings Management');
             console.log('   ✅ Statistics Dashboard');
             console.log('\n🔐 Default Admin Credentials:');
-            console.log('   Username: admin | Password: admin123');
-            console.log('   Username: estatenama | Password: estate2024');
-            console.log('   Username: manager | Password: manager123');
+            console.log('   Username: admin@estatenama.com | Password: EstateNama@8088');
+            console.log('   Username: estatenama@estatenama.com | Password: Estatenama@8088');
+            console.log('   Username: manager@estatenama.com | Password: Manager@8088');
         });
     } catch (error) {
         console.error('Failed to start server:', error);
