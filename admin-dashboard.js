@@ -278,7 +278,7 @@ class AdminDashboard {
             this.addActivity(`${postId ? 'Updated' : 'Created'} post: ${title}`);
         } catch (error) {
             console.error('Failed to save post:', error);
-            this.showNotification(`Failed to ${postId ? 'update' : 'create'} post. Please try again.`, 'error');
+            this.showNotification(error.message || `Failed to ${postId ? 'update' : 'create'} post. Please try again.`, 'error');
         }
     }
 
@@ -297,7 +297,7 @@ class AdminDashboard {
                 this.addActivity(`Deleted post: ${post?.title || 'Unknown'}`);
             } catch (error) {
                 console.error('Failed to delete post:', error);
-                this.showNotification('Failed to delete post. Please try again.', 'error');
+                this.showNotification(error.message || 'Failed to delete post. Please try again.', 'error');
             }
         }
     }
@@ -407,7 +407,7 @@ class AdminDashboard {
             this.addActivity(`${blogId ? 'Updated' : 'Created'} blog: ${title}`);
         } catch (error) {
             console.error('Failed to save blog:', error);
-            this.showNotification(`Failed to ${blogId ? 'update' : 'create'} blog. Please try again.`, 'error');
+            this.showNotification(error.message || `Failed to ${blogId ? 'update' : 'create'} blog. Please try again.`, 'error');
         }
     }
 
@@ -426,7 +426,7 @@ class AdminDashboard {
                 this.addActivity(`Deleted blog: ${blog?.title || 'Unknown'}`);
             } catch (error) {
                 console.error('Failed to delete blog:', error);
-                this.showNotification('Failed to delete blog. Please try again.', 'error');
+                this.showNotification(error.message || 'Failed to delete blog. Please try again.', 'error');
             }
         }
     }
@@ -558,7 +558,7 @@ class AdminDashboard {
             this.addActivity(`${projectId ? 'Updated' : 'Created'} project: ${projectData.title}`);
         } catch (error) {
             console.error('Failed to save project:', error);
-            this.showNotification(`Failed to ${projectId ? 'update' : 'create'} project. Please try again.`, 'error');
+            this.showNotification(error.message || `Failed to ${projectId ? 'update' : 'create'} project. Please try again.`, 'error');
         }
     }
 
@@ -577,7 +577,7 @@ class AdminDashboard {
                 this.addActivity(`Deleted project: ${project?.title || 'Unknown'}`);
             } catch (error) {
                 console.error('Failed to delete project:', error);
-                this.showNotification('Failed to delete project. Please try again.', 'error');
+                this.showNotification(error.message || 'Failed to delete project. Please try again.', 'error');
             }
         }
     }
@@ -750,7 +750,7 @@ class AdminDashboard {
             document.getElementById('addPostForm').reset();
         } catch (error) {
             console.error('Failed to create post:', error);
-            this.showNotification('Failed to create post. Please try again.', 'error');
+            this.showNotification(error.message || 'Failed to create post. Please try again.', 'error');
         }
     }
 
@@ -778,7 +778,7 @@ class AdminDashboard {
             document.getElementById('addBlogForm').reset();
         } catch (error) {
             console.error('Failed to create blog:', error);
-            this.showNotification('Failed to create blog. Please try again.', 'error');
+            this.showNotification(error.message || 'Failed to create blog. Please try again.', 'error');
         }
     }
 
@@ -807,7 +807,7 @@ class AdminDashboard {
             document.getElementById('addProjectForm').reset();
         } catch (error) {
             console.error('Failed to create project:', error);
-            this.showNotification('Failed to create project. Please try again.', 'error');
+            this.showNotification(error.message || 'Failed to create project. Please try again.', 'error');
         }
     }
 
@@ -842,7 +842,7 @@ class AdminDashboard {
             document.getElementById('uploadImagesForm').reset();
         } catch (error) {
             console.error('Failed to upload images:', error);
-            this.showNotification('Failed to upload images. Please try again.', 'error');
+            this.showNotification(error.message || 'Failed to upload images. Please try again.', 'error');
         }
     }
 

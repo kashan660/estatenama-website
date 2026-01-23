@@ -77,7 +77,18 @@ class AdminAPI {
                     window.location.href = '/admin-login.html';
                     return;
                 }
-                throw new Error(`HTTP error! status: ${response.status}`);
+                
+                let errorMessage = `HTTP error! status: ${response.status}`;
+                try {
+                    const errorData = await response.json();
+                    if (errorData && errorData.error) {
+                        errorMessage = errorData.error;
+                    }
+                } catch (e) {
+                    // Ignore JSON parse error, use default message
+                }
+                
+                throw new Error(errorMessage);
             }
             
             return await response.json();
