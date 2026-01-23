@@ -210,25 +210,25 @@ class AdminDashboard {
     }
 
     showPostModal(postId = null) {
-        const post = postId ? this.posts.find(p => p.id === postId) : null;
+        const post = postId ? this.posts.find(p => String(p.id) === String(postId)) : null;
         const isEdit = !!post;
 
         const modalContent = `
             <h2>${isEdit ? 'Edit Post' : 'Add New Post'}</h2>
-            <form id="postForm">
+            <form id="addPostForm">
                 <div class="form-group">
                     <label for="postTitle">Title</label>
                     <input type="text" id="postTitle" value="${post?.title || ''}" required>
                 </div>
                 <div class="form-group">
                     <label for="postContent">Content</label>
-                    <textarea id="postContent" rows="6" required>${post?.content || ''}</textarea>
+                    <textarea id="postContent" rows="8" required>${post?.content || ''}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="postStatus">Status</label>
                     <select id="postStatus">
-                        <option value="published" ${post?.status === 'published' ? 'selected' : ''}>Published</option>
                         <option value="draft" ${post?.status === 'draft' ? 'selected' : ''}>Draft</option>
+                        <option value="published" ${post?.published ? 'selected' : ''}>Published</option>
                     </select>
                 </div>
                 <div class="form-actions">
@@ -245,7 +245,7 @@ class AdminDashboard {
 
         this.showModal(modalContent);
 
-        document.getElementById('postForm').addEventListener('submit', (e) => {
+        document.getElementById('addPostForm').addEventListener('submit', (e) => {
             e.preventDefault();
             this.savePost(postId);
         });
@@ -289,7 +289,7 @@ class AdminDashboard {
     async deletePost(postId) {
         if (confirm('Are you sure you want to delete this post?')) {
             try {
-                const post = this.posts.find(p => p.id === postId);
+                const post = this.posts.find(p => String(p.id) === String(postId));
                 await this.api.deletePost(postId);
                 await this.loadPosts();
                 this.updateStats();
@@ -333,7 +333,7 @@ class AdminDashboard {
     }
 
     showBlogModal(blogId = null) {
-        const blog = blogId ? this.blogs.find(b => b.id === blogId) : null;
+        const blog = blogId ? this.blogs.find(b => String(b.id) === String(blogId)) : null;
         const isEdit = !!blog;
 
         const modalContent = `
@@ -418,7 +418,7 @@ class AdminDashboard {
     async deleteBlog(blogId) {
         if (confirm('Are you sure you want to delete this blog?')) {
             try {
-                const blog = this.blogs.find(b => b.id === blogId);
+                const blog = this.blogs.find(b => String(b.id) === String(blogId));
                 await this.api.deleteBlog(blogId);
                 await this.loadBlogs();
                 this.updateStats();
@@ -466,7 +466,7 @@ class AdminDashboard {
     }
 
     showProjectModal(projectId = null) {
-        const project = projectId ? this.projects.find(p => p.id === projectId) : null;
+        const project = projectId ? this.projects.find(p => String(p.id) === String(projectId)) : null;
         const isEdit = !!project;
         
         const modalContent = `
@@ -569,7 +569,7 @@ class AdminDashboard {
     async deleteProject(projectId) {
         if (confirm('Are you sure you want to delete this project?')) {
             try {
-                const project = this.projects.find(p => p.id === projectId);
+                const project = this.projects.find(p => String(p.id) === String(projectId));
                 await this.api.deleteProject(projectId);
                 await this.loadProjects();
                 this.updateStats();
@@ -714,7 +714,7 @@ class AdminDashboard {
     async deleteImage(imageId) {
         if (confirm('Are you sure you want to delete this image?')) {
             try {
-                const image = this.images.find(img => img.id === imageId);
+                const image = this.images.find(img => String(img.id) === String(imageId));
                 await this.api.deleteImage(imageId);
                 await this.loadGallery();
                 this.updateStats();
@@ -722,7 +722,7 @@ class AdminDashboard {
                 this.addActivity(`Deleted image: ${image?.name || image?.filename || 'Unknown'}`);
             } catch (error) {
                 console.error('Failed to delete image:', error);
-                this.showNotification('Failed to delete image. Please try again.', 'error');
+                this.showNotification(error.message || 'Failed to delete image. Please try again.', 'error');
             }
         }
     }
