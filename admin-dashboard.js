@@ -31,11 +31,20 @@ class AdminDashboard {
             window.location.href = 'admin-login.html';
             return;
         }
+
+        // Check for production environment
+        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+            // production check
+        }
         
         this.setupEventListeners();
         this.loadUserInfo();
         this.updateStats();
         this.loadContent();
+    }
+
+    showProductionWarning() {
+        // Warning removed as we are now using Vercel Postgres
     }
 
     setupEventListeners() {

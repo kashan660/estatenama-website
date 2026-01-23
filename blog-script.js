@@ -9,13 +9,13 @@ function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('en-US', options);
 }
 
-// Fetch blog posts from the server (admin-data/blogs.json and posts.json)
+// Fetch blog posts from the server (API endpoints)
 async function fetchBlogPosts() {
     try {
-        // Fetch both blogs and posts in parallel
+        // Fetch both blogs and posts in parallel from API
         const [blogsResponse, postsResponse] = await Promise.all([
-            fetch('/admin-data/blogs.json').catch(() => ({ ok: false })),
-            fetch('/admin-data/posts.json').catch(() => ({ ok: false }))
+            fetch('/api/blogs').catch(() => ({ ok: false })),
+            fetch('/api/posts').catch(() => ({ ok: false }))
         ]);
 
         let allContent = [];
@@ -23,11 +23,19 @@ async function fetchBlogPosts() {
         if (blogsResponse.ok) {
             const blogs = await blogsResponse.json();
             allContent = [...allContent, ...blogs];
+        } else {
+            // Fallback to static JSON if API fails (e.g. during migration)
+            const staticBlogs = await fetch('/admin-data/blogs.json').then(res => res.ok ? res.json() : []).catch(() => []);
+            allContent = [...allContent, ...staticBlogs];
         }
 
         if (postsResponse.ok) {
             const posts = await postsResponse.json();
             allContent = [...allContent, ...posts];
+        } else {
+            // Fallback to static JSON
+            const staticPosts = await fetch('/admin-data/posts.json').then(res => res.ok ? res.json() : []).catch(() => []);
+            allContent = [...allContent, ...staticPosts];
         }
 
         return allContent;

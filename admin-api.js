@@ -1,7 +1,9 @@
 // Admin API Client for backend integration
 class AdminAPI {
     constructor() {
-        this.baseURL = 'http://localhost:3002';
+        // Use relative URL for production/Vercel, or localhost for local dev if needed.
+        // If the frontend is served by the same server (express), relative URL is best.
+        this.baseURL = ''; 
         this.token = this.getStoredToken();
     }
 

@@ -1,9 +1,10 @@
 // Production Admin Server for Vercel
 const express = require('express');
 const path = require('path');
-const fs = require('fs').promises;
 const multer = require('multer');
 const cors = require('cors');
+const { put } = require('@vercel/blob');
+const db = require('./lib/db');
 
 const app = express();
 
@@ -13,24 +14,14 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(express.static(__dirname));
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/');
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
-
+// Configure multer (memory storage for Vercel Blob)
+const storage = multer.memoryStorage();
 const upload = multer({ 
     storage: storage,
     limits: {
         fileSize: 10 * 1024 * 1024 // 10MB limit
     },
     fileFilter: function (req, file, cb) {
-        // Check file type
         if (file.mimetype.startsWith('image/')) {
             cb(null, true);
         } else {
@@ -39,14 +30,14 @@ const upload = multer({
     }
 });
 
-// Admin credentials - In production, use environment variables
+// Admin credentials
 const ADMIN_CREDENTIALS = [
     { username: 'admin@estatenama.com', password: 'EstateNama@8088' },
     { username: 'estatenama@estatenama.com', password: 'Estatenama@8088' },
     { username: 'manager@estatenama.com', password: 'Manager@8088' }
 ];
 
-// Session storage (simple in-memory, in production use Redis or database)
+// Session storage (simple in-memory)
 const sessions = new Map();
 
 // Authentication middleware
@@ -68,132 +59,115 @@ const authenticateAdmin = (req, res, next) => {
 
 // Routes
 
-// Health check endpoint
+// Health check
 app.get('/api/admin/health', (req, res) => {
     res.json({ 
         status: 'ok', 
         timestamp: new Date().toISOString(),
-        environment: 'production',
+        environment: 'production-postgres',
         endpoints: ['/api/admin/login', '/api/admin/data', '/api/admin/upload']
     });
 });
 
-// Serve admin login page
+// --- Public API Routes (No Auth Required) ---
+app.get('/api/posts', async (req, res) => {
+    try {
+        const posts = await db.getPosts();
+        // Return only published posts for public view
+        const publishedPosts = posts.filter(p => p.published);
+        res.json(publishedPosts);
+    } catch (error) {
+        console.error('Error fetching public posts:', error);
+        res.status(500).json({ error: 'Failed to fetch posts' });
+    }
+});
+
+app.get('/api/blogs', async (req, res) => {
+    try {
+        const blogs = await db.getBlogs();
+        // Return only published blogs for public view
+        const publishedBlogs = blogs.filter(b => b.status === 'published');
+        res.json(publishedBlogs);
+    } catch (error) {
+        console.error('Error fetching public blogs:', error);
+        res.status(500).json({ error: 'Failed to fetch blogs' });
+    }
+});
+
+app.get('/api/projects', async (req, res) => {
+    try {
+        const projects = await db.getProjects();
+        // Return only active projects for public view
+        const activeProjects = projects.filter(p => p.status === 'active');
+        res.json(activeProjects);
+    } catch (error) {
+        console.error('Error fetching public projects:', error);
+        res.status(500).json({ error: 'Failed to fetch projects' });
+    }
+});
+// --------------------------------------------
+
+// Serve admin pages
 app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin-login.html'));
 });
 
-// Serve admin dashboard
 app.get('/admin/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin-dashboard.html'));
 });
 
-// Authentication endpoint
+// Login
 app.post('/api/admin/login', async (req, res) => {
     try {
-        console.log('Login attempt received:', req.body);
         const { username, password } = req.body;
         
         if (!username || !password) {
-            console.log('Missing username or password');
             return res.status(400).json({ error: 'Username and password are required' });
         }
         
-        console.log('Attempting login for username:', username);
-        
-        // Check credentials
-        const isValid = ADMIN_CREDENTIALS.some(cred => {
-            console.log('Checking against:', cred.username);
-            return cred.username === username && cred.password === password;
-        });
-        
-        console.log('Credentials valid:', isValid);
+        const isValid = ADMIN_CREDENTIALS.some(cred => 
+            cred.username === username && cred.password === password
+        );
         
         if (!isValid) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
         
-        // Generate token
         const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
-        
-        // Store session
         sessions.set(token, {
             user: { username },
-            expires: Date.now() + 24 * 60 * 60 * 1000 // 24 hours
+            expires: Date.now() + 24 * 60 * 60 * 1000
         });
         
-        res.json({ 
-            success: true, 
-            token,
-            user: { username }
-        });
-        
+        res.json({ success: true, token, user: { username } });
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
 
-// Logout endpoint
+// Logout
 app.post('/api/admin/logout', authenticateAdmin, (req, res) => {
     const token = req.headers.authorization?.replace('Bearer ', '');
     sessions.delete(token);
     res.json({ success: true });
 });
 
-// Get admin data
-app.get('/api/admin/data', authenticateAdmin, async (req, res) => {
+// Stats
+app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
     try {
-        const data = {};
-        
-        // Read all data files
-        const dataFiles = ['posts.json', 'blogs.json', 'projects.json', 'gallery.json', 'settings.json'];
-        
-        for (const file of dataFiles) {
-            try {
-                const filePath = path.join(__dirname, 'admin-data', file);
-                const fileContent = await fs.readFile(filePath, 'utf8');
-                data[file.replace('.json', '')] = JSON.parse(fileContent);
-            } catch (error) {
-                data[file.replace('.json', '')] = [];
-            }
-        }
-        
-        res.json(data);
+        const stats = await db.getStats();
+        res.json(stats);
     } catch (error) {
-        console.error('Error reading admin data:', error);
-        res.status(500).json({ error: 'Failed to read admin data' });
+        console.error('Error getting stats:', error);
+        res.status(500).json({ error: 'Failed to get statistics' });
     }
 });
 
-// Update admin data
-app.post('/api/admin/data', authenticateAdmin, async (req, res) => {
-    try {
-        const { type, data } = req.body;
-        
-        if (!type || !data) {
-            return res.status(400).json({ error: 'Type and data are required' });
-        }
-        
-        const validTypes = ['posts', 'blogs', 'projects', 'gallery', 'settings'];
-        if (!validTypes.includes(type)) {
-            return res.status(400).json({ error: 'Invalid data type' });
-        }
-        
-        const filePath = path.join(__dirname, 'admin-data', `${type}.json`);
-        await fs.writeFile(filePath, JSON.stringify(data, null, 2));
-        
-        res.json({ success: true });
-    } catch (error) {
-        console.error('Error updating admin data:', error);
-        res.status(500).json({ error: 'Failed to update admin data' });
-    }
-});
-
-// Posts API
+// --- Posts API ---
 app.get('/api/admin/posts', authenticateAdmin, async (req, res) => {
     try {
-        const posts = await readJsonFile(POSTS_FILE);
+        const posts = await db.getPosts();
         res.json(posts);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch posts' });
@@ -202,38 +176,18 @@ app.get('/api/admin/posts', authenticateAdmin, async (req, res) => {
 
 app.post('/api/admin/posts', authenticateAdmin, async (req, res) => {
     try {
-        const posts = await readJsonFile(POSTS_FILE);
-        const newPost = {
-            id: Date.now().toString(),
-            ...req.body,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        };
-        posts.unshift(newPost);
-        await writeJsonFile(POSTS_FILE, posts);
+        const newPost = await db.createPost(req.body);
         res.json(newPost);
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: 'Failed to create post' });
     }
 });
 
 app.put('/api/admin/posts/:id', authenticateAdmin, async (req, res) => {
     try {
-        const posts = await readJsonFile(POSTS_FILE);
-        const postIndex = posts.findIndex(p => p.id === req.params.id);
-        
-        if (postIndex === -1) {
-            return res.status(404).json({ error: 'Post not found' });
-        }
-        
-        posts[postIndex] = {
-            ...posts[postIndex],
-            ...req.body,
-            updatedAt: new Date().toISOString()
-        };
-        
-        await writeJsonFile(POSTS_FILE, posts);
-        res.json(posts[postIndex]);
+        const updatedPost = await db.updatePost(req.params.id, req.body);
+        res.json(updatedPost);
     } catch (error) {
         res.status(500).json({ error: 'Failed to update post' });
     }
@@ -241,24 +195,17 @@ app.put('/api/admin/posts/:id', authenticateAdmin, async (req, res) => {
 
 app.delete('/api/admin/posts/:id', authenticateAdmin, async (req, res) => {
     try {
-        const posts = await readJsonFile(POSTS_FILE);
-        const filteredPosts = posts.filter(p => p.id !== req.params.id);
-        
-        if (posts.length === filteredPosts.length) {
-            return res.status(404).json({ error: 'Post not found' });
-        }
-        
-        await writeJsonFile(POSTS_FILE, filteredPosts);
+        await db.deletePost(req.params.id);
         res.json({ success: true });
     } catch (error) {
         res.status(500).json({ error: 'Failed to delete post' });
     }
 });
 
-// Blogs API
+// --- Blogs API ---
 app.get('/api/admin/blogs', authenticateAdmin, async (req, res) => {
     try {
-        const blogs = await readJsonFile(BLOGS_FILE);
+        const blogs = await db.getBlogs();
         res.json(blogs);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch blogs' });
@@ -267,38 +214,18 @@ app.get('/api/admin/blogs', authenticateAdmin, async (req, res) => {
 
 app.post('/api/admin/blogs', authenticateAdmin, async (req, res) => {
     try {
-        const blogs = await readJsonFile(BLOGS_FILE);
-        const newBlog = {
-            id: Date.now().toString(),
-            ...req.body,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        };
-        blogs.unshift(newBlog);
-        await writeJsonFile(BLOGS_FILE, blogs);
+        const newBlog = await db.createBlog(req.body);
         res.json(newBlog);
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: 'Failed to create blog' });
     }
 });
 
 app.put('/api/admin/blogs/:id', authenticateAdmin, async (req, res) => {
     try {
-        const blogs = await readJsonFile(BLOGS_FILE);
-        const blogIndex = blogs.findIndex(b => b.id === req.params.id);
-        
-        if (blogIndex === -1) {
-            return res.status(404).json({ error: 'Blog not found' });
-        }
-        
-        blogs[blogIndex] = {
-            ...blogs[blogIndex],
-            ...req.body,
-            updatedAt: new Date().toISOString()
-        };
-        
-        await writeJsonFile(BLOGS_FILE, blogs);
-        res.json(blogs[blogIndex]);
+        const updatedBlog = await db.updateBlog(req.params.id, req.body);
+        res.json(updatedBlog);
     } catch (error) {
         res.status(500).json({ error: 'Failed to update blog' });
     }
@@ -306,24 +233,17 @@ app.put('/api/admin/blogs/:id', authenticateAdmin, async (req, res) => {
 
 app.delete('/api/admin/blogs/:id', authenticateAdmin, async (req, res) => {
     try {
-        const blogs = await readJsonFile(BLOGS_FILE);
-        const filteredBlogs = blogs.filter(b => b.id !== req.params.id);
-        
-        if (blogs.length === filteredBlogs.length) {
-            return res.status(404).json({ error: 'Blog not found' });
-        }
-        
-        await writeJsonFile(BLOGS_FILE, filteredBlogs);
+        await db.deleteBlog(req.params.id);
         res.json({ success: true });
     } catch (error) {
         res.status(500).json({ error: 'Failed to delete blog' });
     }
 });
 
-// Projects API
+// --- Projects API ---
 app.get('/api/admin/projects', authenticateAdmin, async (req, res) => {
     try {
-        const projects = await readJsonFile(PROJECTS_FILE);
+        const projects = await db.getProjects();
         res.json(projects);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch projects' });
@@ -332,70 +252,30 @@ app.get('/api/admin/projects', authenticateAdmin, async (req, res) => {
 
 app.post('/api/admin/projects', authenticateAdmin, async (req, res) => {
     try {
-        const projects = await readJsonFile(PROJECTS_FILE);
-        const newProject = {
-            id: Date.now().toString(),
-            ...req.body,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        };
-        projects.unshift(newProject);
-        await writeJsonFile(PROJECTS_FILE, projects);
+        const newProject = await db.createProject(req.body);
         res.json(newProject);
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: 'Failed to create project' });
     }
 });
 
-app.put('/api/admin/projects/:id', authenticateAdmin, async (req, res) => {
-    try {
-        const projects = await readJsonFile(PROJECTS_FILE);
-        const projectIndex = projects.findIndex(p => p.id === req.params.id);
-        
-        if (projectIndex === -1) {
-            return res.status(404).json({ error: 'Project not found' });
-        }
-        
-        projects[projectIndex] = {
-            ...projects[projectIndex],
-            ...req.body,
-            updatedAt: new Date().toISOString()
-        };
-        
-        await writeJsonFile(PROJECTS_FILE, projects);
-        res.json(projects[projectIndex]);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to update project' });
-    }
-});
-
-app.delete('/api/admin/projects/:id', authenticateAdmin, async (req, res) => {
-    try {
-        const projects = await readJsonFile(PROJECTS_FILE);
-        const filteredProjects = projects.filter(p => p.id !== req.params.id);
-        
-        if (projects.length === filteredProjects.length) {
-            return res.status(404).json({ error: 'Project not found' });
-        }
-        
-        await writeJsonFile(PROJECTS_FILE, filteredProjects);
-        res.json({ success: true });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to delete project' });
-    }
-});
-
-// File upload endpoint
-app.post('/api/admin/upload', authenticateAdmin, upload.single('file'), (req, res) => {
+// --- Image Upload (Vercel Blob) ---
+app.post('/api/admin/upload', authenticateAdmin, upload.single('file'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
         }
+
+        // Upload to Vercel Blob
+        const blob = await put(req.file.originalname, req.file.buffer, {
+            access: 'public',
+        });
         
         res.json({ 
             success: true, 
-            filename: req.file.filename,
-            path: `/uploads/${req.file.filename}`
+            filename: req.file.originalname,
+            path: blob.url // Returns the public URL of the blob
         });
     } catch (error) {
         console.error('Upload error:', error);
@@ -403,35 +283,12 @@ app.post('/api/admin/upload', authenticateAdmin, upload.single('file'), (req, re
     }
 });
 
-// Get statistics
-app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
-    try {
-        const stats = {
-            posts: 0,
-            blogs: 0,
-            projects: 0,
-            gallery: 0
-        };
-        
-        const dataFiles = ['posts.json', 'blogs.json', 'projects.json', 'gallery.json'];
-        
-        for (const file of dataFiles) {
-            try {
-                const filePath = path.join(__dirname, 'admin-data', file);
-                const fileContent = await fs.readFile(filePath, 'utf8');
-                const data = JSON.parse(fileContent);
-                stats[file.replace('.json', '')] = data.length || 0;
-            } catch (error) {
-                // File doesn't exist or is empty
-            }
-        }
-        
-        res.json(stats);
-    } catch (error) {
-        console.error('Error getting stats:', error);
-        res.status(500).json({ error: 'Failed to get statistics' });
-    }
-});
+// Start server if run directly
+if (require.main === module) {
+    const PORT = process.env.PORT || 3002;
+    app.listen(PORT, () => {
+        console.log(`Admin server running on port ${PORT}`);
+    });
+}
 
-// Export for Vercel
 module.exports = app;
