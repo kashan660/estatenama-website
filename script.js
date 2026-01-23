@@ -902,7 +902,7 @@ function initRandomHeroImages() {
 }
 
 // Blog Posts Functionality
-const blogPosts = [
+let blogPosts = [
     {
         id: 1,
         title: "Houses for Sale Near Me: Complete Guide to Finding Your Dream Home",
@@ -1146,8 +1146,13 @@ async function fetchAndDisplayBlogPosts() {
             }));
             
             // Merge with existing static posts, prioritizing new dynamic posts
-            // Filter out duplicates based on ID or Slug if necessary, though simple concatenation is fine for now
-            blogPosts = [...mappedPosts, ...blogPosts];
+            // Filter out duplicates based on ID to prevent double adding if function runs multiple times
+            const existingIds = new Set(blogPosts.map(p => String(p.id)));
+            const uniqueNewPosts = mappedPosts.filter(p => !existingIds.has(String(p.id)));
+            blogPosts = [...uniqueNewPosts, ...blogPosts];
+            
+            // Sort by date (newest first)
+            blogPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
         }
     } catch (error) {
         console.warn('Failed to fetch dynamic blogs, using static fallback');

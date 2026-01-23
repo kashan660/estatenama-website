@@ -26,7 +26,7 @@ git add .
 Write-Host ""
 
 Write-Host "💬 Committing changes..." -ForegroundColor Cyan
-git commit -m "Fix main website 404 errors - Updated Vercel configuration to include all website files"
+git commit -m "Fix admin dashboard edit/publish functions, post merging logic, and cache busting"
 if ($LASTEXITCODE -ne 0) {
     Write-Host "⚠️  No changes to commit or commit failed" -ForegroundColor Yellow
 } else {

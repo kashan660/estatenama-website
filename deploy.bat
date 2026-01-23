@@ -21,7 +21,7 @@ git add .
 echo.
 
 echo 💬 Committing changes...
-git commit -m "Fix main website 404 errors - Updated Vercel configuration to include all website files"
+git commit -m "Fix admin dashboard edit/publish functions, post merging logic, and cache busting"
 if %errorlevel% neq 0 (
     echo ⚠️  No changes to commit or commit failed
 ) else (

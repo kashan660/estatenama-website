@@ -3,11 +3,12 @@ class AdminAPI {
     constructor() {
         // Use relative URL for production/Vercel, or localhost:3002 for local dev if not on port 3002.
         const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+        const isFile = typeof window !== 'undefined' && window.location.protocol === 'file:';
         const isPort3002 = typeof window !== 'undefined' && window.location.port === '3002';
         
-        // If local and NOT on port 3002 (e.g. running on 8005), point to 3002.
+        // If local and NOT on port 3002 (e.g. running on 8005), or if running from file system, point to 3002.
         // If on Vercel or local port 3002, use relative path.
-        this.baseURL = (isLocal && !isPort3002) ? 'http://localhost:3002' : ''; 
+        this.baseURL = ((isLocal && !isPort3002) || isFile) ? 'http://localhost:3002' : ''; 
         this.token = this.getStoredToken();
     }
 
@@ -60,7 +61,14 @@ class AdminAPI {
 
     // Generic API request method
     async request(endpoint, options = {}) {
-        const url = `${this.baseURL}/api/admin${endpoint}`;
+        let url = `${this.baseURL}/api/admin${endpoint}`;
+        
+        // Add cache busting for GET requests
+        if (!options.method || options.method === 'GET') {
+            const separator = url.includes('?') ? '&' : '?';
+            url += `${separator}t=${Date.now()}`;
+        }
+
         const config = {
             headers: this.getHeaders(),
             ...options

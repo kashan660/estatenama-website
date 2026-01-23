@@ -193,7 +193,7 @@ app.post('/api/admin/posts', authenticateAdmin, async (req, res) => {
 app.put('/api/admin/posts/:id', authenticateAdmin, async (req, res) => {
     try {
         const posts = await readJsonFile(POSTS_FILE);
-        const postIndex = posts.findIndex(p => p.id === req.params.id);
+        const postIndex = posts.findIndex(p => String(p.id) === String(req.params.id));
         
         if (postIndex === -1) {
             return res.status(404).json({ error: 'Post not found' });
@@ -215,7 +215,7 @@ app.put('/api/admin/posts/:id', authenticateAdmin, async (req, res) => {
 app.delete('/api/admin/posts/:id', authenticateAdmin, async (req, res) => {
     try {
         const posts = await readJsonFile(POSTS_FILE);
-        const filteredPosts = posts.filter(p => p.id !== req.params.id);
+        const filteredPosts = posts.filter(p => String(p.id) !== String(req.params.id));
         
         if (posts.length === filteredPosts.length) {
             return res.status(404).json({ error: 'Post not found' });
@@ -258,7 +258,7 @@ app.post('/api/admin/blogs', authenticateAdmin, async (req, res) => {
 app.put('/api/admin/blogs/:id', authenticateAdmin, async (req, res) => {
     try {
         const blogs = await readJsonFile(BLOGS_FILE);
-        const blogIndex = blogs.findIndex(b => b.id === req.params.id);
+        const blogIndex = blogs.findIndex(b => String(b.id) === String(req.params.id));
         
         if (blogIndex === -1) {
             return res.status(404).json({ error: 'Blog not found' });
@@ -280,7 +280,7 @@ app.put('/api/admin/blogs/:id', authenticateAdmin, async (req, res) => {
 app.delete('/api/admin/blogs/:id', authenticateAdmin, async (req, res) => {
     try {
         const blogs = await readJsonFile(BLOGS_FILE);
-        const filteredBlogs = blogs.filter(b => b.id !== req.params.id);
+        const filteredBlogs = blogs.filter(b => String(b.id) !== String(req.params.id));
         
         if (blogs.length === filteredBlogs.length) {
             return res.status(404).json({ error: 'Blog not found' });
@@ -323,7 +323,7 @@ app.post('/api/admin/projects', authenticateAdmin, async (req, res) => {
 app.put('/api/admin/projects/:id', authenticateAdmin, async (req, res) => {
     try {
         const projects = await readJsonFile(PROJECTS_FILE);
-        const projectIndex = projects.findIndex(p => p.id === req.params.id);
+        const projectIndex = projects.findIndex(p => String(p.id) === String(req.params.id));
         
         if (projectIndex === -1) {
             return res.status(404).json({ error: 'Project not found' });
@@ -345,7 +345,7 @@ app.put('/api/admin/projects/:id', authenticateAdmin, async (req, res) => {
 app.delete('/api/admin/projects/:id', authenticateAdmin, async (req, res) => {
     try {
         const projects = await readJsonFile(PROJECTS_FILE);
-        const filteredProjects = projects.filter(p => p.id !== req.params.id);
+        const filteredProjects = projects.filter(p => String(p.id) !== String(req.params.id));
         
         if (projects.length === filteredProjects.length) {
             return res.status(404).json({ error: 'Project not found' });
@@ -391,7 +391,7 @@ app.post('/api/admin/images/upload', authenticateAdmin, upload.array('images', 1
 app.delete('/api/admin/images/:id', authenticateAdmin, async (req, res) => {
     try {
         const images = await readJsonFile(IMAGES_FILE);
-        const imageToDelete = images.find(img => img.id === req.params.id);
+        const imageToDelete = images.find(img => String(img.id) === String(req.params.id));
         
         if (!imageToDelete) {
             return res.status(404).json({ error: 'Image not found' });
@@ -404,7 +404,7 @@ app.delete('/api/admin/images/:id', authenticateAdmin, async (req, res) => {
             console.warn('Failed to delete file:', error.message);
         }
         
-        const filteredImages = images.filter(img => img.id !== req.params.id);
+        const filteredImages = images.filter(img => String(img.id) !== String(req.params.id));
         await writeJsonFile(IMAGES_FILE, filteredImages);
         res.json({ success: true });
     } catch (error) {

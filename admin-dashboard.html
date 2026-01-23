@@ -149,7 +149,7 @@
                 <section id="posts-section" class="content-section">
                     <div class="content-header">
                         <h2>Manage Posts</h2>
-                        <button class="btn btn-primary" id="addPostBtn" onclick="window.location.href='new-post.html'">
+                        <button class="btn btn-primary" id="addPostBtn">
                             <i class="fas fa-plus"></i>
                             Add New Post
                         </button>
@@ -176,7 +176,7 @@
                 <section id="blogs-section" class="content-section">
                     <div class="section-header">
                         <h2>Manage Blogs</h2>
-                        <button class="btn btn-primary" id="addBlogBtn" onclick="window.location.href='new-blog.html'">
+                        <button class="btn btn-primary" id="addBlogBtn">
                             <i class="fas fa-plus"></i>
                             Add New Blog
                         </button>
@@ -203,7 +203,7 @@
                 <section id="projects-section" class="content-section">
                     <div class="section-header">
                         <h2>Manage Projects</h2>
-                        <button class="btn btn-primary" id="addProjectBtn" onclick="window.location.href='new-project.html'">
+                        <button class="btn btn-primary" id="addProjectBtn">
                             <i class="fas fa-plus"></i>
                             Add New Project
                         </button>
@@ -280,204 +280,6 @@
             <div id="modalBody">
                 <!-- Modal content will be loaded here -->
             </div>
-        </div>
-    </div>
-
-    <!-- Add Post Modal -->
-    <div id="addPostModal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close">&times;</span>
-            <div class="modal-header">
-                <h2>Add New Post</h2>
-            </div>
-            <form id="addPostForm" class="modal-form">
-                <div class="form-group">
-                    <label for="postTitle">Post Title</label>
-                    <input type="text" id="postTitle" name="title" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="postContent">Content</label>
-                    <textarea id="postContent" name="content" rows="6" required></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="postExcerpt">Excerpt</label>
-                    <textarea id="postExcerpt" name="excerpt" rows="3"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="postStatus">Status</label>
-                    <select id="postStatus" name="status">
-                        <option value="published">Published</option>
-                        <option value="draft">Draft</option>
-                    </select>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('addPostModal')">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Create Post</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Add Blog Modal -->
-    <div id="addBlogModal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close">&times;</span>
-            <div class="modal-header">
-                <h2>Add New Blog</h2>
-            </div>
-            <form id="addBlogForm" class="modal-form">
-                <div class="form-group">
-                    <label for="blogTitle">Blog Title</label>
-                    <input type="text" id="blogTitle" name="title" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="blogContent">Content</label>
-                    <textarea id="blogContent" name="content" rows="8" required></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="blogExcerpt">Excerpt</label>
-                    <textarea id="blogExcerpt" name="excerpt" rows="3"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="blogCategory">Category</label>
-                    <select id="blogCategory" name="category">
-                        <option value="real-estate-news">Real Estate News</option>
-                        <option value="real-estate">Real Estate</option>
-                        <option value="investment">Investment</option>
-                        <option value="market-trends">Market Trends</option>
-                        <option value="tips">Tips & Advice</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="blogStatus">Status</label>
-                    <select id="blogStatus" name="status">
-                        <option value="published">Published</option>
-                        <option value="draft">Draft</option>
-                    </select>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('addBlogModal')">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Create Blog</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Add Project Modal -->
-    <div id="addProjectModal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close">&times;</span>
-            <div class="modal-header">
-                <h2>Add New Project</h2>
-            </div>
-            <form id="addProjectForm" class="modal-form">
-                <div class="form-group">
-                    <label for="projectName">Project Name</label>
-                    <input type="text" id="projectName" name="name" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="projectLocation">Location</label>
-                    <input type="text" id="projectLocation" name="location" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="projectType">Property Type</label>
-                    <select id="projectType" name="type">
-                        <option value="residential">Residential</option>
-                        <option value="commercial">Commercial</option>
-                        <option value="plots">Plots</option>
-                        <option value="mixed">Mixed Development</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="projectPrice">Starting Price</label>
-                    <input type="text" id="projectPrice" name="price" placeholder="e.g., PKR 25 Lac">
-                </div>
-                
-                <div class="form-group">
-                    <label for="projectDescription">Description</label>
-                    <textarea id="projectDescription" name="description" rows="4" required></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="projectFeatures">Key Features (comma separated)</label>
-                    <textarea id="projectFeatures" name="features" rows="3" placeholder="e.g., Gated Community, 24/7 Security, Parks"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="projectInstallment">Installment Plan Available</label>
-                    <select id="projectInstallment" name="installmentPlan">
-                        <option value="yes">Yes</option>
-                        <option value="no">No</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="projectStatus">Status</label>
-                    <select id="projectStatus" name="status">
-                        <option value="active">Active</option>
-                        <option value="upcoming">Upcoming</option>
-                        <option value="sold-out">Sold Out</option>
-                    </select>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('addProjectModal')">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Create Project</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Upload Image Modal -->
-    <div id="uploadImageModal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close">&times;</span>
-            <div class="modal-header">
-                <h2>Upload Images</h2>
-            </div>
-            <form id="uploadImageForm" class="modal-form" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="imageFiles">Select Images</label>
-                    <input type="file" id="imageFiles" name="images" multiple accept="image/*" required>
-                    <small>You can select multiple images. Supported formats: JPG, PNG, GIF</small>
-                </div>
-                
-                <div class="form-group">
-                    <label for="imageCategory">Category</label>
-                    <select id="imageCategory" name="category">
-                        <option value="projects">Project Images</option>
-                        <option value="gallery">General Gallery</option>
-                        <option value="blog">Blog Images</option>
-                        <option value="testimonials">Testimonials</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="imageDescription">Description (Optional)</label>
-                    <textarea id="imageDescription" name="description" rows="3" placeholder="Brief description of the images"></textarea>
-                </div>
-                
-                <div class="upload-preview" id="uploadPreview">
-                    <!-- Image previews will appear here -->
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('uploadImageModal')">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Upload Images</button>
-                </div>
-            </form>
         </div>
     </div>
 

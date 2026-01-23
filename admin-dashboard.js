@@ -228,11 +228,11 @@ class AdminDashboard {
                     <label for="postStatus">Status</label>
                     <select id="postStatus">
                         <option value="draft" ${post?.status === 'draft' ? 'selected' : ''}>Draft</option>
-                        <option value="published" ${post?.published ? 'selected' : ''}>Published</option>
+                        <option value="published" ${post?.status === 'published' || post?.published === true ? 'selected' : ''}>Published</option>
                     </select>
                 </div>
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">
+                    <button type="button" id="savePostBtn" class="btn btn-primary">
                         <i class="fas fa-save"></i>
                         ${isEdit ? 'Update' : 'Create'} Post
                     </button>
@@ -245,9 +245,15 @@ class AdminDashboard {
 
         this.showModal(modalContent);
 
-        document.getElementById('addPostForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.savePost(postId);
+        // Handle button click directly to prevent form submission issues
+        document.getElementById('savePostBtn').addEventListener('click', (e) => {
+            e.preventDefault(); // Just in case
+            const form = document.getElementById('addPostForm');
+            if (form.checkValidity()) {
+                this.savePost(postId);
+            } else {
+                form.reportValidity();
+            }
         });
     }
 
@@ -262,23 +268,57 @@ class AdminDashboard {
             status
         };
 
+        console.log('Saving post:', postId, postData);
+
         try {
+            let savedPost;
             if (postId) {
                 // Update existing post
-                await this.api.updatePost(postId, postData);
+                savedPost = await this.api.updatePost(postId, postData);
+                console.log('Post updated successfully');
             } else {
                 // Create new post
-                await this.api.createPost(postData);
+                savedPost = await this.api.createPost(postData);
+                console.log('Post created successfully');
+            }
+
+            // Verify Database (API)
+            const apiPosts = await this.api.getPosts();
+            const inApi = apiPosts.find(p => String(p.id) === String(savedPost.id));
+            if (!inApi) {
+                throw new Error('Critical Error: Post saved but not found in database.');
+            }
+
+            // Verify Public Availability (Frontend)
+            try {
+                const publicRes = await fetch(`/admin-data/posts.json?t=${Date.now()}`);
+                if (publicRes.ok) {
+                    const publicPosts = await publicRes.json();
+                    const inPublic = publicPosts.find(p => String(p.id) === String(savedPost.id));
+                    
+                    if (!inPublic) {
+                        throw new Error('Post saved to database but not visible on public site.');
+                    }
+                    console.log('Public verification passed');
+                }
+            } catch (verifyError) {
+                console.warn('Public verification warning:', verifyError);
+                // We don't block success on this, but we log it
+                if (verifyError.message.includes('not visible')) {
+                    throw verifyError;
+                }
             }
 
             await this.loadPosts();
             this.updateStats();
             this.closeModal();
-            this.showNotification(`Post ${postId ? 'updated' : 'created'} successfully!`, 'success');
+            this.showNotification(`Post successfully published and verified!`, 'success');
             this.addActivity(`${postId ? 'Updated' : 'Created'} post: ${title}`);
         } catch (error) {
             console.error('Failed to save post:', error);
-            this.showNotification(error.message || `Failed to ${postId ? 'update' : 'create'} post. Please try again.`, 'error');
+            const msg = error.message || `Failed to ${postId ? 'update' : 'create'} post. Please try again.`;
+            this.showNotification(msg, 'error');
+            alert(msg); // Fallback alert
         }
     }
 
@@ -359,7 +399,7 @@ class AdminDashboard {
                     </select>
                 </div>
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">
+                    <button type="button" id="saveBlogBtn" class="btn btn-primary">
                         <i class="fas fa-save"></i>
                         ${isEdit ? 'Update' : 'Create'} Blog
                     </button>
@@ -372,9 +412,14 @@ class AdminDashboard {
 
         this.showModal(modalContent);
 
-        document.getElementById('blogForm').addEventListener('submit', (e) => {
+        document.getElementById('saveBlogBtn').addEventListener('click', (e) => {
             e.preventDefault();
-            this.saveBlog(blogId);
+            const form = document.getElementById('blogForm');
+            if (form.checkValidity()) {
+                this.saveBlog(blogId);
+            } else {
+                form.reportValidity();
+            }
         });
     }
 
@@ -391,23 +436,56 @@ class AdminDashboard {
             status
         };
 
+        console.log('Saving blog:', blogId, blogData);
+
         try {
+            let savedBlog;
             if (blogId) {
                 // Update existing blog
-                await this.api.updateBlog(blogId, blogData);
+                savedBlog = await this.api.updateBlog(blogId, blogData);
+                console.log('Blog updated successfully');
             } else {
                 // Create new blog
-                await this.api.createBlog(blogData);
+                savedBlog = await this.api.createBlog(blogData);
+                console.log('Blog created successfully');
+            }
+
+            // Verify Database (API)
+            const apiBlogs = await this.api.getBlogs();
+            const inApi = apiBlogs.find(b => String(b.id) === String(savedBlog.id));
+            if (!inApi) {
+                throw new Error('Critical Error: Blog saved but not found in database.');
+            }
+
+            // Verify Public Availability (Frontend)
+            try {
+                const publicRes = await fetch(`/admin-data/blogs.json?t=${Date.now()}`);
+                if (publicRes.ok) {
+                    const publicBlogs = await publicRes.json();
+                    const inPublic = publicBlogs.find(b => String(b.id) === String(savedBlog.id));
+                    
+                    if (!inPublic) {
+                        throw new Error('Blog saved to database but not visible on public site.');
+                    }
+                    console.log('Public verification passed');
+                }
+            } catch (verifyError) {
+                console.warn('Public verification warning:', verifyError);
+                if (verifyError.message.includes('not visible')) {
+                    throw verifyError;
+                }
             }
 
             await this.loadBlogs();
             this.updateStats();
             this.closeModal();
-            this.showNotification(`Blog ${blogId ? 'updated' : 'created'} successfully!`, 'success');
+            this.showNotification(`Blog successfully published and verified!`, 'success');
             this.addActivity(`${blogId ? 'Updated' : 'Created'} blog: ${title}`);
         } catch (error) {
             console.error('Failed to save blog:', error);
-            this.showNotification(error.message || `Failed to ${blogId ? 'update' : 'create'} blog. Please try again.`, 'error');
+            const msg = error.message || `Failed to ${blogId ? 'update' : 'create'} blog. Please try again.`;
+            this.showNotification(msg, 'error');
+            alert(msg); // Fallback alert
         }
     }
 
@@ -503,14 +581,14 @@ class AdminDashboard {
                 </div>
                 <div class="form-group">
                     <label for="projectImage">Image URL</label>
-                    <input type="url" id="projectImage" name="image" value="${project?.image || ''}" required>
+                    <input type="url" id="projectImage" name="image" value="${project?.featuredImage || project?.image || ''}" required>
                 </div>
                 <div class="form-group">
                     <label for="projectFeatures">Key Features (comma separated)</label>
-                    <input type="text" id="projectFeatures" name="features" value="${project?.features?.join(', ') || ''}" placeholder="e.g., Swimming Pool, Gym, Security">
+                    <input type="text" id="projectFeatures" name="features" value="${(project?.amenities || project?.features || []).join(', ')}" placeholder="e.g., Swimming Pool, Gym, Security">
                 </div>
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">
+                    <button type="button" id="saveProjectBtn" class="btn btn-primary">
                         <i class="fas fa-save"></i>
                         ${isEdit ? 'Update Project' : 'Add Project'}
                     </button>
@@ -522,9 +600,14 @@ class AdminDashboard {
         `;
 
         this.showModal(modalContent);
-        document.getElementById('projectForm').addEventListener('submit', (e) => {
+        document.getElementById('saveProjectBtn').addEventListener('click', (e) => {
             e.preventDefault();
-            this.saveProject(projectId);
+            const form = document.getElementById('projectForm');
+            if (form.checkValidity()) {
+                this.saveProject(projectId);
+            } else {
+                form.reportValidity();
+            }
         });
     }
 
@@ -913,7 +996,6 @@ class AdminDashboard {
 // Data persistence is now handled by the API
 
 // Initialize dashboard
-let adminDashboard;
 document.addEventListener('DOMContentLoaded', () => {
-    adminDashboard = new AdminDashboard();
+    window.adminDashboard = new AdminDashboard();
 });

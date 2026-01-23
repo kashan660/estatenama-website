@@ -54,7 +54,7 @@ async function loadBlogPosts() {
         const posts = await fetchBlogPosts();
         
         // Filter for published posts only (unless in admin preview)
-        const publishedPosts = posts.filter(post => post.status === 'published');
+        const publishedPosts = posts.filter(post => post.status === 'published' || post.published === true);
         
         if (publishedPosts.length === 0) {
             grid.innerHTML = `

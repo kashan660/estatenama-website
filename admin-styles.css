@@ -779,7 +779,7 @@ body {
     border-radius: var(--border-radius);
     color: var(--white);
     font-weight: 500;
-    z-index: 9999;
+    z-index: 10000;
     transform: translateX(400px);
     transition: var(--transition);
 }
