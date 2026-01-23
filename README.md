@@ -99,97 +99,20 @@ A modern, responsive real estate website for EstateNama with a comprehensive adm
 #### 6. Settings Management
 - Update site title and description
 - Manage contact information
-- Update company address
-- Save configuration changes
+- Social media links configuration
 
-## File Structure
+## Deployment to Vercel
 
-```
-estatenama.com/
-├── index.html              # Main website homepage
-├── styles.css              # Main website styles
-├── script.js               # Main website JavaScript
-├── server.js               # Main website server
-├── admin-login.html        # Admin login page
-├── admin-dashboard.html    # Admin dashboard
-├── admin-styles.css        # Admin panel styles
-├── admin-auth.js           # Admin authentication
-├── admin-dashboard.js      # Admin dashboard functionality
-├── admin-server.js         # Admin panel backend server
-├── package.json            # Project dependencies
-├── README.md               # This file
-├── admin-data/             # Admin data storage
-│   ├── posts.json          # Posts data
-│   ├── blogs.json          # Blogs data
-│   ├── images.json         # Images metadata
-│   └── settings.json       # Website settings
-└── uploads/                # Uploaded images storage
-```
+This project is configured for deployment on Vercel.
 
-## API Endpoints
+1.  **Push to Git**: Ensure your code is committed to a Git repository (GitHub, GitLab, or Bitbucket).
+2.  **Import to Vercel**: Import the project in Vercel.
+3.  **Configuration**: Vercel should automatically detect the `vercel.json` configuration.
+    *   **Framework Preset**: Select "Other" if asked, or "Next.js" if it misidentifies, but "Other" is safer for a custom Node/Static mix.
+    *   **Build Command**: None (or `npm install` if needed for server deps).
+    *   **Output Directory**: `.` (Root).
 
-### Authentication
-- `POST /api/admin/login` - Admin login
-
-### Posts
-- `GET /api/admin/posts` - Get all posts
-- `POST /api/admin/posts` - Create new post
-- `PUT /api/admin/posts/:id` - Update post
-- `DELETE /api/admin/posts/:id` - Delete post
-
-### Blogs
-- `GET /api/admin/blogs` - Get all blogs
-- `POST /api/admin/blogs` - Create new blog
-- `PUT /api/admin/blogs/:id` - Update blog
-- `DELETE /api/admin/blogs/:id` - Delete blog
-
-### Images
-- `GET /api/admin/images` - Get all images
-- `POST /api/admin/images/upload` - Upload images
-- `DELETE /api/admin/images/:id` - Delete image
-
-### Settings
-- `GET /api/admin/settings` - Get website settings
-- `PUT /api/admin/settings` - Update settings
-
-### Statistics
-- `GET /api/admin/stats` - Get dashboard statistics
-
-## Company Information
-
-- **Company**: EstateNama
-- **Domain**: estatenama.com
-- **Email**: info@estatenama.com
-- **Phone**: 03195547788
-- **Address**: Phase 7, Anarkali Restaurant, Bahria Town
-
-### Partner Projects
-- [Faisal Town](https://faisaltown.com.pk/projects/)
-- [Eighteen Luxury Society](https://www.eighteen.com/)
-- [Ruden Enclave](https://rudnenclave.com/)
-
-## Security Notes
-
-⚠️ **Important**: This admin panel is designed for development and demonstration purposes. For production use, please implement:
-
-1. **Proper Authentication**: Use JWT tokens with secure secret keys
-2. **Password Hashing**: Implement bcrypt or similar for password security
-3. **HTTPS**: Use SSL certificates for secure communication
-4. **Input Validation**: Add comprehensive server-side validation
-5. **Rate Limiting**: Implement rate limiting for API endpoints
-6. **Database**: Replace file-based storage with a proper database
-7. **Environment Variables**: Use environment variables for sensitive configuration
-
-## Support
-
-For technical support or questions about the admin panel:
-- Email: info@estatenama.com
-- Phone: 03195547788
-
-## License
-
-This project is licensed under the MIT License.
-
----
-
-**EstateNama** - Your trusted real estate partner for premium properties in Islamabad and Rawalpindi.
+### Important Note on Vercel Deployment
+Vercel uses a **Read-Only Filesystem** for Serverless Functions. This means:
+*   **The Admin Panel is Read-Only**: You can view content, but **cannot save changes** (create posts, upload images, etc.) permanently. Changes made in the admin panel will not persist after the function execution ends.
+*   **Data Persistence**: For a fully functional admin panel in production, you must migrate the data storage from local JSON files to an external database (e.g., MongoDB, PostgreSQL) and file storage (e.g., AWS S3).

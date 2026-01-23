@@ -30,6 +30,10 @@
       "use": "@vercel/static"
     },
     {
+      "src": "admin-data/**",
+      "use": "@vercel/static"
+    },
+    {
       "src": "uploads/**",
       "use": "@vercel/static"
     }
@@ -42,6 +46,10 @@
     {
       "src": "/admin-api/(.*)",
       "dest": "/admin-server-prod.js"
+    },
+    {
+      "src": "/admin-data/(.*)",
+      "dest": "/admin-data/$1"
     },
     {
       "src": "/admin-login.html",
