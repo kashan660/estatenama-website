@@ -59,14 +59,42 @@ const authenticateAdmin = (req, res, next) => {
 
 // Routes
 
-// Health check
-app.get('/api/admin/health', (req, res) => {
+// Health check (includes DB connectivity test)
+app.get('/api/admin/health', async (req, res) => {
+    let dbStatus = 'unknown';
+    let dbError = null;
+    try {
+        const stats = await db.getStats();
+        dbStatus = 'connected';
+    } catch (error) {
+        dbStatus = 'error';
+        dbError = error.message;
+    }
     res.json({
         status: 'ok',
         timestamp: new Date().toISOString(),
         environment: 'production-mysql',
+        dbStatus: dbStatus,
+        dbError: dbError,
         endpoints: ['/api/admin/login', '/api/admin/data', '/api/admin/upload', '/api/blogs', '/api/pages']
     });
+});
+
+// DB Test endpoint (no auth, for debugging)
+app.get('/api/test-db', async (req, res) => {
+    try {
+        const stats = await db.getStats();
+        res.json({ success: true, stats, message: 'Database connection working' });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+            code: error.code,
+            errno: error.errno,
+            sqlState: error.sqlState,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
+    }
 });
 
 // --- Public API Routes (No Auth Required) ---
@@ -79,7 +107,7 @@ app.get('/api/posts', async (req, res) => {
         res.json(publishedPosts);
     } catch (error) {
         console.error('Error fetching public posts:', error);
-        res.status(500).json({ error: 'Failed to fetch posts' });
+        res.status(500).json({ error: 'Failed to fetch posts', detail: error.message, code: error.code });
     }
 });
 
@@ -91,7 +119,7 @@ app.get('/api/blogs', async (req, res) => {
         res.json(publishedBlogs);
     } catch (error) {
         console.error('Error fetching public blogs:', error);
-        res.status(500).json({ error: 'Failed to fetch blogs' });
+        res.status(500).json({ error: 'Failed to fetch blogs', detail: error.message, code: error.code });
     }
 });
 
@@ -102,7 +130,7 @@ app.get('/api/blogs/:slug', async (req, res) => {
         res.json(blog);
     } catch (error) {
         console.error('Error fetching blog:', error);
-        res.status(500).json({ error: 'Failed to fetch blog' });
+        res.status(500).json({ error: 'Failed to fetch blog', detail: error.message, code: error.code });
     }
 });
 
@@ -113,7 +141,7 @@ app.get('/api/pages', async (req, res) => {
         res.json(pages);
     } catch (error) {
         console.error('Error fetching public pages:', error);
-        res.status(500).json({ error: 'Failed to fetch pages' });
+        res.status(500).json({ error: 'Failed to fetch pages', detail: error.message, code: error.code });
     }
 });
 
@@ -123,7 +151,7 @@ app.get('/api/pages/nav', async (req, res) => {
         res.json(pages);
     } catch (error) {
         console.error('Error fetching nav pages:', error);
-        res.status(500).json({ error: 'Failed to fetch navigation pages' });
+        res.status(500).json({ error: 'Failed to fetch navigation pages', detail: error.message, code: error.code });
     }
 });
 
@@ -134,7 +162,7 @@ app.get('/api/pages/:slug', async (req, res) => {
         res.json(page);
     } catch (error) {
         console.error('Error fetching page:', error);
-        res.status(500).json({ error: 'Failed to fetch page' });
+        res.status(500).json({ error: 'Failed to fetch page', detail: error.message, code: error.code });
     }
 });
 
@@ -145,7 +173,7 @@ app.get('/api/settings', async (req, res) => {
         res.json(settings);
     } catch (error) {
         console.error('Error fetching settings:', error);
-        res.status(500).json({ error: 'Failed to fetch settings' });
+        res.status(500).json({ error: 'Failed to fetch settings', detail: error.message, code: error.code });
     }
 });
 
@@ -157,7 +185,7 @@ app.get('/api/projects', async (req, res) => {
         res.json(activeProjects);
     } catch (error) {
         console.error('Error fetching public projects:', error);
-        res.status(500).json({ error: 'Failed to fetch projects' });
+        res.status(500).json({ error: 'Failed to fetch projects', detail: error.message, code: error.code });
     }
 });
 
@@ -216,7 +244,7 @@ app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
         res.json(stats);
     } catch (error) {
         console.error('Error getting stats:', error);
-        res.status(500).json({ error: 'Failed to get statistics' });
+        res.status(500).json({ error: 'Failed to get statistics', detail: error.message, code: error.code });
     }
 });
 
@@ -226,7 +254,7 @@ app.get('/api/admin/posts', authenticateAdmin, async (req, res) => {
         const posts = await db.getPosts();
         res.json(posts);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch posts' });
+        res.status(500).json({ error: 'Failed to fetch posts', detail: error.message, code: error.code });
     }
 });
 
@@ -236,7 +264,7 @@ app.post('/api/admin/posts', authenticateAdmin, async (req, res) => {
         res.json(newPost);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Failed to create post' });
+        res.status(500).json({ error: 'Failed to create post', detail: error.message, code: error.code });
     }
 });
 
@@ -245,7 +273,7 @@ app.put('/api/admin/posts/:id', authenticateAdmin, async (req, res) => {
         const updatedPost = await db.updatePost(req.params.id, req.body);
         res.json(updatedPost);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to update post' });
+        res.status(500).json({ error: 'Failed to update post', detail: error.message, code: error.code });
     }
 });
 
@@ -254,7 +282,7 @@ app.delete('/api/admin/posts/:id', authenticateAdmin, async (req, res) => {
         await db.deletePost(req.params.id);
         res.json({ success: true });
     } catch (error) {
-        res.status(500).json({ error: 'Failed to delete post' });
+        res.status(500).json({ error: 'Failed to delete post', detail: error.message, code: error.code });
     }
 });
 
@@ -264,7 +292,7 @@ app.get('/api/admin/blogs', authenticateAdmin, async (req, res) => {
         const blogs = await db.getBlogs();
         res.json(blogs);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch blogs' });
+        res.status(500).json({ error: 'Failed to fetch blogs', detail: error.message, code: error.code });
     }
 });
 
@@ -274,7 +302,7 @@ app.get('/api/admin/blogs/:id', authenticateAdmin, async (req, res) => {
         if (!blog) return res.status(404).json({ error: 'Blog not found' });
         res.json(blog);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch blog' });
+        res.status(500).json({ error: 'Failed to fetch blog', detail: error.message, code: error.code });
     }
 });
 
@@ -287,7 +315,7 @@ app.post('/api/admin/blogs', authenticateAdmin, async (req, res) => {
         if (error.code === 'ER_DUP_ENTRY') {
             return res.status(400).json({ error: 'A blog with this slug already exists' });
         }
-        res.status(500).json({ error: 'Failed to create blog' });
+        res.status(500).json({ error: 'Failed to create blog', detail: error.message, code: error.code });
     }
 });
 
@@ -299,7 +327,7 @@ app.put('/api/admin/blogs/:id', authenticateAdmin, async (req, res) => {
         if (error.code === 'ER_DUP_ENTRY') {
             return res.status(400).json({ error: 'A blog with this slug already exists' });
         }
-        res.status(500).json({ error: 'Failed to update blog' });
+        res.status(500).json({ error: 'Failed to update blog', detail: error.message, code: error.code });
     }
 });
 
@@ -308,7 +336,7 @@ app.delete('/api/admin/blogs/:id', authenticateAdmin, async (req, res) => {
         await db.deleteBlog(req.params.id);
         res.json({ success: true });
     } catch (error) {
-        res.status(500).json({ error: 'Failed to delete blog' });
+        res.status(500).json({ error: 'Failed to delete blog', detail: error.message, code: error.code });
     }
 });
 
@@ -318,7 +346,7 @@ app.get('/api/admin/pages', authenticateAdmin, async (req, res) => {
         const pages = await db.getPages();
         res.json(pages);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch pages' });
+        res.status(500).json({ error: 'Failed to fetch pages', detail: error.message, code: error.code });
     }
 });
 
@@ -328,7 +356,7 @@ app.get('/api/admin/pages/:id', authenticateAdmin, async (req, res) => {
         if (!page) return res.status(404).json({ error: 'Page not found' });
         res.json(page);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch page' });
+        res.status(500).json({ error: 'Failed to fetch page', detail: error.message, code: error.code });
     }
 });
 
@@ -341,7 +369,7 @@ app.post('/api/admin/pages', authenticateAdmin, async (req, res) => {
         if (error.code === 'ER_DUP_ENTRY') {
             return res.status(400).json({ error: 'A page with this slug already exists' });
         }
-        res.status(500).json({ error: 'Failed to create page' });
+        res.status(500).json({ error: 'Failed to create page', detail: error.message, code: error.code });
     }
 });
 
@@ -353,7 +381,7 @@ app.put('/api/admin/pages/:id', authenticateAdmin, async (req, res) => {
         if (error.code === 'ER_DUP_ENTRY') {
             return res.status(400).json({ error: 'A page with this slug already exists' });
         }
-        res.status(500).json({ error: 'Failed to update page' });
+        res.status(500).json({ error: 'Failed to update page', detail: error.message, code: error.code });
     }
 });
 
@@ -362,7 +390,7 @@ app.delete('/api/admin/pages/:id', authenticateAdmin, async (req, res) => {
         await db.deletePage(req.params.id);
         res.json({ success: true });
     } catch (error) {
-        res.status(500).json({ error: 'Failed to delete page' });
+        res.status(500).json({ error: 'Failed to delete page', detail: error.message, code: error.code });
     }
 });
 
@@ -372,7 +400,7 @@ app.get('/api/admin/projects', authenticateAdmin, async (req, res) => {
         const projects = await db.getProjects();
         res.json(projects);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch projects' });
+        res.status(500).json({ error: 'Failed to fetch projects', detail: error.message, code: error.code });
     }
 });
 
@@ -382,7 +410,7 @@ app.post('/api/admin/projects', authenticateAdmin, async (req, res) => {
         res.json(newProject);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Failed to create project' });
+        res.status(500).json({ error: 'Failed to create project', detail: error.message, code: error.code });
     }
 });
 
@@ -391,7 +419,7 @@ app.put('/api/admin/projects/:id', authenticateAdmin, async (req, res) => {
         const updatedProject = await db.updateProject(req.params.id, req.body);
         res.json(updatedProject);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to update project' });
+        res.status(500).json({ error: 'Failed to update project', detail: error.message, code: error.code });
     }
 });
 
@@ -400,7 +428,7 @@ app.delete('/api/admin/projects/:id', authenticateAdmin, async (req, res) => {
         await db.deleteProject(req.params.id);
         res.json({ success: true });
     } catch (error) {
-        res.status(500).json({ error: 'Failed to delete project' });
+        res.status(500).json({ error: 'Failed to delete project', detail: error.message, code: error.code });
     }
 });
 
@@ -410,7 +438,7 @@ app.get('/api/admin/images', authenticateAdmin, async (req, res) => {
         const images = await db.getImages();
         res.json(images);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch images' });
+        res.status(500).json({ error: 'Failed to fetch images', detail: error.message, code: error.code });
     }
 });
 
@@ -461,7 +489,7 @@ app.get('/api/admin/settings', authenticateAdmin, async (req, res) => {
         const settings = await db.getSettings();
         res.json(settings);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch settings' });
+        res.status(500).json({ error: 'Failed to fetch settings', detail: error.message, code: error.code });
     }
 });
 
@@ -470,7 +498,7 @@ app.put('/api/admin/settings', authenticateAdmin, async (req, res) => {
         const settings = await db.updateSettings(req.body);
         res.json(settings);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to update settings' });
+        res.status(500).json({ error: 'Failed to update settings', detail: error.message, code: error.code });
     }
 });
 
@@ -552,7 +580,7 @@ app.use((error, req, res, next) => {
         }
     }
     console.error('Server error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error', detail: error.message, code: error.code });
 });
 
 // 404 handler
