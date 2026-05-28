@@ -248,6 +248,31 @@ class AdminAPI {
         });
     }
 
+    // Pages API
+    async getPages() {
+        return await this.request('/pages');
+    }
+
+    async createPage(pageData) {
+        return await this.request('/pages', {
+            method: 'POST',
+            body: JSON.stringify(pageData)
+        });
+    }
+
+    async updatePage(id, pageData) {
+        return await this.request(`/pages/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(pageData)
+        });
+    }
+
+    async deletePage(id) {
+        return await this.request(`/pages/${id}`, {
+            method: 'DELETE'
+        });
+    }
+
     // Settings API
     async getSettings() {
         return await this.request('/settings');
@@ -263,6 +288,13 @@ class AdminAPI {
     // Statistics API
     async getStats() {
         return await this.request('/stats');
+    }
+
+    // Sitemap API
+    async refreshSitemap() {
+        return await this.request('/sitemap/regenerate', {
+            method: 'POST'
+        });
     }
 }
 

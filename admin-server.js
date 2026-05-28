@@ -1,9 +1,13 @@
-// Admin Panel Backend Server
+// EstateNama Admin Panel Backend Server with MySQL Database
 const express = require('express');
 const path = require('path');
 const fs = require('fs').promises;
 const multer = require('multer');
 const cors = require('cors');
+const { pool, testConnection } = require('./db');
+const blogsModel = require('./models/blogs');
+const pagesModel = require('./models/pages');
+const settingsModel = require('./models/settings');
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -25,13 +29,10 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ 
+const upload = multer({
     storage: storage,
-    limits: {
-        fileSize: 10 * 1024 * 1024 // 10MB limit
-    },
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
     fileFilter: function (req, file, cb) {
-        // Check file type
         if (file.mimetype.startsWith('image/')) {
             cb(null, true);
         } else {
@@ -49,71 +50,111 @@ const ensureUploadsDir = async () => {
     }
 };
 
-// Data storage paths
-const DATA_DIR = 'admin-data';
-const POSTS_FILE = path.join(DATA_DIR, 'posts.json');
-const BLOGS_FILE = path.join(DATA_DIR, 'blogs.json');
-const PROJECTS_FILE = path.join(DATA_DIR, 'projects.json');
-const IMAGES_FILE = path.join(DATA_DIR, 'images.json');
-const SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
-
-// Ensure data directory exists
-const ensureDataDir = async () => {
-    try {
-        await fs.access(DATA_DIR);
-    } catch {
-        await fs.mkdir(DATA_DIR, { recursive: true });
-    }
-};
-
-// Helper functions for data management
-const readJsonFile = async (filePath, defaultValue = []) => {
-    try {
-        const data = await fs.readFile(filePath, 'utf8');
-        return JSON.parse(data);
-    } catch {
-        return defaultValue;
-    }
-};
-
-const writeJsonFile = async (filePath, data) => {
-    await fs.writeFile(filePath, JSON.stringify(data, null, 2));
-};
-
 // Authentication middleware
-// Store active tokens (in production, use Redis or database)
 const activeSessions = new Map();
 
 const authenticateAdmin = (req, res, next) => {
     const authHeader = req.headers.authorization;
-    
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ error: 'Authentication required' });
     }
-    
+
     const token = authHeader.substring(7);
-    
-    // Check if token exists in active sessions
+
     if (!activeSessions.has(token)) {
         return res.status(401).json({ error: 'Invalid or expired authentication token' });
     }
-    
-    // Check if token is expired (24 hours)
+
     const sessionData = activeSessions.get(token);
     const now = Date.now();
     const tokenAge = now - sessionData.createdAt;
     const maxAge = 24 * 60 * 60 * 1000; // 24 hours
-    
+
     if (tokenAge > maxAge) {
         activeSessions.delete(token);
         return res.status(401).json({ error: 'Token expired' });
     }
-    
+
     req.user = sessionData.user;
     next();
 };
 
-// Routes
+// ===== PUBLIC API ENDPOINTS (No auth required - for frontend) =====
+
+// Get all published blogs
+app.get('/api/blogs', async (req, res) => {
+    try {
+        const blogs = await blogsModel.getAllBlogs('published');
+        res.json(blogs);
+    } catch (error) {
+        console.error('Error fetching blogs:', error);
+        res.status(500).json({ error: 'Failed to fetch blogs' });
+    }
+});
+
+// Get single blog by slug
+app.get('/api/blogs/:slug', async (req, res) => {
+    try {
+        const blog = await blogsModel.getBlogBySlug(req.params.slug);
+        if (!blog) {
+            return res.status(404).json({ error: 'Blog not found' });
+        }
+        res.json(blog);
+    } catch (error) {
+        console.error('Error fetching blog:', error);
+        res.status(500).json({ error: 'Failed to fetch blog' });
+    }
+});
+
+// Get all published pages
+app.get('/api/pages', async (req, res) => {
+    try {
+        const pages = await pagesModel.getAllPages('published');
+        res.json(pages);
+    } catch (error) {
+        console.error('Error fetching pages:', error);
+        res.status(500).json({ error: 'Failed to fetch pages' });
+    }
+});
+
+// Get navigation pages
+app.get('/api/pages/nav', async (req, res) => {
+    try {
+        const pages = await pagesModel.getNavPages();
+        res.json(pages);
+    } catch (error) {
+        console.error('Error fetching nav pages:', error);
+        res.status(500).json({ error: 'Failed to fetch navigation pages' });
+    }
+});
+
+// Get single page by slug
+app.get('/api/pages/:slug', async (req, res) => {
+    try {
+        const page = await pagesModel.getPageBySlug(req.params.slug);
+        if (!page) {
+            return res.status(404).json({ error: 'Page not found' });
+        }
+        res.json(page);
+    } catch (error) {
+        console.error('Error fetching page:', error);
+        res.status(500).json({ error: 'Failed to fetch page' });
+    }
+});
+
+// Get public settings
+app.get('/api/settings', async (req, res) => {
+    try {
+        const settings = await settingsModel.getAllSettings();
+        res.json(settings);
+    } catch (error) {
+        console.error('Error fetching settings:', error);
+        res.status(500).json({ error: 'Failed to fetch settings' });
+    }
+});
+
+// ===== ADMIN API ENDPOINTS (Auth required) =====
 
 // Serve admin login page
 app.get('/admin', (req, res) => {
@@ -128,333 +169,255 @@ app.get('/admin/dashboard', (req, res) => {
 // Authentication endpoint
 app.post('/api/admin/login', async (req, res) => {
     const { username, password } = req.body;
-    
-    // Simple authentication (in production, use proper password hashing)
+
     const validCredentials = [
         { username: 'admin@estatenama.com', password: 'EstateNama@8088' },
         { username: 'estatenama@estatenama.com', password: 'Estatenama@8088' },
         { username: 'manager@estatenama.com', password: 'Manager@8088' }
     ];
-    
-    const isValid = validCredentials.some(cred => 
+
+    const isValid = validCredentials.some(cred =>
         cred.username === username && cred.password === password
     );
-    
+
     if (isValid) {
-        // Generate simple token (in production, use proper JWT)
         const token = 'admin-token-' + Date.now();
-        
-        // Store token in active sessions
         activeSessions.set(token, {
             user: { username },
             createdAt: Date.now()
         });
-        
-        res.json({ 
-            success: true, 
+
+        res.json({
+            success: true,
             token,
             user: { username }
         });
     } else {
-        res.status(401).json({ 
-            success: false, 
-            error: 'Invalid credentials' 
+        res.status(401).json({
+            success: false,
+            error: 'Invalid credentials'
         });
     }
 });
 
-// Posts API
-app.get('/api/admin/posts', authenticateAdmin, async (req, res) => {
-    try {
-        const posts = await readJsonFile(POSTS_FILE);
-        res.json(posts);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch posts' });
-    }
-});
-
-app.post('/api/admin/posts', authenticateAdmin, async (req, res) => {
-    try {
-        const posts = await readJsonFile(POSTS_FILE);
-        const newPost = {
-            id: Date.now().toString(),
-            ...req.body,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        };
-        posts.unshift(newPost);
-        await writeJsonFile(POSTS_FILE, posts);
-        res.json(newPost);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to create post' });
-    }
-});
-
-app.put('/api/admin/posts/:id', authenticateAdmin, async (req, res) => {
-    try {
-        const posts = await readJsonFile(POSTS_FILE);
-        const postIndex = posts.findIndex(p => String(p.id) === String(req.params.id));
-        
-        if (postIndex === -1) {
-            return res.status(404).json({ error: 'Post not found' });
-        }
-        
-        posts[postIndex] = {
-            ...posts[postIndex],
-            ...req.body,
-            updatedAt: new Date().toISOString()
-        };
-        
-        await writeJsonFile(POSTS_FILE, posts);
-        res.json(posts[postIndex]);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to update post' });
-    }
-});
-
-app.delete('/api/admin/posts/:id', authenticateAdmin, async (req, res) => {
-    try {
-        const posts = await readJsonFile(POSTS_FILE);
-        const filteredPosts = posts.filter(p => String(p.id) !== String(req.params.id));
-        
-        if (posts.length === filteredPosts.length) {
-            return res.status(404).json({ error: 'Post not found' });
-        }
-        
-        await writeJsonFile(POSTS_FILE, filteredPosts);
-        res.json({ success: true });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to delete post' });
-    }
-});
-
-// Blogs API
+// --- Blogs Admin API ---
 app.get('/api/admin/blogs', authenticateAdmin, async (req, res) => {
     try {
-        const blogs = await readJsonFile(BLOGS_FILE);
+        const blogs = await blogsModel.getAllBlogs();
         res.json(blogs);
     } catch (error) {
+        console.error('Error fetching admin blogs:', error);
         res.status(500).json({ error: 'Failed to fetch blogs' });
+    }
+});
+
+app.get('/api/admin/blogs/:id', authenticateAdmin, async (req, res) => {
+    try {
+        const blog = await blogsModel.getBlogById(req.params.id);
+        if (!blog) return res.status(404).json({ error: 'Blog not found' });
+        res.json(blog);
+    } catch (error) {
+        console.error('Error fetching blog:', error);
+        res.status(500).json({ error: 'Failed to fetch blog' });
     }
 });
 
 app.post('/api/admin/blogs', authenticateAdmin, async (req, res) => {
     try {
-        const blogs = await readJsonFile(BLOGS_FILE);
-        const newBlog = {
-            id: Date.now().toString(),
-            ...req.body,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        };
-        blogs.unshift(newBlog);
-        await writeJsonFile(BLOGS_FILE, blogs);
-        res.json(newBlog);
+        const data = req.body;
+        if (!data.slug && data.title) {
+            data.slug = blogsModel.generateSlug(data.title);
+        }
+        const blog = await blogsModel.createBlog(data);
+        res.json(blog);
     } catch (error) {
+        console.error('Error creating blog:', error);
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json({ error: 'A blog with this slug already exists' });
+        }
         res.status(500).json({ error: 'Failed to create blog' });
     }
 });
 
 app.put('/api/admin/blogs/:id', authenticateAdmin, async (req, res) => {
     try {
-        const blogs = await readJsonFile(BLOGS_FILE);
-        const blogIndex = blogs.findIndex(b => String(b.id) === String(req.params.id));
-        
-        if (blogIndex === -1) {
-            return res.status(404).json({ error: 'Blog not found' });
-        }
-        
-        blogs[blogIndex] = {
-            ...blogs[blogIndex],
-            ...req.body,
-            updatedAt: new Date().toISOString()
-        };
-        
-        await writeJsonFile(BLOGS_FILE, blogs);
-        res.json(blogs[blogIndex]);
+        const blog = await blogsModel.updateBlog(req.params.id, req.body);
+        if (!blog) return res.status(404).json({ error: 'Blog not found' });
+        res.json(blog);
     } catch (error) {
+        console.error('Error updating blog:', error);
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json({ error: 'A blog with this slug already exists' });
+        }
         res.status(500).json({ error: 'Failed to update blog' });
     }
 });
 
 app.delete('/api/admin/blogs/:id', authenticateAdmin, async (req, res) => {
     try {
-        const blogs = await readJsonFile(BLOGS_FILE);
-        const filteredBlogs = blogs.filter(b => String(b.id) !== String(req.params.id));
-        
-        if (blogs.length === filteredBlogs.length) {
-            return res.status(404).json({ error: 'Blog not found' });
-        }
-        
-        await writeJsonFile(BLOGS_FILE, filteredBlogs);
+        const success = await blogsModel.deleteBlog(req.params.id);
+        if (!success) return res.status(404).json({ error: 'Blog not found' });
         res.json({ success: true });
     } catch (error) {
+        console.error('Error deleting blog:', error);
         res.status(500).json({ error: 'Failed to delete blog' });
     }
 });
 
-// Projects API
-app.get('/api/admin/projects', authenticateAdmin, async (req, res) => {
+// --- Pages Admin API ---
+app.get('/api/admin/pages', authenticateAdmin, async (req, res) => {
     try {
-        const projects = await readJsonFile(PROJECTS_FILE);
-        res.json(projects);
+        const pages = await pagesModel.getAllPages();
+        res.json(pages);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch projects' });
+        console.error('Error fetching pages:', error);
+        res.status(500).json({ error: 'Failed to fetch pages' });
     }
 });
 
-app.post('/api/admin/projects', authenticateAdmin, async (req, res) => {
+app.get('/api/admin/pages/:id', authenticateAdmin, async (req, res) => {
     try {
-        const projects = await readJsonFile(PROJECTS_FILE);
-        const newProject = {
-            id: Date.now().toString(),
-            ...req.body,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        };
-        projects.unshift(newProject);
-        await writeJsonFile(PROJECTS_FILE, projects);
-        res.json(newProject);
+        const page = await pagesModel.getPageById(req.params.id);
+        if (!page) return res.status(404).json({ error: 'Page not found' });
+        res.json(page);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to create project' });
+        console.error('Error fetching page:', error);
+        res.status(500).json({ error: 'Failed to fetch page' });
     }
 });
 
-app.put('/api/admin/projects/:id', authenticateAdmin, async (req, res) => {
+app.post('/api/admin/pages', authenticateAdmin, async (req, res) => {
     try {
-        const projects = await readJsonFile(PROJECTS_FILE);
-        const projectIndex = projects.findIndex(p => String(p.id) === String(req.params.id));
-        
-        if (projectIndex === -1) {
-            return res.status(404).json({ error: 'Project not found' });
+        const data = req.body;
+        if (!data.slug && data.title) {
+            data.slug = pagesModel.generateSlug(data.title);
         }
-        
-        projects[projectIndex] = {
-            ...projects[projectIndex],
-            ...req.body,
-            updatedAt: new Date().toISOString()
-        };
-        
-        await writeJsonFile(PROJECTS_FILE, projects);
-        res.json(projects[projectIndex]);
+        const page = await pagesModel.createPage(data);
+        res.json(page);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to update project' });
-    }
-});
-
-app.delete('/api/admin/projects/:id', authenticateAdmin, async (req, res) => {
-    try {
-        const projects = await readJsonFile(PROJECTS_FILE);
-        const filteredProjects = projects.filter(p => String(p.id) !== String(req.params.id));
-        
-        if (projects.length === filteredProjects.length) {
-            return res.status(404).json({ error: 'Project not found' });
+        console.error('Error creating page:', error);
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json({ error: 'A page with this slug already exists' });
         }
-        
-        await writeJsonFile(PROJECTS_FILE, filteredProjects);
-        res.json({ message: 'Project deleted successfully' });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to delete project' });
+        res.status(500).json({ error: 'Failed to create page' });
     }
 });
 
-// Images API
+app.put('/api/admin/pages/:id', authenticateAdmin, async (req, res) => {
+    try {
+        const page = await pagesModel.updatePage(req.params.id, req.body);
+        if (!page) return res.status(404).json({ error: 'Page not found' });
+        res.json(page);
+    } catch (error) {
+        console.error('Error updating page:', error);
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json({ error: 'A page with this slug already exists' });
+        }
+        res.status(500).json({ error: 'Failed to update page' });
+    }
+});
+
+app.delete('/api/admin/pages/:id', authenticateAdmin, async (req, res) => {
+    try {
+        const success = await pagesModel.deletePage(req.params.id);
+        if (!success) return res.status(404).json({ error: 'Page not found' });
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error deleting page:', error);
+        res.status(500).json({ error: 'Failed to delete page' });
+    }
+});
+
+// --- Images Admin API ---
 app.get('/api/admin/images', authenticateAdmin, async (req, res) => {
     try {
-        const images = await readJsonFile(IMAGES_FILE);
+        const [images] = await pool.execute('SELECT * FROM images ORDER BY uploaded_at DESC');
         res.json(images);
     } catch (error) {
+        console.error('Error fetching images:', error);
         res.status(500).json({ error: 'Failed to fetch images' });
     }
 });
 
 app.post('/api/admin/images/upload', authenticateAdmin, upload.array('images', 10), async (req, res) => {
     try {
-        const images = await readJsonFile(IMAGES_FILE);
-        const newImages = req.files.map(file => ({
-            id: Date.now().toString() + Math.random().toString(36).substr(2),
-            name: file.originalname,
-            filename: file.filename,
-            url: `/uploads/${file.filename}`,
-            size: file.size,
-            uploadedAt: new Date().toISOString()
-        }));
-        
-        images.push(...newImages);
-        await writeJsonFile(IMAGES_FILE, images);
+        const newImages = [];
+        for (const file of req.files) {
+            const [result] = await pool.execute(
+                'INSERT INTO images (name, filename, url, size) VALUES (?, ?, ?, ?)',
+                [file.originalname, file.filename, `/uploads/${file.filename}`, file.size]
+            );
+            newImages.push({
+                id: result.insertId,
+                name: file.originalname,
+                filename: file.filename,
+                url: `/uploads/${file.filename}`,
+                size: file.size
+            });
+        }
         res.json(newImages);
     } catch (error) {
+        console.error('Error uploading images:', error);
         res.status(500).json({ error: 'Failed to upload images' });
     }
 });
 
 app.delete('/api/admin/images/:id', authenticateAdmin, async (req, res) => {
     try {
-        const images = await readJsonFile(IMAGES_FILE);
-        const imageToDelete = images.find(img => String(img.id) === String(req.params.id));
-        
-        if (!imageToDelete) {
-            return res.status(404).json({ error: 'Image not found' });
-        }
-        
-        // Delete file from filesystem
+        const [rows] = await pool.execute('SELECT * FROM images WHERE id = ?', [req.params.id]);
+        const image = rows[0];
+        if (!image) return res.status(404).json({ error: 'Image not found' });
+
         try {
-            await fs.unlink(path.join('uploads', imageToDelete.filename));
-        } catch (error) {
-            console.warn('Failed to delete file:', error.message);
+            await fs.unlink(path.join('uploads', image.filename));
+        } catch (err) {
+            console.warn('Failed to delete file:', err.message);
         }
-        
-        const filteredImages = images.filter(img => String(img.id) !== String(req.params.id));
-        await writeJsonFile(IMAGES_FILE, filteredImages);
+
+        await pool.execute('DELETE FROM images WHERE id = ?', [req.params.id]);
         res.json({ success: true });
     } catch (error) {
+        console.error('Error deleting image:', error);
         res.status(500).json({ error: 'Failed to delete image' });
     }
 });
 
-// Settings API
+// --- Settings Admin API ---
 app.get('/api/admin/settings', authenticateAdmin, async (req, res) => {
     try {
-        const settings = await readJsonFile(SETTINGS_FILE, {
-            siteTitle: 'EstateNama - Real Estate Solutions',
-            siteDescription: 'Leading real estate company specializing in plots, residential, and commercial properties with trusted installment plans.',
-            contactEmail: 'info@estatenama.com',
-            contactPhone: '03195547788',
-            companyAddress: 'Phase 7, Anarkali Restaurant, Bahria Town'
-        });
+        const settings = await settingsModel.getAllSettings();
         res.json(settings);
     } catch (error) {
+        console.error('Error fetching settings:', error);
         res.status(500).json({ error: 'Failed to fetch settings' });
     }
 });
 
 app.put('/api/admin/settings', authenticateAdmin, async (req, res) => {
     try {
-        const settings = {
-            ...req.body,
-            updatedAt: new Date().toISOString()
-        };
-        await writeJsonFile(SETTINGS_FILE, settings);
+        const settings = await settingsModel.updateMultipleSettings(req.body);
         res.json(settings);
     } catch (error) {
+        console.error('Error updating settings:', error);
         res.status(500).json({ error: 'Failed to update settings' });
     }
 });
 
-// Statistics API
+// --- Statistics Admin API ---
 app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
     try {
-        const posts = await readJsonFile(POSTS_FILE);
-        const blogs = await readJsonFile(BLOGS_FILE);
-        const images = await readJsonFile(IMAGES_FILE);
-        
+        const [[blogCount]] = await pool.execute('SELECT COUNT(*) as count FROM blogs');
+        const [[pageCount]] = await pool.execute('SELECT COUNT(*) as count FROM pages');
+        const [[imageCount]] = await pool.execute('SELECT COUNT(*) as count FROM images');
+
         res.json({
-            totalPosts: posts.length,
-            totalBlogs: blogs.length,
-            totalImages: images.length,
-            totalProjects: 4 // Static for now
+            totalBlogs: blogCount.count,
+            totalPages: pageCount.count,
+            totalImages: imageCount.count,
+            totalProjects: 4
         });
     } catch (error) {
+        console.error('Error fetching stats:', error);
         res.status(500).json({ error: 'Failed to fetch statistics' });
     }
 });
@@ -469,30 +432,38 @@ app.use((error, req, res, next) => {
             return res.status(400).json({ error: 'File too large' });
         }
     }
-    
     console.error('Server error:', error);
     res.status(500).json({ error: 'Internal server error' });
 });
 
 // 404 handler
 app.use((req, res) => {
-    res.status(404).json({ error: 'Endpoint not found' });
+    if (req.path.startsWith('/api/')) {
+        res.status(404).json({ error: 'Endpoint not found' });
+    } else {
+        res.status(404).sendFile(path.join(__dirname, '404.html'));
+    }
 });
 
 // Initialize server
 const startServer = async () => {
     try {
-        await ensureDataDir();
         await ensureUploadsDir();
-        
+        const dbConnected = await testConnection();
+
+        if (!dbConnected) {
+            console.error('\n⚠️  WARNING: Database not connected. Check your db-config.json or environment variables.');
+            console.log('   Run: node database-setup.js after configuring database credentials.\n');
+        }
+
         app.listen(PORT, () => {
             console.log(`\n🚀 Admin Panel Server running on http://localhost:${PORT}`);
             console.log(`📊 Admin Dashboard: http://localhost:${PORT}/admin`);
-            console.log(`🔧 API Base URL: http://localhost:${PORT}/api/admin`);
+            console.log(`🔧 API Base URL: http://localhost:${PORT}/api`);
             console.log('\n📁 Admin Panel Features:');
             console.log('   ✅ Authentication System');
-            console.log('   ✅ Posts Management');
-            console.log('   ✅ Blogs Management');
+            console.log('   ✅ Blogs Management (MySQL Database)');
+            console.log('   ✅ Pages Management (MySQL Database)');
             console.log('   ✅ Image Upload & Gallery');
             console.log('   ✅ Settings Management');
             console.log('   ✅ Statistics Dashboard');

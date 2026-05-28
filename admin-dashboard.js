@@ -19,6 +19,7 @@ class AdminDashboard {
         
         this.posts = [];
         this.blogs = [];
+        this.pages = [];
         this.images = [];
         this.projects = [];
         this.init();
@@ -39,6 +40,7 @@ class AdminDashboard {
         
         this.setupEventListeners();
         this.loadUserInfo();
+        this.loadSettings();
         this.updateStats();
         this.loadContent();
     }
@@ -65,11 +67,15 @@ class AdminDashboard {
         // Add buttons
         document.getElementById('addPostBtn')?.addEventListener('click', () => this.showPostModal());
         document.getElementById('addBlogBtn')?.addEventListener('click', () => this.showBlogModal());
+        document.getElementById('addPageBtn')?.addEventListener('click', () => this.showPageModal());
         document.getElementById('addProjectBtn')?.addEventListener('click', () => this.showProjectModal());
         document.getElementById('uploadImageBtn')?.addEventListener('click', () => this.showImageUploadModal());
 
         // Settings form
         document.getElementById('settingsForm')?.addEventListener('submit', (e) => this.saveSettings(e));
+
+        // Sitemap refresh
+        document.getElementById('refreshSitemapBtn')?.addEventListener('click', () => this.refreshSitemap());
 
         // Modal close
         document.querySelector('.modal-close')?.addEventListener('click', () => this.closeModal());
@@ -119,9 +125,11 @@ class AdminDashboard {
             dashboard: 'Dashboard',
             posts: 'Manage Posts',
             blogs: 'Manage Blogs',
+            pages: 'Manage Pages',
             projects: 'Manage Projects',
             gallery: 'Manage Gallery',
             images: 'Image Manager',
+            seo: 'SEO & Sitemap',
             settings: 'Website Settings'
         };
         const pageTitle = document.querySelector('.page-title');
@@ -137,10 +145,21 @@ class AdminDashboard {
         document.querySelector('.admin-sidebar').classList.toggle('collapsed');
     }
 
-    updateStats() {
-        document.getElementById('totalPosts').textContent = this.posts.length;
-        document.getElementById('totalBlogs').textContent = this.blogs.length;
-        document.getElementById('totalImages').textContent = this.images.length;
+    async updateStats() {
+        try {
+            const stats = await this.api.getStats();
+            const totalBlogsEl = document.getElementById('totalBlogs');
+            const totalPagesEl = document.getElementById('totalPages');
+            const totalImagesEl = document.getElementById('totalImages');
+            if (totalBlogsEl) totalBlogsEl.textContent = stats.totalBlogs || 0;
+            if (totalPagesEl) totalPagesEl.textContent = stats.totalPages || 0;
+            if (totalImagesEl) totalImagesEl.textContent = stats.totalImages || 0;
+        } catch (error) {
+            console.error('Failed to load stats:', error);
+            document.getElementById('totalBlogs').textContent = this.blogs.length;
+            document.getElementById('totalPages').textContent = this.pages.length;
+            document.getElementById('totalImages').textContent = this.images.length;
+        }
     }
 
     async loadContent() {
@@ -148,9 +167,10 @@ class AdminDashboard {
             // Load data from API
             await this.loadPosts();
             await this.loadBlogs();
+            await this.loadPages();
             await this.loadGallery();
-            await this.loadProjects(); // Now using API for projects
-            this.updateStats();
+            await this.loadProjects();
+            await this.updateStats();
             
             // Load recent activity
             const activityList = document.getElementById('activityList');
@@ -280,33 +300,6 @@ class AdminDashboard {
                 // Create new post
                 savedPost = await this.api.createPost(postData);
                 console.log('Post created successfully');
-            }
-
-            // Verify Database (API)
-            const apiPosts = await this.api.getPosts();
-            const inApi = apiPosts.find(p => String(p.id) === String(savedPost.id));
-            if (!inApi) {
-                throw new Error('Critical Error: Post saved but not found in database.');
-            }
-
-            // Verify Public Availability (Frontend)
-            try {
-                const publicRes = await fetch(`/admin-data/posts.json?t=${Date.now()}`);
-                if (publicRes.ok) {
-                    const publicPosts = await publicRes.json();
-                    const inPublic = publicPosts.find(p => String(p.id) === String(savedPost.id));
-                    
-                    if (!inPublic) {
-                        throw new Error('Post saved to database but not visible on public site.');
-                    }
-                    console.log('Public verification passed');
-                }
-            } catch (verifyError) {
-                console.warn('Public verification warning:', verifyError);
-                // We don't block success on this, but we log it
-                if (verifyError.message.includes('not visible')) {
-                    throw verifyError;
-                }
             }
 
             await this.loadPosts();
@@ -450,32 +443,6 @@ class AdminDashboard {
                 console.log('Blog created successfully');
             }
 
-            // Verify Database (API)
-            const apiBlogs = await this.api.getBlogs();
-            const inApi = apiBlogs.find(b => String(b.id) === String(savedBlog.id));
-            if (!inApi) {
-                throw new Error('Critical Error: Blog saved but not found in database.');
-            }
-
-            // Verify Public Availability (Frontend)
-            try {
-                const publicRes = await fetch(`/admin-data/blogs.json?t=${Date.now()}`);
-                if (publicRes.ok) {
-                    const publicBlogs = await publicRes.json();
-                    const inPublic = publicBlogs.find(b => String(b.id) === String(savedBlog.id));
-                    
-                    if (!inPublic) {
-                        throw new Error('Blog saved to database but not visible on public site.');
-                    }
-                    console.log('Public verification passed');
-                }
-            } catch (verifyError) {
-                console.warn('Public verification warning:', verifyError);
-                if (verifyError.message.includes('not visible')) {
-                    throw verifyError;
-                }
-            }
-
             await this.loadBlogs();
             this.updateStats();
             this.closeModal();
@@ -505,6 +472,169 @@ class AdminDashboard {
             } catch (error) {
                 console.error('Failed to delete blog:', error);
                 this.showNotification(error.message || 'Failed to delete blog. Please try again.', 'error');
+            }
+        }
+    }
+
+    // Pages Management
+    async loadPages() {
+        const tbody = document.getElementById('pagesTableBody');
+        if (!tbody) return;
+
+        try {
+            const response = await this.api.getPages();
+            this.pages = Array.isArray(response) ? response : (response.pages || []);
+
+            tbody.innerHTML = this.pages.map(page => `
+                <tr>
+                    <td>${page.title}</td>
+                    <td><code>${page.slug}</code></td>
+                    <td><span class="status ${page.status}">${page.status}</span></td>
+                    <td>${page.show_in_nav ? '<i class="fas fa-check" style="color: #27ae60;"></i>' : '<i class="fas fa-times" style="color: #e74c3c;"></i>'}</td>
+                    <td>
+                        <a href="page.html?slug=${page.slug}" target="_blank" class="btn btn-sm btn-info" title="View Page">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <button class="btn btn-sm btn-secondary" onclick="adminDashboard.editPage('${page.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="adminDashboard.deletePage('${page.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        } catch (error) {
+            console.error('Failed to load pages:', error);
+            tbody.innerHTML = '<tr><td colspan="5">Failed to load pages. Please try again.</td></tr>';
+        }
+    }
+
+    showPageModal(pageId = null) {
+        const page = pageId ? this.pages.find(p => String(p.id) === String(pageId)) : null;
+        const isEdit = !!page;
+
+        const modalContent = `
+            <h2>${isEdit ? 'Edit Page' : 'Add New Page'}</h2>
+            <form id="pageForm">
+                <div class="form-group">
+                    <label for="pageTitle">Title</label>
+                    <input type="text" id="pageTitle" value="${page?.title || ''}" required>
+                </div>
+                <div class="form-group">
+                    <label for="pageSlug">Slug (URL)</label>
+                    <input type="text" id="pageSlug" value="${page?.slug || ''}" placeholder="e.g., about-us, services">
+                    <small>Leave empty to auto-generate from title</small>
+                </div>
+                <div class="form-group">
+                    <label for="pageContent">Content (HTML supported)</label>
+                    <textarea id="pageContent" rows="10" required>${page?.content || ''}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="pageFeaturedImage">Featured Image URL</label>
+                    <input type="text" id="pageFeaturedImage" value="${page?.featured_image || ''}" placeholder="/uploads/image.jpg">
+                </div>
+                <div class="form-group">
+                    <label for="pageMetaTitle">Meta Title (SEO)</label>
+                    <input type="text" id="pageMetaTitle" value="${page?.meta_title || ''}">
+                </div>
+                <div class="form-group">
+                    <label for="pageMetaDescription">Meta Description (SEO)</label>
+                    <textarea id="pageMetaDescription" rows="2">${page?.meta_description || ''}</textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="pageStatus">Status</label>
+                        <select id="pageStatus">
+                            <option value="published" ${page?.status === 'published' ? 'selected' : ''}>Published</option>
+                            <option value="draft" ${page?.status === 'draft' ? 'selected' : ''}>Draft</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="pageSortOrder">Sort Order</label>
+                        <input type="number" id="pageSortOrder" value="${page?.sort_order ?? 0}" min="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="pageShowInNav" ${page?.show_in_nav ? 'checked' : ''}>
+                        Show in Navigation Menu
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" id="savePageBtn" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        ${isEdit ? 'Update' : 'Create'} Page
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="adminDashboard.closeModal()">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        `;
+
+        this.showModal(modalContent);
+
+        document.getElementById('savePageBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            const form = document.getElementById('pageForm');
+            if (form.checkValidity()) {
+                this.savePage(pageId);
+            } else {
+                form.reportValidity();
+            }
+        });
+    }
+
+    async savePage(pageId = null) {
+        const title = document.getElementById('pageTitle').value;
+        const slug = document.getElementById('pageSlug').value;
+        const content = document.getElementById('pageContent').value;
+        const featured_image = document.getElementById('pageFeaturedImage').value;
+        const meta_title = document.getElementById('pageMetaTitle').value;
+        const meta_description = document.getElementById('pageMetaDescription').value;
+        const status = document.getElementById('pageStatus').value;
+        const sort_order = parseInt(document.getElementById('pageSortOrder').value) || 0;
+        const show_in_nav = document.getElementById('pageShowInNav').checked;
+
+        const pageData = {
+            title, slug, content, featured_image, meta_title, meta_description, status, sort_order, show_in_nav
+        };
+
+        try {
+            if (pageId) {
+                await this.api.updatePage(pageId, pageData);
+            } else {
+                await this.api.createPage(pageData);
+            }
+
+            await this.loadPages();
+            this.updateStats();
+            this.closeModal();
+            this.showNotification(`Page ${pageId ? 'updated' : 'created'} successfully!`, 'success');
+            this.addActivity(`${pageId ? 'Updated' : 'Created'} page: ${title}`);
+        } catch (error) {
+            console.error('Failed to save page:', error);
+            this.showNotification(error.message || `Failed to ${pageId ? 'update' : 'create'} page. Please try again.`, 'error');
+        }
+    }
+
+    editPage(pageId) {
+        this.showPageModal(pageId);
+    }
+
+    async deletePage(pageId) {
+        if (confirm('Are you sure you want to delete this page?')) {
+            try {
+                const page = this.pages.find(p => String(p.id) === String(pageId));
+                await this.api.deletePage(pageId);
+                await this.loadPages();
+                this.updateStats();
+                this.showNotification('Page deleted successfully!', 'success');
+                this.addActivity(`Deleted page: ${page?.title || 'Unknown'}`);
+            } catch (error) {
+                console.error('Failed to delete page:', error);
+                this.showNotification(error.message || 'Failed to delete page. Please try again.', 'error');
             }
         }
     }
@@ -774,14 +904,22 @@ class AdminDashboard {
     async uploadImages() {
         const input = document.getElementById('imageInput');
         const files = input.files;
-        
+
+        if (!files || files.length === 0) {
+            this.showNotification('Please select at least one image.', 'warning');
+            return;
+        }
+
+        const uploadBtn = document.getElementById('uploadBtn');
+        if (uploadBtn) uploadBtn.disabled = true;
+
         try {
+            const formData = new FormData();
             for (const file of files) {
-                const formData = new FormData();
-                formData.append('image', file);
-                
-                await this.api.uploadImage(formData);
+                formData.append('images', file);
             }
+
+            await this.api.uploadImages(formData);
 
             await this.loadGallery();
             this.updateStats();
@@ -790,7 +928,9 @@ class AdminDashboard {
             this.addActivity(`Uploaded ${files.length} image(s)`);
         } catch (error) {
             console.error('Failed to upload images:', error);
-            this.showNotification('Failed to upload images. Please try again.', 'error');
+            this.showNotification(error.message || 'Failed to upload images. Please try again.', 'error');
+        } finally {
+            if (uploadBtn) uploadBtn.disabled = false;
         }
     }
 
@@ -930,20 +1070,64 @@ class AdminDashboard {
     }
 
     // Settings Management
-    saveSettings(e) {
+    async loadSettings() {
+        try {
+            const settings = await this.api.getSettings();
+            if (document.getElementById('siteTitle')) {
+                document.getElementById('siteTitle').value = settings.site_title || settings.siteTitle || '';
+            }
+            if (document.getElementById('siteDescription')) {
+                document.getElementById('siteDescription').value = settings.site_description || settings.siteDescription || '';
+            }
+            if (document.getElementById('contactEmail')) {
+                document.getElementById('contactEmail').value = settings.contact_email || settings.contactEmail || '';
+            }
+            if (document.getElementById('contactPhone')) {
+                document.getElementById('contactPhone').value = settings.contact_phone || settings.contactPhone || '';
+            }
+            if (document.getElementById('companyAddress')) {
+                document.getElementById('companyAddress').value = settings.company_address || settings.companyAddress || '';
+            }
+        } catch (error) {
+            console.warn('Failed to load settings from API:', error);
+        }
+    }
+
+    async saveSettings(e) {
         e.preventDefault();
-        
+
         const settings = {
-            siteTitle: document.getElementById('siteTitle').value,
-            siteDescription: document.getElementById('siteDescription').value,
-            contactEmail: document.getElementById('contactEmail').value,
-            contactPhone: document.getElementById('contactPhone').value,
-            companyAddress: document.getElementById('companyAddress').value
+            site_title: document.getElementById('siteTitle').value,
+            site_description: document.getElementById('siteDescription').value,
+            contact_email: document.getElementById('contactEmail').value,
+            contact_phone: document.getElementById('contactPhone').value,
+            company_address: document.getElementById('companyAddress').value
         };
 
-        localStorage.setItem('adminSettings', JSON.stringify(settings));
-        this.showNotification('Settings saved successfully!', 'success');
-        this.addActivity('Updated website settings');
+        try {
+            await this.api.updateSettings(settings);
+            this.showNotification('Settings saved successfully!', 'success');
+            this.addActivity('Updated website settings');
+        } catch (error) {
+            console.error('Failed to save settings:', error);
+            this.showNotification('Failed to save settings. Please try again.', 'error');
+        }
+    }
+
+    // Sitemap / SEO
+    async refreshSitemap() {
+        const btn = document.getElementById('refreshSitemapBtn');
+        if (btn) btn.disabled = true;
+        try {
+            await this.api.refreshSitemap();
+            this.showNotification('Sitemap refreshed successfully!', 'success');
+            this.addActivity('Refreshed sitemap');
+        } catch (error) {
+            console.error('Failed to refresh sitemap:', error);
+            this.showNotification('Sitemap refresh failed. It will auto-update on next request.', 'warning');
+        } finally {
+            if (btn) btn.disabled = false;
+        }
     }
 
     // Utility Methods

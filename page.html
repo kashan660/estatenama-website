@@ -3,148 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog Details - Estate Nama</title>
-    <!-- Dynamic Meta Tags will be injected via JS -->
-    <meta name="description" content="Read the latest real estate news and insights from Estate Nama.">
-    
+    <title>Loading... - Estate Nama</title>
+    <meta name="description" content="Estate Nama - Real Estate Solutions">
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
     <style>
-        .blog-header {
-            height: 60vh;
-            min-height: 400px;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-align: center;
-            margin-top: 80px;
-        }
-        
-        .blog-header-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+        .page-header {
+            background: linear-gradient(rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.9)), url('images/homepage/home2.png');
             background-size: cover;
             background-position: center;
-            z-index: -1;
-        }
-        
-        .blog-header-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.6);
-            z-index: 0;
-        }
-        
-        .blog-header-content {
-            position: relative;
-            z-index: 1;
-            max-width: 800px;
-            padding: 20px;
-        }
-        
-        .blog-category-badge {
-            background: #e74c3c;
+            padding: 100px 0 60px;
+            text-align: center;
             color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            display: inline-block;
-            margin-bottom: 20px;
+            margin-top: 80px;
         }
-        
-        .blog-title-large {
+        .page-header h1 {
             font-size: 3rem;
             margin-bottom: 20px;
-            line-height: 1.2;
         }
-        
-        .blog-meta-large {
-            font-size: 1.1rem;
-            opacity: 0.9;
+        .page-container {
+            padding: 60px 0;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-left: 20px;
+            padding-right: 20px;
+            min-height: 400px;
         }
-        
-        .blog-body {
-            max-width: 900px;
-            margin: 60px auto;
-            padding: 0 20px;
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: #2c3e50;
-        }
-        
-        .blog-body img {
-            max-width: 100%;
+        .page-content {
+            background: white;
             border-radius: 10px;
-            margin: 30px 0;
+            padding: 40px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            line-height: 1.8;
+            color: #333;
         }
-        
-        .blog-body h2, .blog-body h3 {
-            margin-top: 40px;
-            margin-bottom: 20px;
+        .page-content h1, .page-content h2, .page-content h3 {
             color: #2c3e50;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
         }
-        
-        .share-section {
-            border-top: 1px solid #eee;
-            border-bottom: 1px solid #eee;
-            padding: 30px 0;
-            margin: 50px 0;
+        .page-content p {
+            margin-bottom: 1em;
+        }
+        .page-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .page-content ul, .page-content ol {
+            margin-left: 20px;
+            margin-bottom: 1em;
+        }
+        .loading-spinner {
             text-align: center;
-        }
-        
-        .share-buttons button {
-            background: none;
-            border: 2px solid #ddd;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+            padding: 100px 0;
             font-size: 1.2rem;
-            margin: 0 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
             color: #666;
         }
-        
-        .share-buttons button:hover {
-            border-color: #e74c3c;
-            color: #e74c3c;
-            transform: translateY(-3px);
-        }
-        
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            color: #666;
-            text-decoration: none;
-            margin-bottom: 20px;
-            font-weight: 500;
-        }
-        
-        .back-btn i {
-            margin-right: 10px;
-        }
-        
-        .back-btn:hover {
+        .error-message {
+            text-align: center;
+            padding: 100px 0;
             color: #e74c3c;
         }
-
-        .loading-container {
-            height: 60vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            margin-top: 80px;
+        .error-message a {
+            color: #e74c3c;
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -173,8 +98,9 @@
                     </ul>
                 </li>
                 <li><a href="index.html#services" class="nav-link">Services</a></li>
-                <li><a href="blog.html" class="nav-link active">Blog</a></li>
+                <li><a href="blog.html" class="nav-link">Blog</a></li>
                 <li><a href="index.html#contact" class="nav-link">Contact</a></li>
+                <!-- Dynamic pages will be inserted here -->
             </ul>
             <div class="hamburger">
                 <span class="bar"></span>
@@ -184,19 +110,31 @@
         </div>
     </nav>
 
-    <div id="blog-content">
-        <div class="loading-container">
-            <i class="fas fa-spinner fa-spin fa-3x" style="color: #e74c3c; margin-bottom: 20px;"></i>
-            <h2>Loading article...</h2>
+    <!-- Page Header -->
+    <header class="page-header" id="pageHeader">
+        <div class="container">
+            <h1 id="pageTitle">Loading...</h1>
         </div>
-    </div>
+    </header>
+
+    <!-- Page Content -->
+    <section class="page-container">
+        <div id="pageContent" class="page-content">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i> Loading page content...
+            </div>
+        </div>
+    </section>
 
     <!-- Footer -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-grid">
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
                 <div class="footer-section">
-                    <h3>Estate Nama</h3>
+                    <div class="footer-logo">
+                        <img src="images/logos/logoe_statenama.png" alt="Estate Nama Logo" class="footer-logo-img">
+                        <h3>Estate<span>Nama</span></h3>
+                    </div>
                     <p><strong>Premium Real Estate | Houses for Sale | Commercial Property | Land Plots | Investment Opportunities | Trusted Real Estate Agent Pakistan</strong></p>
                     <div class="social-links">
                         <a href="#"><i class="fab fa-facebook"></i></a>
@@ -226,7 +164,6 @@
                         <li><a href="bahria-town-phase8-projects.html">Bahria Town Phase 8</a></li>
                     </ul>
                 </div>
-
                 <div class="footer-section">
                     <h4>Contact Info</h4>
                     <p><i class="fas fa-map-marker-alt"></i> Phase 7, Anarkali Restaurant, Bahria Town</p>
@@ -242,11 +179,76 @@
     </footer>
 
     <script src="nav-loader.js"></script>
-    <script src="blog-script.js"></script>
     <script>
-        // Initialize blog details page
+        async function loadPage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const slug = urlParams.get('slug');
+            const contentContainer = document.getElementById('pageContent');
+            const titleEl = document.getElementById('pageTitle');
+
+            if (!slug) {
+                contentContainer.innerHTML = `
+                    <div class="error-message">
+                        <h2>Page Not Found</h2>
+                        <p>No page slug specified.</p>
+                        <a href="index.html" class="btn btn-primary" style="margin-top: 20px;">Go Home</a>
+                    </div>
+                `;
+                titleEl.textContent = 'Page Not Found';
+                document.title = 'Page Not Found - Estate Nama';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/pages/${slug}`);
+                if (!response.ok) {
+                    throw new Error('Page not found');
+                }
+                const page = await response.json();
+
+                // Update meta and title
+                document.title = page.meta_title || `${page.title} - Estate Nama`;
+                const metaDesc = document.querySelector('meta[name="description"]');
+                if (metaDesc && page.meta_description) {
+                    metaDesc.content = page.meta_description;
+                }
+
+                // Update header
+                titleEl.textContent = page.title;
+
+                // Update content
+                contentContainer.innerHTML = page.content || '<p>No content available.</p>';
+
+                // If there's a featured image, show it at top
+                if (page.featured_image) {
+                    const img = document.createElement('img');
+                    img.src = page.featured_image;
+                    img.alt = page.title;
+                    img.style.width = '100%';
+                    img.style.maxHeight = '400px';
+                    img.style.objectFit = 'cover';
+                    img.style.borderRadius = '8px';
+                    img.style.marginBottom = '20px';
+                    contentContainer.insertBefore(img, contentContainer.firstChild);
+                }
+
+            } catch (error) {
+                console.error('Error loading page:', error);
+                contentContainer.innerHTML = `
+                    <div class="error-message">
+                        <h2>Page Not Found</h2>
+                        <p>The page you are looking for does not exist or has been removed.</p>
+                        <a href="index.html" class="btn btn-primary" style="margin-top: 20px;">Go Home</a>
+                    </div>
+                `;
+                titleEl.textContent = 'Page Not Found';
+                document.title = 'Page Not Found - Estate Nama';
+            }
+        }
+
+        // Load page on DOM ready
         document.addEventListener('DOMContentLoaded', () => {
-            loadBlogDetails();
+            loadPage();
         });
     </script>
 </body>

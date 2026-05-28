@@ -40,6 +40,10 @@
   ],
   "routes": [
     {
+      "src": "/sitemap\\.xml",
+      "dest": "/admin-server-prod.js"
+    },
+    {
       "src": "/api/admin/(.*)",
       "dest": "/admin-server-prod.js"
     },

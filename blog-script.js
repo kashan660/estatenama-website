@@ -9,33 +9,40 @@ function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('en-US', options);
 }
 
+// Normalize blog data from MySQL (snake_case) to frontend format (camelCase)
+function normalizeBlog(blog) {
+    return {
+        id: blog.id,
+        title: blog.title,
+        slug: blog.slug,
+        excerpt: blog.excerpt,
+        content: blog.content,
+        featuredImage: blog.featured_image || blog.featuredImage || blog.image,
+        image: blog.featured_image || blog.featuredImage || blog.image,
+        category: blog.category || 'Real Estate',
+        author: blog.author || 'Estate Nama',
+        metaDescription: blog.meta_description || blog.metaDescription,
+        status: blog.status,
+        date: blog.published_at || blog.date || blog.created_at || blog.createdAt,
+        createdAt: blog.created_at || blog.createdAt
+    };
+}
+
 // Fetch blog posts from the server (API endpoints)
 async function fetchBlogPosts() {
     try {
-        // Fetch both blogs and posts in parallel from API
-        const [blogsResponse, postsResponse] = await Promise.all([
-            fetch('/api/blogs').catch(() => ({ ok: false })),
-            fetch('/api/posts').catch(() => ({ ok: false }))
-        ]);
+        // Fetch blogs from API
+        const blogsResponse = await fetch('/api/blogs').catch(() => ({ ok: false }));
 
         let allContent = [];
 
         if (blogsResponse.ok) {
             const blogs = await blogsResponse.json();
-            allContent = [...allContent, ...blogs];
+            allContent = blogs.map(normalizeBlog);
         } else {
-            // Fallback to static JSON if API fails (e.g. during migration)
+            // Fallback to static JSON if API fails
             const staticBlogs = await fetch('/admin-data/blogs.json').then(res => res.ok ? res.json() : []).catch(() => []);
-            allContent = [...allContent, ...staticBlogs];
-        }
-
-        if (postsResponse.ok) {
-            const posts = await postsResponse.json();
-            allContent = [...allContent, ...posts];
-        } else {
-            // Fallback to static JSON
-            const staticPosts = await fetch('/admin-data/posts.json').then(res => res.ok ? res.json() : []).catch(() => []);
-            allContent = [...allContent, ...staticPosts];
+            allContent = [...allContent, ...staticBlogs.map(normalizeBlog)];
         }
 
         return allContent;

@@ -55,6 +55,9 @@ typings/
 .env.local
 .env.production
 
+# Database config with credentials
+db-config.json
+
 # parcel-bundler cache
 .cache
 .parcel-cache
