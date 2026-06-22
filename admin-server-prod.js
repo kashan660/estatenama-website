@@ -31,26 +31,23 @@ const upload = multer({
     }
 });
 
-// Admin credentials — from env, with dev fallback.
-// ADMIN_USERS = JSON array [{"username":"a@b.com","password":"x"}], or ADMIN_EMAIL/ADMIN_PASSWORD.
+// Admin credentials — configured ONLY via environment variables (no hardcoded defaults).
+// Set ADMIN_USERS = JSON array [{"username":"a@b.com","password":"x"}], or ADMIN_EMAIL + ADMIN_PASSWORD.
+// If neither is set, login is disabled (returns no valid credentials) — fail closed.
 function getAdminCredentials() {
     if (process.env.ADMIN_USERS) {
         try {
             const parsed = JSON.parse(process.env.ADMIN_USERS);
             if (Array.isArray(parsed) && parsed.length) return parsed;
         } catch (e) {
-            console.warn('Could not parse ADMIN_USERS env var, falling back');
+            console.warn('Could not parse ADMIN_USERS env var');
         }
     }
     if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
         return [{ username: process.env.ADMIN_EMAIL, password: process.env.ADMIN_PASSWORD }];
     }
-    // Dev fallback (override in production via env vars)
-    return [
-        { username: 'admin@estatenama.com', password: 'EstateNama@8088' },
-        { username: 'estatenama@estatenama.com', password: 'Estatenama@8088' },
-        { username: 'manager@estatenama.com', password: 'Manager@8088' }
-    ];
+    console.warn('No admin credentials configured. Set ADMIN_USERS or ADMIN_EMAIL/ADMIN_PASSWORD env vars.');
+    return [];
 }
 
 const SESSION_SECRET = process.env.SESSION_SECRET || 'estatenama-dev-secret-change-me';
