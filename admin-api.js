@@ -1,14 +1,23 @@
 // Admin API Client for backend integration
 class AdminAPI {
     constructor() {
-        // Use relative URL for production/Vercel, or localhost:3002 for local dev if not on port 3002.
-        const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+        const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+        const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
         const isFile = typeof window !== 'undefined' && window.location.protocol === 'file:';
         const isPort3002 = typeof window !== 'undefined' && window.location.port === '3002';
-        
-        // If local and NOT on port 3002 (e.g. running on 8005), or if running from file system, point to 3002.
-        // If on Vercel or local port 3002, use relative path.
-        this.baseURL = ((isLocal && !isPort3002) || isFile) ? 'http://localhost:3002' : ''; 
+
+        // IMPORTANT: the apex domain (estatenama.com) 307-redirects to www. Browsers
+        // strip the Authorization header on that cross-origin redirect, so authenticated
+        // writes (create/edit/delete) silently 401. Always target the canonical www host
+        // in production so the redirect never happens and auth survives.
+        if ((isLocal && !isPort3002) || isFile) {
+            this.baseURL = 'http://localhost:3002';
+        } else if (hostname === 'estatenama.com') {
+            this.baseURL = 'https://www.estatenama.com';
+        } else {
+            // www, preview *.vercel.app, or local port 3002 — same-origin relative calls
+            this.baseURL = '';
+        }
         this.token = this.getStoredToken();
     }
 
