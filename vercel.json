@@ -44,6 +44,18 @@
       "dest": "/admin-server-prod.js"
     },
     {
+      "src": "/robots\\.txt",
+      "dest": "/admin-server-prod.js"
+    },
+    {
+      "src": "/blog/(.*)",
+      "dest": "/admin-server-prod.js"
+    },
+    {
+      "src": "/page/(.*)",
+      "dest": "/admin-server-prod.js"
+    },
+    {
       "src": "/api/admin/(.*)",
       "dest": "/admin-server-prod.js"
     },

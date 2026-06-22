@@ -592,14 +592,122 @@ function getProjectId() {
     return projectId;
 }
 
-// Load project details
-function loadProjectDetails() {
-    console.log('loadProjectDetails called');
+// Convert a YouTube/Vimeo/MP4 URL into a responsive embed
+function videoEmbedHtml(url) {
+    if (!url) return '';
+    url = String(url).trim();
+    let m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})/);
+    if (m) return `<div class="video-embed"><iframe src="https://www.youtube.com/embed/${m[1]}" title="Project video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+    m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+    if (m) return `<div class="video-embed"><iframe src="https://player.vimeo.com/video/${m[1]}" title="Project video" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>`;
+    if (/\.(mp4|webm|ogg)(\?.*)?$/i.test(url)) return `<div class="video-embed"><video controls src="${url}"></video></div>`;
+    return `<div class="video-embed"><iframe src="${url}" frameborder="0" allowfullscreen></iframe></div>`;
+}
+
+// Render a project that comes from the database (admin-managed).
+function renderDbProject(project) {
+    document.getElementById('project-title').textContent = project.title;
+    document.title = `${project.title} - Estate Nama`;
+
+    const images = Array.isArray(project.images) ? project.images.filter(Boolean) : [];
+    const videos = Array.isArray(project.videos) ? project.videos.filter(Boolean) : [];
+    const features = Array.isArray(project.features) ? project.features : (Array.isArray(project.amenities) ? project.amenities : []);
+    const plots = Array.isArray(project.plots) ? project.plots : [];
+    const heroImg = project.featuredImage || images[0] || 'images/homepage/home1.png';
+
+    const gallery = images.length ? `
+        <div class="detail-section">
+            <h2><i class="fas fa-images"></i> Photo Gallery</h2>
+            <div class="features-grid">
+                ${images.map(src => `<a href="${src}" target="_blank" rel="noopener"><img src="${src}" alt="${project.title}" loading="lazy" style="width:100%;height:160px;object-fit:cover;border-radius:8px;"></a>`).join('')}
+            </div>
+        </div>` : '';
+
+    const videoBlock = videos.length ? `
+        <div class="detail-section">
+            <h2><i class="fas fa-video"></i> Videos</h2>
+            ${videos.map(videoEmbedHtml).join('')}
+        </div>` : '';
+
+    const plotBlock = plots.length ? `
+        <div class="detail-section">
+            <h2><i class="fas fa-home"></i> Plot Sizes & Pricing</h2>
+            <div class="plot-table">
+                <div class="plot-header"><div>Plot</div><div>Type</div></div>
+                ${plots.map(p => `<div class="plot-row"><div class="plot-size">${(p.label || '')}</div><div class="plot-dimensions">${(p.type || '')}</div></div>`).join('')}
+            </div>
+        </div>` : '';
+
+    const featureBlock = features.length ? `
+        <div class="detail-section">
+            <h2><i class="fas fa-star"></i> Key Features</h2>
+            <div class="features-grid">
+                ${features.map(f => `<div class="feature-item"><i class="fas fa-check"></i> ${f}</div>`).join('')}
+            </div>
+        </div>` : '';
+
+    const paymentBlock = project.paymentPlan ? `
+        <div class="detail-section">
+            <h2><i class="fas fa-credit-card"></i> Payment Plan</h2>
+            <div class="payment-details"><div class="payment-item">${project.paymentPlan}</div></div>
+        </div>` : '';
+
+    document.getElementById('detail-content').innerHTML = `
+        <div class="project-hero">
+            <div class="project-hero-image">
+                <img src="${heroImg}" alt="${project.title}" loading="lazy">
+                ${project.badge ? `<div class="project-status-badge">${project.badge}</div>` : ''}
+            </div>
+            <div class="project-hero-info">
+                <h1>${project.title}</h1>
+                ${project.location ? `<p class="location"><i class="fas fa-map-marker-alt"></i> ${project.location}</p>` : ''}
+                ${project.price ? `<p class="area"><i class="fas fa-tag"></i> ${project.price}</p>` : ''}
+                ${project.description ? `<p class="description">${project.description}</p>` : ''}
+            </div>
+        </div>
+        <div class="detail-sections">
+            ${gallery}
+            ${videoBlock}
+            ${plotBlock}
+            ${featureBlock}
+            ${paymentBlock}
+        </div>
+        <div class="contact-section">
+            <h2>Interested in this Project?</h2>
+            <p>Contact our expert team for site visits, detailed brochures, and personalized assistance.</p>
+            <div class="contact-buttons">
+                <button class="btn-primary" onclick="openWhatsApp('I am interested in ${project.title}. Please provide me with complete details and arrange a site visit.')">
+                    <i class="fab fa-whatsapp"></i> WhatsApp for Details
+                </button>
+                <a href="tel:03195547788" class="btn-secondary"><i class="fas fa-phone"></i> Call Now</a>
+                <a href="mailto:info@estatenama.com?subject=Inquiry about ${project.title}" class="btn-outline"><i class="fas fa-envelope"></i> Email Us</a>
+            </div>
+        </div>`;
+}
+
+// Load project details — try the database first, then fall back to static data.
+async function loadProjectDetails() {
     const projectId = getProjectId();
-    console.log('Looking for project:', projectId);
+
+    // 1) Try the admin-managed database (by slug)
+    if (projectId) {
+        try {
+            const res = await fetch('/api/projects/' + encodeURIComponent(projectId));
+            if (res.ok) {
+                const dbProject = await res.json();
+                if (dbProject && dbProject.id) {
+                    renderDbProject(dbProject);
+                    return;
+                }
+            }
+        } catch (e) {
+            // ignore and fall back to static data
+        }
+    }
+
+    // 2) Fall back to legacy hardcoded data
     const project = projectsData[projectId];
-    console.log('Found project:', project);
-    
+
     if (!project) {
         console.log('Project not found, available projects:', Object.keys(projectsData));
         document.getElementById('detail-content').innerHTML = `

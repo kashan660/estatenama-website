@@ -273,6 +273,35 @@ class AdminAPI {
         });
     }
 
+    // Sections API
+    async getSections() {
+        return await this.request('/sections');
+    }
+
+    async getSection(id) {
+        return await this.request(`/sections/${id}`);
+    }
+
+    async createSection(sectionData) {
+        return await this.request('/sections', {
+            method: 'POST',
+            body: JSON.stringify(sectionData)
+        });
+    }
+
+    async updateSection(id, sectionData) {
+        return await this.request(`/sections/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(sectionData)
+        });
+    }
+
+    async deleteSection(id) {
+        return await this.request(`/sections/${id}`, {
+            method: 'DELETE'
+        });
+    }
+
     // Settings API
     async getSettings() {
         return await this.request('/settings');

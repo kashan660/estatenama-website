@@ -61,7 +61,19 @@
                 <li>
                     <a href="#" class="menu-item" data-section="projects">
                         <i class="fas fa-building"></i>
-                        <span>Projects</span>
+                        <span>Projects / Societies</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="menu-item" data-section="hero">
+                        <i class="fas fa-images"></i>
+                        <span>Hero Slideshow</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="menu-item" data-section="sections">
+                        <i class="fas fa-th-large"></i>
+                        <span>Homepage Sections</span>
                     </a>
                 </li>
                 <li>
@@ -251,6 +263,51 @@
                     
                     <div class="projects-grid" id="projectsGrid">
                         <!-- Projects will be loaded here -->
+                    </div>
+                </section>
+
+                <!-- Hero Slideshow Section -->
+                <section id="hero-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Hero Slideshow Images</h2>
+                        <button class="btn btn-primary" id="addHeroImageBtn">
+                            <i class="fas fa-plus"></i>
+                            Add Image
+                        </button>
+                    </div>
+                    <p class="page-subtitle" style="margin-bottom:16px;">These images rotate in the big banner at the top of the homepage. Add, remove or reorder them — changes appear on the live site.</p>
+                    <div id="heroImagesList" class="gallery-grid">
+                        <!-- Hero images load here -->
+                    </div>
+                    <div style="margin-top:16px;">
+                        <button class="btn btn-primary" id="saveHeroBtn"><i class="fas fa-save"></i> Save Hero Slideshow</button>
+                    </div>
+                </section>
+
+                <!-- Homepage Sections -->
+                <section id="sections-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Homepage Sections</h2>
+                        <button class="btn btn-primary" id="addSectionBtn">
+                            <i class="fas fa-plus"></i>
+                            Add New Section
+                        </button>
+                    </div>
+                    <div class="content-table">
+                        <table id="sectionsTable">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Type</th>
+                                    <th>Order</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sectionsTableBody">
+                                <!-- Sections load here -->
+                            </tbody>
+                        </table>
                     </div>
                 </section>
 

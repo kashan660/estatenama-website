@@ -1,61 +1,50 @@
 /**
- * Database Setup Script
- * Run this after creating your MySQL database in cPanel
+ * Database Setup Script (PostgreSQL)
+ * Creates/updates all tables for EstateNama. Idempotent — safe to re-run.
  * Usage: node database-setup.js
+ * Requires POSTGRES_URL (env or db-config.json { "url": ... }).
  */
 
 const fs = require('fs');
 const path = require('path');
-const mysql = require('mysql2/promise');
+const { Pool } = require('pg');
 
-// Load config
-let config = {
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'estatenama_user',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'estatenama_db',
-    multipleStatements: true
-};
-
-const configPath = path.join(__dirname, 'db-config.json');
-if (fs.existsSync(configPath)) {
+function getConnectionString() {
+    if (process.env.POSTGRES_URL) return process.env.POSTGRES_URL;
+    if (process.env.DATABASE_URL) return process.env.DATABASE_URL;
     try {
-        const fileConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-        config = { ...config, ...fileConfig, multipleStatements: true };
+        const configPath = path.join(__dirname, 'db-config.json');
+        if (fs.existsSync(configPath)) {
+            const fileConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+            return fileConfig.url || fileConfig.connectionString || null;
+        }
     } catch (err) {
         console.warn('Warning: Could not parse db-config.json');
     }
+    return null;
 }
 
 async function setupDatabase() {
-    let connection;
+    const connectionString = getConnectionString();
+    if (!connectionString) {
+        console.error('\n❌ No connection string. Set POSTGRES_URL or add a "url" to db-config.json.');
+        process.exit(1);
+    }
+
+    const pool = new Pool({ connectionString, ssl: { rejectUnauthorized: false } });
     try {
-        console.log('Connecting to database...');
-        connection = await mysql.createConnection(config);
-
-        console.log('Reading schema file...');
-        const sql = fs.readFileSync(path.join(__dirname, 'database-setup.sql'), 'utf8');
-
+        console.log('Connecting to Postgres...');
+        const sql = fs.readFileSync(path.join(__dirname, 'migrations', 'postgres-schema.sql'), 'utf8');
         console.log('Executing schema...');
-        await connection.query(sql);
+        await pool.query(sql);
 
         console.log('\n✅ Database setup completed successfully!');
-        console.log('\nTables created:');
-        console.log('  - blogs');
-        console.log('  - pages');
-        console.log('  - images');
-        console.log('  - settings');
-        console.log('\nDefault settings inserted.');
-
+        console.log('Tables ready: posts, blogs, pages, projects, images, sections, settings');
     } catch (error) {
         console.error('\n❌ Setup failed:', error.message);
-        console.log('\nMake sure you have:');
-        console.log('  1. Created the database in cPanel');
-        console.log('  2. Created a database user with all privileges');
-        console.log('  3. Updated db-config.json with correct credentials');
         process.exit(1);
     } finally {
-        if (connection) await connection.end();
+        await pool.end();
     }
 }
 

@@ -69,6 +69,9 @@ class AdminDashboard {
         document.getElementById('addBlogBtn')?.addEventListener('click', () => this.showBlogModal());
         document.getElementById('addPageBtn')?.addEventListener('click', () => this.showPageModal());
         document.getElementById('addProjectBtn')?.addEventListener('click', () => this.showProjectModal());
+        document.getElementById('addSectionBtn')?.addEventListener('click', () => this.showSectionModal());
+        document.getElementById('addHeroImageBtn')?.addEventListener('click', () => this.addHeroImage());
+        document.getElementById('saveHeroBtn')?.addEventListener('click', () => this.saveHero());
         document.getElementById('uploadImageBtn')?.addEventListener('click', () => this.showImageUploadModal());
 
         // Settings form
@@ -126,7 +129,9 @@ class AdminDashboard {
             posts: 'Manage Posts',
             blogs: 'Manage Blogs',
             pages: 'Manage Pages',
-            projects: 'Manage Projects',
+            projects: 'Manage Projects / Societies',
+            hero: 'Hero Slideshow',
+            sections: 'Homepage Sections',
             gallery: 'Manage Gallery',
             images: 'Image Manager',
             seo: 'SEO & Sitemap',
@@ -170,6 +175,8 @@ class AdminDashboard {
             await this.loadPages();
             await this.loadGallery();
             await this.loadProjects();
+            await this.loadSections();
+            await this.loadHero();
             await this.updateStats();
             
             // Load recent activity
@@ -377,12 +384,43 @@ class AdminDashboard {
                     <input type="text" id="blogTitle" value="${blog?.title || ''}" required>
                 </div>
                 <div class="form-group">
+                    <label for="blogSlug">Slug (URL)</label>
+                    <input type="text" id="blogSlug" value="${blog?.slug || ''}" placeholder="Leave empty to auto-generate from title">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="blogCategory">Category</label>
+                        <input type="text" id="blogCategory" value="${blog?.category || 'Real Estate'}">
+                    </div>
+                    <div class="form-group">
+                        <label for="blogAuthor">Author</label>
+                        <input type="text" id="blogAuthor" value="${blog?.author || 'Estate Nama'}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="blogFeaturedImage">Featured Image</label>
+                    <div style="display:flex;gap:8px;">
+                        <input type="text" id="blogFeaturedImage" value="${blog?.featuredImage || ''}" placeholder="/uploads/image.jpg" style="flex:1;">
+                        <button type="button" class="btn btn-secondary" onclick="adminDashboard.browseFeaturedImage('blogFeaturedImage','blogImagePreview')">Browse</button>
+                    </div>
+                    <img id="blogImagePreview" src="${blog?.featuredImage || ''}" style="${blog?.featuredImage ? '' : 'display:none;'}max-height:120px;margin-top:8px;border-radius:6px;">
+                </div>
+                <div class="form-group">
                     <label for="blogExcerpt">Excerpt</label>
                     <textarea id="blogExcerpt" rows="2">${blog?.excerpt || ''}</textarea>
                 </div>
                 <div class="form-group">
-                    <label for="blogContent">Content</label>
-                    <textarea id="blogContent" rows="8" required>${blog?.content || ''}</textarea>
+                    <label for="blogContent">Content (HTML, images & video supported)</label>
+                    ${this.mediaToolbar('blogContent')}
+                    <textarea id="blogContent" rows="10" required>${blog?.content || ''}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="blogMetaTitle">Meta Title (SEO)</label>
+                    <input type="text" id="blogMetaTitle" value="${blog?.metaTitle || ''}" placeholder="Defaults to title if empty">
+                </div>
+                <div class="form-group">
+                    <label for="blogMetaDescription">Meta Description (SEO)</label>
+                    <textarea id="blogMetaDescription" rows="2" placeholder="Defaults to excerpt if empty">${blog?.metaDescription || ''}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="blogStatus">Status</label>
@@ -418,15 +456,17 @@ class AdminDashboard {
 
     async saveBlog(blogId = null) {
         const title = document.getElementById('blogTitle').value;
-        const excerpt = document.getElementById('blogExcerpt').value;
-        const content = document.getElementById('blogContent').value;
-        const status = document.getElementById('blogStatus').value;
-
         const blogData = {
             title,
-            excerpt,
-            content,
-            status
+            slug: document.getElementById('blogSlug').value,
+            category: document.getElementById('blogCategory').value,
+            author: document.getElementById('blogAuthor').value,
+            featuredImage: document.getElementById('blogFeaturedImage').value,
+            excerpt: document.getElementById('blogExcerpt').value,
+            content: document.getElementById('blogContent').value,
+            metaTitle: document.getElementById('blogMetaTitle').value,
+            metaDescription: document.getElementById('blogMetaDescription').value,
+            status: document.getElementById('blogStatus').value
         };
 
         console.log('Saving blog:', blogId, blogData);
@@ -527,20 +567,25 @@ class AdminDashboard {
                     <small>Leave empty to auto-generate from title</small>
                 </div>
                 <div class="form-group">
-                    <label for="pageContent">Content (HTML supported)</label>
+                    <label for="pageContent">Content (HTML, images & video supported)</label>
+                    ${this.mediaToolbar('pageContent')}
                     <textarea id="pageContent" rows="10" required>${page?.content || ''}</textarea>
                 </div>
                 <div class="form-group">
-                    <label for="pageFeaturedImage">Featured Image URL</label>
-                    <input type="text" id="pageFeaturedImage" value="${page?.featured_image || ''}" placeholder="/uploads/image.jpg">
+                    <label for="pageFeaturedImage">Featured Image</label>
+                    <div style="display:flex;gap:8px;">
+                        <input type="text" id="pageFeaturedImage" value="${page?.featuredImage || ''}" placeholder="/uploads/image.jpg" style="flex:1;">
+                        <button type="button" class="btn btn-secondary" onclick="adminDashboard.browseFeaturedImage('pageFeaturedImage','pageImagePreview')">Browse</button>
+                    </div>
+                    <img id="pageImagePreview" src="${page?.featuredImage || ''}" style="${page?.featuredImage ? '' : 'display:none;'}max-height:120px;margin-top:8px;border-radius:6px;">
                 </div>
                 <div class="form-group">
                     <label for="pageMetaTitle">Meta Title (SEO)</label>
-                    <input type="text" id="pageMetaTitle" value="${page?.meta_title || ''}">
+                    <input type="text" id="pageMetaTitle" value="${page?.metaTitle || ''}">
                 </div>
                 <div class="form-group">
                     <label for="pageMetaDescription">Meta Description (SEO)</label>
-                    <textarea id="pageMetaDescription" rows="2">${page?.meta_description || ''}</textarea>
+                    <textarea id="pageMetaDescription" rows="2">${page?.metaDescription || ''}</textarea>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -651,11 +696,12 @@ class AdminDashboard {
             grid.innerHTML = this.projects.map(project => `
                 <div class="project-card">
                     <div class="project-image">
-                        <img src="${project.image}" alt="${project.title}">
+                        <img src="${project.featuredImage || project.image || ''}" alt="${project.title}">
                     </div>
                     <div class="project-info">
                         <h3>${project.title}</h3>
-                        <p>${project.description}</p>
+                        <p style="color:#888;font-size:13px;">${project.category || ''} ${(project.images && project.images.length) ? '• ' + project.images.length + ' photos' : ''} ${(project.videos && project.videos.length) ? '• ' + project.videos.length + ' videos' : ''}</p>
+                        <p>${(project.description || '').slice(0, 120)}</p>
                         <div class="project-actions">
                             <button class="btn btn-sm btn-secondary" onclick="adminDashboard.editProject('${project.id}')">
                                 <i class="fas fa-edit"></i> Edit
@@ -677,45 +723,86 @@ class AdminDashboard {
         const project = projectId ? this.projects.find(p => String(p.id) === String(projectId)) : null;
         const isEdit = !!project;
         
+        // Plots are stored as JSON [{label, type}]; show them as one "label | type" per line.
+        const plotsText = Array.isArray(project?.plots)
+            ? project.plots.map(p => `${p.label || ''}${p.type ? ' | ' + p.type : ''}`).join('\n')
+            : '';
+
         const modalContent = `
-            <h2>${isEdit ? 'Edit Project' : 'Add New Project'}</h2>
+            <h2>${isEdit ? 'Edit Project / Society' : 'Add New Project / Society'}</h2>
             <form id="projectForm">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="projectTitle">Project Title</label>
+                        <label for="projectTitle">Project / Society Name</label>
                         <input type="text" id="projectTitle" name="title" value="${project?.title || ''}" required>
                     </div>
                     <div class="form-group">
+                        <label for="projectCategory">Category / Group</label>
+                        <input type="text" id="projectCategory" name="category" value="${project?.category || ''}" placeholder="e.g., Faisal Town, Premium Projects">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
                         <label for="projectLocation">Location</label>
-                        <input type="text" id="projectLocation" name="location" value="${project?.location || ''}" required>
+                        <input type="text" id="projectLocation" name="location" value="${project?.location || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label for="projectBadge">Badge / Status Label</label>
+                        <input type="text" id="projectBadge" name="badge" value="${project?.badge || ''}" placeholder="e.g., New Launch, Luxury, Premium">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label for="projectPrice">Price Range</label>
-                        <input type="text" id="projectPrice" name="price" value="${project?.price || ''}" required>
+                        <input type="text" id="projectPrice" name="price" value="${project?.price || ''}">
                     </div>
                     <div class="form-group">
                         <label for="projectType">Property Type</label>
-                        <select id="projectType" name="type" required>
-                            <option value="">Select Type</option>
+                        <select id="projectType" name="type">
                             <option value="residential" ${project?.type === 'residential' ? 'selected' : ''}>Residential</option>
                             <option value="commercial" ${project?.type === 'commercial' ? 'selected' : ''}>Commercial</option>
                             <option value="plots" ${project?.type === 'plots' ? 'selected' : ''}>Plots</option>
+                            <option value="mixed" ${project?.type === 'mixed' ? 'selected' : ''}>Mixed</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="projectDescription">Description</label>
-                    <textarea id="projectDescription" name="description" rows="4" required>${project?.description || ''}</textarea>
+                    <label for="projectSubtitle">Subtitle (short tagline)</label>
+                    <input type="text" id="projectSubtitle" name="subtitle" value="${project?.subtitle || ''}">
                 </div>
                 <div class="form-group">
-                    <label for="projectImage">Image URL</label>
-                    <input type="url" id="projectImage" name="image" value="${project?.featuredImage || project?.image || ''}" required>
+                    <label for="projectDescription">Description</label>
+                    <textarea id="projectDescription" name="description" rows="4">${project?.description || ''}</textarea>
                 </div>
+                <div class="form-group">
+                    <label for="projectImage">Featured Image</label>
+                    <div style="display:flex;gap:8px;">
+                        <input type="text" id="projectImage" name="image" value="${project?.featuredImage || project?.image || ''}" placeholder="https://..." style="flex:1;">
+                        <button type="button" class="btn btn-secondary" onclick="adminDashboard.browseFeaturedImage('projectImage','projectImagePreview')">Browse</button>
+                    </div>
+                    <img id="projectImagePreview" src="${project?.featuredImage || project?.image || ''}" style="${(project?.featuredImage || project?.image) ? '' : 'display:none;'}max-height:120px;margin-top:8px;border-radius:6px;">
+                </div>
+                ${this.mediaArrayField('projectGallery', 'Photo Gallery', 'image', project?.images || [], 'Upload progress/development photos. Shown on the project details page.')}
+                ${this.mediaArrayField('projectVideos', 'Videos', 'video', project?.videos || [], 'YouTube, Vimeo or MP4 links of the project/society.')}
                 <div class="form-group">
                     <label for="projectFeatures">Key Features (comma separated)</label>
-                    <input type="text" id="projectFeatures" name="features" value="${(project?.amenities || project?.features || []).join(', ')}" placeholder="e.g., Swimming Pool, Gym, Security">
+                    <input type="text" id="projectFeatures" name="features" value="${(project?.features || project?.amenities || []).join(', ')}" placeholder="e.g., 270ft Boulevard, Green Belts, Gated">
+                </div>
+                <div class="form-group">
+                    <label for="projectPlots">Plot Pricing (one per line, format: <em>Label | Type</em>)</label>
+                    <textarea id="projectPlots" rows="5" placeholder="5 Marla - PKR 34.75 Lac | Residential
+Main Boulevard (50x60) - PKR 85 Lac | Commercial">${plotsText}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="projectPaymentPlan">Payment Plan</label>
+                    <textarea id="projectPaymentPlan" rows="2" placeholder="48 Months | 20% Down Payment | Flexible Installments">${project?.paymentPlan || ''}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="projectStatus">Status</label>
+                    <select id="projectStatus">
+                        <option value="active" ${(!project || project?.status === 'active') ? 'selected' : ''}>Active (visible)</option>
+                        <option value="inactive" ${project?.status === 'inactive' ? 'selected' : ''}>Inactive (hidden)</option>
+                    </select>
                 </div>
                 <div class="form-actions">
                     <button type="button" id="saveProjectBtn" class="btn btn-primary">
@@ -730,6 +817,8 @@ class AdminDashboard {
         `;
 
         this.showModal(modalContent);
+        this.renderMediaArray('projectGallery', 'image');
+        this.renderMediaArray('projectVideos', 'video');
         document.getElementById('saveProjectBtn').addEventListener('click', (e) => {
             e.preventDefault();
             const form = document.getElementById('projectForm');
@@ -741,18 +830,35 @@ class AdminDashboard {
         });
     }
 
+    // Parse the "Label | Type" plot textarea into [{label, type}]
+    parsePlots(text) {
+        if (!text) return [];
+        return text.split('\n').map(line => line.trim()).filter(Boolean).map(line => {
+            const [label, type] = line.split('|').map(s => s.trim());
+            return { label: label || '', type: type || '' };
+        });
+    }
+
     async saveProject(projectId = null) {
         const form = document.getElementById('projectForm');
         const formData = new FormData(form);
-        
+
         const projectData = {
             title: formData.get('title'),
+            category: formData.get('category'),
             location: formData.get('location'),
+            badge: formData.get('badge'),
             price: formData.get('price'),
             type: formData.get('type'),
+            subtitle: formData.get('subtitle'),
             description: formData.get('description'),
-            image: formData.get('image'),
-            features: formData.get('features') ? formData.get('features').split(',').map(f => f.trim()) : []
+            featuredImage: formData.get('image'),
+            images: this.getMediaArray('projectGallery'),
+            videos: this.getMediaArray('projectVideos'),
+            features: formData.get('features') ? formData.get('features').split(',').map(f => f.trim()).filter(Boolean) : [],
+            plots: this.parsePlots(document.getElementById('projectPlots').value),
+            paymentPlan: document.getElementById('projectPaymentPlan').value,
+            status: document.getElementById('projectStatus').value
         };
 
         try {
@@ -1127,6 +1233,468 @@ class AdminDashboard {
             this.showNotification('Sitemap refresh failed. It will auto-update on next request.', 'warning');
         } finally {
             if (btn) btn.disabled = false;
+        }
+    }
+
+    // ===== Shared rich-content media helpers =====
+
+    // Toolbar (HTML string) placed above a content <textarea>
+    mediaToolbar(targetId) {
+        return `
+            <div class="editor-toolbar" style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+                <button type="button" class="btn btn-sm btn-secondary" onclick="adminDashboard.insertImage('${targetId}')"><i class="fas fa-image"></i> Image</button>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="adminDashboard.insertVideo('${targetId}')"><i class="fas fa-video"></i> Video</button>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="adminDashboard.insertSnippet('${targetId}','heading')"><i class="fas fa-heading"></i> Heading</button>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="adminDashboard.insertSnippet('${targetId}','paragraph')"><i class="fas fa-paragraph"></i> Paragraph</button>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="adminDashboard.insertSnippet('${targetId}','link')"><i class="fas fa-link"></i> Link</button>
+            </div>`;
+    }
+
+    // Convert a YouTube/Vimeo/MP4 URL into responsive embed HTML
+    toEmbedHtml(url) {
+        if (!url) return '';
+        url = url.trim();
+        let m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})/);
+        if (m) {
+            return `\n<div class="video-embed"><iframe src="https://www.youtube.com/embed/${m[1]}" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>\n`;
+        }
+        m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+        if (m) {
+            return `\n<div class="video-embed"><iframe src="https://player.vimeo.com/video/${m[1]}" title="Vimeo video" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>\n`;
+        }
+        if (/\.(mp4|webm|ogg)(\?.*)?$/i.test(url)) {
+            return `\n<div class="video-embed"><video controls src="${url}"></video></div>\n`;
+        }
+        return `\n<div class="video-embed"><iframe src="${url}" frameborder="0" allowfullscreen></iframe></div>\n`;
+    }
+
+    insertIntoTextarea(targetId, snippet) {
+        const ta = document.getElementById(targetId);
+        if (!ta) return;
+        const start = ta.selectionStart ?? ta.value.length;
+        const end = ta.selectionEnd ?? ta.value.length;
+        ta.value = ta.value.slice(0, start) + snippet + ta.value.slice(end);
+        ta.focus();
+        const pos = start + snippet.length;
+        ta.setSelectionRange(pos, pos);
+    }
+
+    insertSnippet(targetId, kind) {
+        if (kind === 'heading') this.insertIntoTextarea(targetId, '\n<h2>Heading</h2>\n');
+        else if (kind === 'paragraph') this.insertIntoTextarea(targetId, '\n<p>Your text here...</p>\n');
+        else if (kind === 'link') {
+            const url = prompt('Link URL:');
+            if (!url) return;
+            const text = prompt('Link text:', url) || url;
+            this.insertIntoTextarea(targetId, `<a href="${url}" target="_blank" rel="noopener">${text}</a>`);
+        }
+    }
+
+    insertVideo(targetId) {
+        const url = prompt('Paste a YouTube, Vimeo, or MP4 video URL:');
+        if (!url) return;
+        this.insertIntoTextarea(targetId, this.toEmbedHtml(url));
+    }
+
+    insertImage(targetId) {
+        this.openMediaLibrary((url) => {
+            const alt = prompt('Image alt text (for SEO):', '') || '';
+            this.insertIntoTextarea(targetId, `\n<img src="${url}" alt="${alt}" loading="lazy">\n`);
+        });
+    }
+
+    // Media library overlay; calls onPick(url) when an image is chosen
+    async openMediaLibrary(onPick) {
+        this._mediaPickCb = onPick;
+        const existing = document.getElementById('mediaLibraryOverlay');
+        if (existing) existing.remove();
+
+        const overlay = document.createElement('div');
+        overlay.id = 'mediaLibraryOverlay';
+        overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:3000;display:flex;align-items:center;justify-content:center;padding:20px;';
+        overlay.innerHTML = `
+            <div style="background:#fff;border-radius:10px;max-width:820px;width:100%;max-height:85vh;overflow:auto;padding:24px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                    <h3 style="margin:0;">Media Library</h3>
+                    <button type="button" class="btn btn-sm btn-secondary" id="mediaLibClose">&times; Close</button>
+                </div>
+                <div class="form-group">
+                    <label>Paste an image URL</label>
+                    <div style="display:flex;gap:8px;">
+                        <input type="text" id="mediaLibUrl" placeholder="https://..." style="flex:1;">
+                        <button type="button" class="btn btn-primary" id="mediaLibUrlBtn">Use URL</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Or upload a new image</label>
+                    <input type="file" id="mediaLibUpload" accept="image/*">
+                </div>
+                <h4 style="margin:16px 0 8px;">Your uploads</h4>
+                <div id="mediaLibGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;"><p>Loading...</p></div>
+            </div>`;
+        document.body.appendChild(overlay);
+
+        const close = () => overlay.remove();
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+        document.getElementById('mediaLibClose').onclick = close;
+        document.getElementById('mediaLibUrlBtn').onclick = () => {
+            const url = document.getElementById('mediaLibUrl').value.trim();
+            if (url) { close(); if (this._mediaPickCb) this._mediaPickCb(url); }
+        };
+        document.getElementById('mediaLibUpload').onchange = async (e) => {
+            const files = e.target.files;
+            if (!files || !files.length) return;
+            const fd = new FormData();
+            fd.append('images', files[0]);
+            try {
+                const res = await this.api.uploadImages(fd);
+                const uploaded = Array.isArray(res) ? res[0] : res;
+                if (uploaded && uploaded.url) {
+                    close();
+                    if (this._mediaPickCb) this._mediaPickCb(uploaded.url);
+                    this.loadGallery();
+                }
+            } catch (err) {
+                this.showNotification('Upload failed. Please try again.', 'error');
+            }
+        };
+
+        try {
+            const res = await this.api.getImages();
+            const images = Array.isArray(res) ? res : (res.images || []);
+            const grid = document.getElementById('mediaLibGrid');
+            if (!grid) return;
+            grid.innerHTML = images.length
+                ? images.map(img => `<img src="${img.url}" alt="${img.name || ''}" title="${img.name || ''}" style="width:100%;height:90px;object-fit:cover;border-radius:6px;cursor:pointer;" onclick="adminDashboard._pickMedia(this.src)">`).join('')
+                : '<p>No uploads yet. Use the URL field or upload above.</p>';
+        } catch (err) {
+            const grid = document.getElementById('mediaLibGrid');
+            if (grid) grid.innerHTML = '<p>Failed to load images.</p>';
+        }
+    }
+
+    _pickMedia(url) {
+        const cb = this._mediaPickCb;
+        const overlay = document.getElementById('mediaLibraryOverlay');
+        if (overlay) overlay.remove();
+        if (cb) cb(url);
+    }
+
+    // Set a featured-image <input> via the media library
+    browseFeaturedImage(inputId, previewId) {
+        this.openMediaLibrary((url) => {
+            const input = document.getElementById(inputId);
+            if (input) input.value = url;
+            const preview = document.getElementById(previewId);
+            if (preview) { preview.src = url; preview.style.display = 'block'; }
+        });
+    }
+
+    // ===== Reusable media-array widget (image galleries & video lists) =====
+    // State keyed by the list container id, so multiple widgets can coexist in one modal.
+    _ensureMediaStore() { if (!this._mediaArrays) this._mediaArrays = {}; }
+
+    // Returns the HTML for a managed list of images or videos.
+    // kind: 'image' | 'video'
+    mediaArrayField(listId, label, kind, items, hint) {
+        this._ensureMediaStore();
+        this._mediaArrays[listId] = Array.isArray(items) ? items.slice() : [];
+        const addFn = kind === 'image' ? `adminDashboard.addMediaArrayImage('${listId}')` : `adminDashboard.addMediaArrayVideo('${listId}')`;
+        const addLabel = kind === 'image' ? 'Add Image' : 'Add Video';
+        return `
+            <div class="form-group">
+                <label>${label}</label>
+                ${hint ? `<small style="display:block;color:#666;margin-bottom:6px;">${hint}</small>` : ''}
+                <div id="${listId}" class="media-array-list" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:8px;"></div>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="${addFn}"><i class="fas fa-plus"></i> ${addLabel}</button>
+            </div>`;
+    }
+
+    renderMediaArray(listId, kind) {
+        this._ensureMediaStore();
+        const list = document.getElementById(listId);
+        if (!list) return;
+        const items = this._mediaArrays[listId] || [];
+        if (!items.length) {
+            list.innerHTML = '<p style="color:#888;margin:0;">None yet.</p>';
+            return;
+        }
+        list.innerHTML = items.map((item, i) => {
+            const preview = kind === 'image'
+                ? `<img src="${item}" style="width:100%;height:90px;object-fit:cover;border-radius:6px;">`
+                : `<div style="height:90px;display:flex;align-items:center;justify-content:center;background:#222;color:#fff;border-radius:6px;text-align:center;font-size:11px;padding:4px;word-break:break-all;"><i class="fas fa-play-circle" style="margin-right:4px;"></i>${item.slice(0, 40)}</div>`;
+            return `
+                <div style="width:130px;border:1px solid #e0e0e0;border-radius:8px;padding:6px;background:#fff;">
+                    ${preview}
+                    <div style="display:flex;justify-content:space-between;margin-top:4px;">
+                        <button type="button" class="btn btn-sm btn-secondary" title="Move left" onclick="adminDashboard.moveMediaArrayItem('${listId}','${kind}',${i},-1)"><i class="fas fa-arrow-left"></i></button>
+                        <button type="button" class="btn btn-sm btn-secondary" title="Move right" onclick="adminDashboard.moveMediaArrayItem('${listId}','${kind}',${i},1)"><i class="fas fa-arrow-right"></i></button>
+                        <button type="button" class="btn btn-sm btn-danger" title="Remove" onclick="adminDashboard.removeMediaArrayItem('${listId}','${kind}',${i})"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>`;
+        }).join('');
+    }
+
+    addMediaArrayImage(listId) {
+        this.openMediaLibrary((url) => {
+            this._ensureMediaStore();
+            (this._mediaArrays[listId] = this._mediaArrays[listId] || []).push(url);
+            this.renderMediaArray(listId, 'image');
+        });
+    }
+
+    addMediaArrayVideo(listId) {
+        const url = prompt('Paste a YouTube, Vimeo, or MP4 video URL:');
+        if (!url) return;
+        this._ensureMediaStore();
+        (this._mediaArrays[listId] = this._mediaArrays[listId] || []).push(url.trim());
+        this.renderMediaArray(listId, 'video');
+    }
+
+    removeMediaArrayItem(listId, kind, idx) {
+        this._ensureMediaStore();
+        const arr = this._mediaArrays[listId];
+        if (!arr) return;
+        arr.splice(idx, 1);
+        this.renderMediaArray(listId, kind);
+    }
+
+    moveMediaArrayItem(listId, kind, idx, delta) {
+        this._ensureMediaStore();
+        const arr = this._mediaArrays[listId];
+        if (!arr) return;
+        const j = idx + delta;
+        if (j < 0 || j >= arr.length) return;
+        [arr[idx], arr[j]] = [arr[j], arr[idx]];
+        this.renderMediaArray(listId, kind);
+    }
+
+    getMediaArray(listId) {
+        this._ensureMediaStore();
+        return this._mediaArrays[listId] || [];
+    }
+
+    // ===== Hero Slideshow Management =====
+    // The hero is a single section with type='hero'; its images[] are the rotating banner.
+    async loadHero() {
+        const list = document.getElementById('heroImagesList');
+        if (!list) return;
+        try {
+            const response = await this.api.getSections();
+            const sections = Array.isArray(response) ? response : (response.sections || []);
+            this._heroSection = sections.find(s => s.type === 'hero') || null;
+            this._heroImages = (this._heroSection && Array.isArray(this._heroSection.images)) ? this._heroSection.images.slice() : [];
+            this.renderHeroImages();
+        } catch (error) {
+            console.error('Failed to load hero:', error);
+            list.innerHTML = '<p>Failed to load hero images.</p>';
+        }
+    }
+
+    renderHeroImages() {
+        const list = document.getElementById('heroImagesList');
+        if (!list) return;
+        const imgs = this._heroImages || [];
+        list.innerHTML = imgs.length ? imgs.map((url, i) => `
+            <div class="gallery-item" style="position:relative;">
+                <img src="${url}" alt="Hero image ${i + 1}" style="width:100%;height:130px;object-fit:cover;border-radius:8px;">
+                <div style="display:flex;justify-content:space-between;margin-top:6px;">
+                    <button class="btn btn-sm btn-secondary" title="Move left" onclick="adminDashboard.moveHeroImage(${i},-1)"><i class="fas fa-arrow-left"></i></button>
+                    <button class="btn btn-sm btn-secondary" title="Move right" onclick="adminDashboard.moveHeroImage(${i},1)"><i class="fas fa-arrow-right"></i></button>
+                    <button class="btn btn-sm btn-danger" title="Remove" onclick="adminDashboard.removeHeroImage(${i})"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>`).join('') : '<p style="color:#888;">No hero images yet. Click "Add Image".</p>';
+    }
+
+    addHeroImage() {
+        this.openMediaLibrary((url) => {
+            (this._heroImages = this._heroImages || []).push(url);
+            this.renderHeroImages();
+        });
+    }
+
+    removeHeroImage(i) {
+        if (!this._heroImages) return;
+        this._heroImages.splice(i, 1);
+        this.renderHeroImages();
+    }
+
+    moveHeroImage(i, delta) {
+        if (!this._heroImages) return;
+        const j = i + delta;
+        if (j < 0 || j >= this._heroImages.length) return;
+        [this._heroImages[i], this._heroImages[j]] = [this._heroImages[j], this._heroImages[i]];
+        this.renderHeroImages();
+    }
+
+    async saveHero() {
+        const images = this._heroImages || [];
+        const payload = {
+            type: 'hero',
+            title: this._heroSection?.title || 'Hero',
+            images,
+            status: 'published',
+            sortOrder: this._heroSection?.sortOrder ?? 0
+        };
+        try {
+            if (this._heroSection && this._heroSection.id) {
+                await this.api.updateSection(this._heroSection.id, payload);
+            } else {
+                this._heroSection = await this.api.createSection(payload);
+            }
+            await this.loadHero();
+            this.showNotification('Hero slideshow saved! It is now live on the homepage.', 'success');
+            this.addActivity('Updated hero slideshow images');
+        } catch (error) {
+            console.error('Failed to save hero:', error);
+            this.showNotification(error.message || 'Failed to save hero slideshow.', 'error');
+        }
+    }
+
+    // ===== Sections Management =====
+    async loadSections() {
+        const tbody = document.getElementById('sectionsTableBody');
+        if (!tbody) return;
+        try {
+            const response = await this.api.getSections();
+            this.sections = Array.isArray(response) ? response : (response.sections || []);
+            tbody.innerHTML = this.sections.length ? this.sections.map(section => `
+                <tr>
+                    <td>${section.title || '(untitled)'}</td>
+                    <td>${section.type || 'custom'}</td>
+                    <td>${section.sortOrder ?? 0}</td>
+                    <td><span class="status ${section.status}">${section.status}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" onclick="adminDashboard.editSection('${section.id}')"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="adminDashboard.deleteSection('${section.id}')"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('') : '<tr><td colspan="5">No sections yet. Click "Add New Section".</td></tr>';
+        } catch (error) {
+            console.error('Failed to load sections:', error);
+            tbody.innerHTML = '<tr><td colspan="5">Failed to load sections. Please try again.</td></tr>';
+        }
+    }
+
+    showSectionModal(sectionId = null) {
+        const section = sectionId ? (this.sections || []).find(s => String(s.id) === String(sectionId)) : null;
+        const isEdit = !!section;
+        const types = ['custom', 'hero', 'about', 'services', 'feature', 'cta'];
+
+        const modalContent = `
+            <h2>${isEdit ? 'Edit Section' : 'Add New Section'}</h2>
+            <form id="sectionForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="sectionTitle">Title</label>
+                        <input type="text" id="sectionTitle" value="${section?.title || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label for="sectionType">Type</label>
+                        <select id="sectionType">
+                            ${types.map(t => `<option value="${t}" ${section?.type === t ? 'selected' : ''}>${t}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="sectionSubtitle">Subtitle</label>
+                    <input type="text" id="sectionSubtitle" value="${section?.subtitle || ''}">
+                </div>
+                <div class="form-group">
+                    <label for="sectionContent">Content (HTML, images & video supported)</label>
+                    ${this.mediaToolbar('sectionContent')}
+                    <textarea id="sectionContent" rows="8">${section?.content || ''}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="sectionImageUrl">Image URL</label>
+                    <div style="display:flex;gap:8px;">
+                        <input type="text" id="sectionImageUrl" value="${section?.imageUrl || ''}" placeholder="/uploads/image.jpg" style="flex:1;">
+                        <button type="button" class="btn btn-secondary" onclick="adminDashboard.browseFeaturedImage('sectionImageUrl','sectionImagePreview')">Browse</button>
+                    </div>
+                    <img id="sectionImagePreview" src="${section?.imageUrl || ''}" style="${section?.imageUrl ? '' : 'display:none;'}max-height:120px;margin-top:8px;border-radius:6px;">
+                </div>
+                <div class="form-group">
+                    <label for="sectionVideoUrl">Video URL (YouTube/Vimeo/MP4, optional)</label>
+                    <input type="text" id="sectionVideoUrl" value="${section?.videoUrl || ''}" placeholder="https://youtube.com/watch?v=...">
+                </div>
+                ${this.mediaArrayField('sectionImages', 'Image Gallery / Slideshow', 'image', section?.images || [], 'For a hero or gallery block, add multiple images here.')}
+                ${this.mediaArrayField('sectionVideos', 'Videos', 'video', section?.videos || [], 'YouTube, Vimeo or MP4 links.')}
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="sectionButtonText">Button Text</label>
+                        <input type="text" id="sectionButtonText" value="${section?.buttonText || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label for="sectionButtonLink">Button Link</label>
+                        <input type="text" id="sectionButtonLink" value="${section?.buttonLink || ''}">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="sectionStatus">Status</label>
+                        <select id="sectionStatus">
+                            <option value="published" ${section?.status === 'published' ? 'selected' : ''}>Published</option>
+                            <option value="draft" ${section?.status === 'draft' || !section ? 'selected' : ''}>Draft</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sectionSortOrder">Sort Order</label>
+                        <input type="number" id="sectionSortOrder" value="${section?.sortOrder ?? 0}" min="0">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" id="saveSectionBtn" class="btn btn-primary"><i class="fas fa-save"></i> ${isEdit ? 'Update' : 'Create'} Section</button>
+                    <button type="button" class="btn btn-secondary" onclick="adminDashboard.closeModal()">Cancel</button>
+                </div>
+            </form>`;
+
+        this.showModal(modalContent);
+        this.renderMediaArray('sectionImages', 'image');
+        this.renderMediaArray('sectionVideos', 'video');
+        document.getElementById('saveSectionBtn').addEventListener('click', () => this.saveSection(sectionId));
+    }
+
+    async saveSection(sectionId = null) {
+        const sectionData = {
+            title: document.getElementById('sectionTitle').value,
+            type: document.getElementById('sectionType').value,
+            subtitle: document.getElementById('sectionSubtitle').value,
+            content: document.getElementById('sectionContent').value,
+            imageUrl: document.getElementById('sectionImageUrl').value,
+            videoUrl: document.getElementById('sectionVideoUrl').value,
+            images: this.getMediaArray('sectionImages'),
+            videos: this.getMediaArray('sectionVideos'),
+            buttonText: document.getElementById('sectionButtonText').value,
+            buttonLink: document.getElementById('sectionButtonLink').value,
+            status: document.getElementById('sectionStatus').value,
+            sortOrder: parseInt(document.getElementById('sectionSortOrder').value) || 0
+        };
+        try {
+            if (sectionId) await this.api.updateSection(sectionId, sectionData);
+            else await this.api.createSection(sectionData);
+            await this.loadSections();
+            this.closeModal();
+            this.showNotification(`Section ${sectionId ? 'updated' : 'created'} successfully!`, 'success');
+            this.addActivity(`${sectionId ? 'Updated' : 'Created'} section: ${sectionData.title || 'untitled'}`);
+        } catch (error) {
+            console.error('Failed to save section:', error);
+            this.showNotification(error.message || 'Failed to save section. Please try again.', 'error');
+        }
+    }
+
+    editSection(sectionId) {
+        this.showSectionModal(sectionId);
+    }
+
+    async deleteSection(sectionId) {
+        if (!confirm('Are you sure you want to delete this section?')) return;
+        try {
+            await this.api.deleteSection(sectionId);
+            await this.loadSections();
+            this.showNotification('Section deleted successfully!', 'success');
+        } catch (error) {
+            console.error('Failed to delete section:', error);
+            this.showNotification(error.message || 'Failed to delete section. Please try again.', 'error');
         }
     }
 
