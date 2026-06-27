@@ -1705,11 +1705,13 @@ Main Boulevard (50x60) - PKR 85 Lac | Commercial">${plotsText}</textarea>
 
     showModal(content) {
         document.getElementById('modalBody').innerHTML = content;
-        document.getElementById('modal').style.display = 'block';
+        // CSS controls visibility via the `.show` class (opacity/visibility),
+        // not display — toggling display alone leaves the modal invisible.
+        document.getElementById('modal').classList.add('show');
     }
 
     closeModal() {
-        document.getElementById('modal').style.display = 'none';
+        document.getElementById('modal').classList.remove('show');
     }
 
     showNotification(message, type = 'info') {
