@@ -110,3 +110,5 @@ logs
 tmp/
 temp/
 .vercel
+
+.env*
