@@ -340,9 +340,6 @@
                     <i class="fas fa-plus"></i> Choose Images
                 </button>
             </div>
-            <div class="current-images" id="homepageImages">
-                <!-- Current homepage images will be loaded here -->
-            </div>
         </div>
 
         <!-- Logo Images -->
@@ -363,9 +360,6 @@
                     <i class="fas fa-plus"></i> Choose Logo
                 </button>
             </div>
-            <div class="current-images" id="logoImages">
-                <!-- Current logo images will be loaded here -->
-            </div>
         </div>
 
         <!-- Project Images -->
@@ -373,15 +367,6 @@
             <div class="section-title">
                 <i class="fas fa-building"></i>
                 Project Images
-            </div>
-            <div style="margin-bottom: 20px;">
-                <label for="projectSelect">Select Project:</label>
-                <select id="projectSelect" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin-left: 10px;">
-                    <option value="faisal-town">Faisal Town</option>
-                    <option value="ruden-enclave">Ruden Enclave</option>
-                    <option value="eighteen">Eighteen</option>
-                    <option value="bahria-town-phase8">Bahria Town Phase 8</option>
-                </select>
             </div>
             <div class="upload-area" id="projectUploadArea">
                 <div class="upload-icon">
@@ -394,9 +379,6 @@
                 <button class="btn btn-primary" onclick="document.getElementById('projectFileInput').click()">
                     <i class="fas fa-plus"></i> Choose Project Images
                 </button>
-            </div>
-            <div class="current-images" id="projectImages">
-                <!-- Current project images will be loaded here -->
             </div>
         </div>
 
@@ -434,37 +416,29 @@
             constructor() {
                 this.api = new AdminAPI();
                 this.initializeEventListeners();
-                this.loadCurrentImages();
                 this.loadUploadedImages();
             }
 
             initializeEventListeners() {
-                // Homepage upload
-                this.setupDragAndDrop('homepageUploadArea', 'homepageFileInput', 'homepage');
+                // All three upload areas post to the same authenticated endpoint.
+                this.setupDragAndDrop('homepageUploadArea', 'homepageFileInput');
                 document.getElementById('homepageFileInput').addEventListener('change', (e) => {
-                    this.handleFileUpload(e.target.files, 'homepage');
+                    this.handleFileUpload(e.target.files);
                 });
 
-                // Logo upload
-                this.setupDragAndDrop('logoUploadArea', 'logoFileInput', 'logo');
+                this.setupDragAndDrop('logoUploadArea', 'logoFileInput');
                 document.getElementById('logoFileInput').addEventListener('change', (e) => {
-                    this.handleFileUpload(e.target.files, 'logo');
+                    this.handleFileUpload(e.target.files);
                 });
 
-                // Project upload
-                this.setupDragAndDrop('projectUploadArea', 'projectFileInput', 'project');
+                this.setupDragAndDrop('projectUploadArea', 'projectFileInput');
                 document.getElementById('projectFileInput').addEventListener('change', (e) => {
-                    this.handleFileUpload(e.target.files, 'project');
-                });
-
-                document.getElementById('projectSelect').addEventListener('change', () => {
-                    this.loadProjectImages();
+                    this.handleFileUpload(e.target.files);
                 });
             }
 
-            setupDragAndDrop(areaId, inputId, type) {
+            setupDragAndDrop(areaId, inputId) {
                 const area = document.getElementById(areaId);
-                const input = document.getElementById(inputId);
 
                 area.addEventListener('dragover', (e) => {
                     e.preventDefault();
@@ -478,11 +452,11 @@
                 area.addEventListener('drop', (e) => {
                     e.preventDefault();
                     area.classList.remove('dragover');
-                    this.handleFileUpload(e.dataTransfer.files, type);
+                    this.handleFileUpload(e.dataTransfer.files);
                 });
             }
 
-            async handleFileUpload(files, type) {
+            async handleFileUpload(files) {
                 if (!files || files.length === 0) return;
 
                 this.showStatus(`Uploading ${files.length} image(s)...`, 'info');
@@ -560,77 +534,6 @@
                     console.error('Delete failed:', error);
                     this.showStatus('Failed to delete image: ' + (error.message || ''), 'error');
                 }
-            }
-
-            loadCurrentImages() {
-                this.loadHomepageImages();
-                this.loadLogoImages();
-                this.loadProjectImages();
-            }
-
-            loadHomepageImages() {
-                const container = document.getElementById('homepageImages');
-                const images = [
-                    { name: 'home1.png', path: 'images/homepage/home1.png', alt: 'Hero Image 1' },
-                    { name: 'home2.png', path: 'images/homepage/home2.png', alt: 'Hero Image 2' }
-                ];
-
-                container.innerHTML = images.map(img => `
-                    <div class="current-image-item">
-                        <img src="${img.path}" alt="${img.alt}" onerror="this.src='https://via.placeholder.com/150x100?text=No+Image'">
-                        <div class="current-image-name">${img.name}</div>
-                    </div>
-                `).join('');
-            }
-
-            loadLogoImages() {
-                const container = document.getElementById('logoImages');
-                const images = [
-                    { name: 'logoe_statenama.png', path: 'images/logos/logoe_statenama.png', alt: 'Estate Nama Logo' }
-                ];
-
-                container.innerHTML = images.map(img => `
-                    <div class="current-image-item">
-                        <img src="${img.path}" alt="${img.alt}" onerror="this.src='https://via.placeholder.com/150x100?text=No+Logo'">
-                        <div class="current-image-name">${img.name}</div>
-                    </div>
-                `).join('');
-            }
-
-            loadProjectImages() {
-                const project = document.getElementById('projectSelect').value;
-                const container = document.getElementById('projectImages');
-                
-                // This would load actual project images from the server
-                const images = this.getProjectImages(project);
-
-                container.innerHTML = images.map(img => `
-                    <div class="current-image-item">
-                        <img src="${img.path}" alt="${img.alt}" onerror="this.src='https://via.placeholder.com/150x100?text=Project+Image'">
-                        <div class="current-image-name">${img.name}</div>
-                    </div>
-                `).join('');
-            }
-
-            getProjectImages(project) {
-                // Mock data - in real implementation, fetch from server
-                const projectImages = {
-                    'faisal-town': [
-                        { name: 'project1.jpg', path: 'images/projects/faisal-town/project1.jpg', alt: 'Faisal Town Project 1' },
-                        { name: 'project2.jpg', path: 'images/projects/faisal-town/project2.jpg', alt: 'Faisal Town Project 2' }
-                    ],
-                    'ruden-enclave': [
-                        { name: 'project1.jpg', path: 'images/projects/ruden-enclave/project1.jpg', alt: 'Ruden Enclave Project 1' }
-                    ],
-                    'eighteen': [
-                        { name: 'project1.jpg', path: 'images/projects/eighteen/project1.jpg', alt: 'Eighteen Project 1' }
-                    ],
-                    'bahria-town-phase8': [
-                        { name: 'project1.jpg', path: 'images/projects/bahria-town-phase8/project1.jpg', alt: 'Bahria Town Phase 8 Project 1' }
-                    ]
-                };
-
-                return projectImages[project] || [];
             }
 
             showStatus(message, type) {
