@@ -66,8 +66,8 @@ class AdminDashboard {
 
         // Add buttons
         document.getElementById('addPostBtn')?.addEventListener('click', () => this.showPostModal());
-        document.getElementById('addBlogBtn')?.addEventListener('click', () => this.showBlogModal());
-        document.getElementById('addPageBtn')?.addEventListener('click', () => this.showPageModal());
+        document.getElementById('addBlogBtn')?.addEventListener('click', () => { window.location.href = 'new-blog.html'; });
+        document.getElementById('addPageBtn')?.addEventListener('click', () => { window.location.href = 'new-page.html'; });
         document.getElementById('addProjectBtn')?.addEventListener('click', () => this.showProjectModal());
         document.getElementById('addSectionBtn')?.addEventListener('click', () => this.showSectionModal());
         document.getElementById('addHeroImageBtn')?.addEventListener('click', () => this.addHeroImage());
@@ -101,6 +101,11 @@ class AdminDashboard {
             // Handle image manager separately - redirect to dedicated page
             if (section === 'images') {
                 window.location.href = 'admin-images.html';
+                return;
+            }
+            // Settings has its own dedicated page
+            if (section === 'settings') {
+                window.location.href = 'admin-settings.html';
                 return;
             }
             this.switchSection(section);
@@ -497,7 +502,7 @@ class AdminDashboard {
     }
 
     editBlog(blogId) {
-        this.showBlogModal(blogId);
+        window.location.href = 'new-blog.html?id=' + encodeURIComponent(blogId);
     }
 
     async deleteBlog(blogId) {
@@ -665,7 +670,7 @@ class AdminDashboard {
     }
 
     editPage(pageId) {
-        this.showPageModal(pageId);
+        window.location.href = 'new-page.html?id=' + encodeURIComponent(pageId);
     }
 
     async deletePage(pageId) {
@@ -1311,7 +1316,9 @@ Main Boulevard (50x60) - PKR 85 Lac | Commercial">${plotsText}</textarea>
 
         const overlay = document.createElement('div');
         overlay.id = 'mediaLibraryOverlay';
-        overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:3000;display:flex;align-items:center;justify-content:center;padding:20px;';
+        // z-index must exceed the content modal (.modal = 9999) so the picker
+        // appears ABOVE it, not hidden behind — otherwise it looks like the popup vanished.
+        overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10001;display:flex;align-items:center;justify-content:center;padding:20px;';
         overlay.innerHTML = `
             <div style="background:#fff;border-radius:10px;max-width:820px;width:100%;max-height:85vh;overflow:auto;padding:24px;">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">

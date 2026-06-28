@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estate Nama - Site Settings</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .admin-container { max-width: 900px; margin: 0 auto; padding: 20px; font-family: 'Inter', sans-serif; }
+        .admin-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white; padding: 30px; border-radius: 10px; margin-bottom: 30px; text-align: center;
+        }
+        .admin-header h1 { margin: 0; font-size: 2.2em; font-weight: 700; }
+        .admin-header p { margin: 10px 0 0; opacity: .9; }
+        .settings-section {
+            background: #fff; border-radius: 10px; padding: 28px; margin-bottom: 24px;
+            box-shadow: 0 5px 15px rgba(0,0,0,.08); border: 1px solid #e0e0e0;
+        }
+        .section-title {
+            color: #1e3c72; font-size: 1.3em; font-weight: 600; margin: 0 0 20px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-weight: 600; color: #333; margin-bottom: 6px; }
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="url"],
+        .form-group textarea {
+            width: 100%; padding: 11px 12px; border: 1px solid #ddd; border-radius: 6px;
+            font-size: .95em; font-family: inherit; box-sizing: border-box;
+        }
+        .form-group small { color: #777; font-size: .8em; display: block; margin-top: 4px; }
+        .input-icon { position: relative; }
+        .input-icon i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #2a5298; }
+        .input-icon input { padding-left: 38px !important; }
+        .logo-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        .logo-preview {
+            width: 160px; height: 90px; object-fit: contain; background: #f5f5f5;
+            border: 1px solid #e0e0e0; border-radius: 6px; padding: 6px;
+        }
+        .btn {
+            padding: 11px 18px; border: none; border-radius: 6px; cursor: pointer; font-size: .95em;
+            font-weight: 600; transition: all .25s ease; text-decoration: none; display: inline-flex;
+            align-items: center; gap: 8px;
+        }
+        .btn-primary { background: #2a5298; color: #fff; }
+        .btn-primary:hover { background: #1e3c72; }
+        .btn-secondary { background: #6c757d; color: #fff; }
+        .btn-secondary:hover { background: #5a6268; }
+        .save-bar {
+            position: sticky; bottom: 0; background: #fff; padding: 18px; border-radius: 10px;
+            box-shadow: 0 -4px 15px rgba(0,0,0,.08); border: 1px solid #e0e0e0; text-align: right;
+        }
+        .status-message { padding: 14px; border-radius: 6px; margin: 0 0 18px; display: none; }
+        .status-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .status-info { background: #cce5ff; color: #004085; border: 1px solid #b8daff; }
+        .back-btn {
+            position: fixed; top: 20px; left: 20px; background: #2a5298; color: #fff; padding: 10px 15px;
+            border-radius: 5px; text-decoration: none; display: flex; align-items: center; gap: 8px;
+            font-weight: 500; z-index: 1000;
+        }
+        .back-btn:hover { background: #1e3c72; }
+        .file-input { display: none; }
+    </style>
+</head>
+<body>
+    <a href="admin-dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1><i class="fas fa-sliders-h"></i> Site Settings</h1>
+            <p>Manage your logo, contact details, WhatsApp number, and social links</p>
+        </div>
+
+        <div id="statusMessage" class="status-message"></div>
+
+        <form id="settingsForm">
+            <!-- Branding -->
+            <div class="settings-section">
+                <div class="section-title"><i class="fas fa-trademark"></i> Branding</div>
+                <div class="form-group">
+                    <label>Site Logo</label>
+                    <div class="logo-row">
+                        <img id="logoPreview" class="logo-preview" alt="Logo preview"
+                             onerror="this.src='https://via.placeholder.com/160x90?text=No+Logo'">
+                        <div>
+                            <input type="file" id="logoFileInput" class="file-input" accept="image/*">
+                            <button type="button" class="btn btn-secondary" onclick="document.getElementById('logoFileInput').click()">
+                                <i class="fas fa-upload"></i> Upload New Logo
+                            </button>
+                            <small>PNG with transparent background recommended.</small>
+                        </div>
+                    </div>
+                    <input type="hidden" id="site_logo">
+                </div>
+                <div class="form-group">
+                    <label for="site_title">Site Title</label>
+                    <input type="text" id="site_title" placeholder="EstateNama - Real Estate Solutions">
+                </div>
+                <div class="form-group">
+                    <label for="site_description">Site Description</label>
+                    <textarea id="site_description" rows="2" placeholder="Short description used for SEO"></textarea>
+                </div>
+            </div>
+
+            <!-- Contact -->
+            <div class="settings-section">
+                <div class="section-title"><i class="fas fa-address-book"></i> Contact Information</div>
+                <div class="form-group">
+                    <label for="contact_phone">Phone Number</label>
+                    <div class="input-icon"><i class="fas fa-phone"></i>
+                        <input type="text" id="contact_phone" placeholder="03195547788">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="contact_email">Email Address</label>
+                    <div class="input-icon"><i class="fas fa-envelope"></i>
+                        <input type="email" id="contact_email" placeholder="info@estatenama.com">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="company_address">Company Address</label>
+                    <div class="input-icon"><i class="fas fa-map-marker-alt"></i>
+                        <input type="text" id="company_address" placeholder="Phase 7, Bahria Town">
+                    </div>
+                </div>
+            </div>
+
+            <!-- WhatsApp -->
+            <div class="settings-section">
+                <div class="section-title"><i class="fab fa-whatsapp"></i> WhatsApp</div>
+                <div class="form-group">
+                    <label for="whatsapp_number">WhatsApp Number</label>
+                    <div class="input-icon"><i class="fab fa-whatsapp"></i>
+                        <input type="text" id="whatsapp_number" placeholder="923001234567">
+                    </div>
+                    <small>Full international format, digits only (country code + number). e.g. 923001234567 — drives all "Chat with us" buttons.</small>
+                </div>
+            </div>
+
+            <!-- Social -->
+            <div class="settings-section">
+                <div class="section-title"><i class="fas fa-share-nodes"></i> Social Links</div>
+                <div class="form-group">
+                    <label for="social_facebook">Facebook URL</label>
+                    <div class="input-icon"><i class="fab fa-facebook"></i>
+                        <input type="url" id="social_facebook" placeholder="https://facebook.com/yourpage">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="social_instagram">Instagram URL</label>
+                    <div class="input-icon"><i class="fab fa-instagram"></i>
+                        <input type="url" id="social_instagram" placeholder="https://instagram.com/yourpage">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="social_linkedin">LinkedIn URL</label>
+                    <div class="input-icon"><i class="fab fa-linkedin"></i>
+                        <input type="url" id="social_linkedin" placeholder="https://linkedin.com/company/yourpage">
+                    </div>
+                </div>
+            </div>
+
+            <div class="save-bar">
+                <button type="submit" class="btn btn-primary" id="saveBtn">
+                    <i class="fas fa-save"></i> Save Settings
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script src="/admin-auth.js?v=20260629"></script>
+    <script src="/admin-api.js?v=20260629"></script>
+    <script>
+        const auth = new AdminAuth();
+        if (!auth.isLoggedIn()) {
+            window.location.href = 'admin-login.html';
+        }
+
+        class SettingsManager {
+            constructor() {
+                this.api = new AdminAPI();
+                // Keys mirrored between the form (id) and the settings table (snake_case key).
+                this.keys = [
+                    'site_logo', 'site_title', 'site_description',
+                    'contact_phone', 'contact_email', 'company_address',
+                    'whatsapp_number',
+                    'social_facebook', 'social_instagram', 'social_linkedin'
+                ];
+                this.bindEvents();
+                this.load();
+            }
+
+            bindEvents() {
+                document.getElementById('settingsForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.save();
+                });
+                document.getElementById('logoFileInput').addEventListener('change', (e) => {
+                    this.uploadLogo(e.target.files);
+                });
+            }
+
+            async load() {
+                try {
+                    const settings = await this.api.getSettings();
+                    if (!settings) return;
+                    this.keys.forEach(key => {
+                        const el = document.getElementById(key);
+                        if (el && settings[key] != null) el.value = settings[key];
+                    });
+                    const logo = settings.site_logo;
+                    if (logo) document.getElementById('logoPreview').src = logo;
+                } catch (err) {
+                    console.error('Failed to load settings:', err);
+                    this.showStatus('Failed to load settings: ' + (err.message || ''), 'error');
+                }
+            }
+
+            async uploadLogo(files) {
+                if (!files || !files.length) return;
+                this.showStatus('Uploading logo...', 'info');
+                try {
+                    const fd = new FormData();
+                    fd.append('images', files[0]);
+                    const result = await this.api.uploadImages(fd);
+                    if (!result) return; // redirected to login on 401
+                    const uploaded = Array.isArray(result) ? result[0] : result;
+                    if (!uploaded || !uploaded.url) throw new Error('Upload returned no URL');
+                    document.getElementById('site_logo').value = uploaded.url;
+                    document.getElementById('logoPreview').src = uploaded.url;
+                    this.showStatus('Logo uploaded. Click "Save Settings" to apply it.', 'success');
+                } catch (err) {
+                    console.error('Logo upload failed:', err);
+                    this.showStatus('Logo upload failed: ' + (err.message || ''), 'error');
+                }
+            }
+
+            async save() {
+                const btn = document.getElementById('saveBtn');
+                const original = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+                const payload = {};
+                this.keys.forEach(key => {
+                    const el = document.getElementById(key);
+                    if (el) payload[key] = el.value.trim();
+                });
+
+                try {
+                    await this.api.updateSettings(payload);
+                    this.showStatus('Settings saved successfully! Changes are live on the site.', 'success');
+                } catch (err) {
+                    console.error('Save failed:', err);
+                    this.showStatus('Failed to save settings: ' + (err.message || ''), 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = original;
+                }
+            }
+
+            showStatus(message, type) {
+                const el = document.getElementById('statusMessage');
+                el.textContent = message;
+                el.className = `status-message status-${type}`;
+                el.style.display = 'block';
+                if (type === 'success') {
+                    setTimeout(() => { el.style.display = 'none'; }, 5000);
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => new SettingsManager());
+    </script>
+</body>
+</html>

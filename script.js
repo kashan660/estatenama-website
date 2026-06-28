@@ -726,7 +726,9 @@ document.addEventListener('DOMContentLoaded', initNewsletterWidget);
 // Console welcome message
 // WhatsApp function for project details and newsletter offers
 function openWhatsApp(message = '') {
-    const phoneNumber = '923195547788';
+    // Number is configurable via Admin > Settings (hydrated into window.SITE_WHATSAPP
+    // by site-content.js). Falls back to the default if no setting is present.
+    const phoneNumber = (window.SITE_WHATSAPP && String(window.SITE_WHATSAPP).replace(/\D/g, '')) || '923195547788';
     const defaultMessage = 'Hi! I saw your special offers on Estate Nama website and I\'m interested in learning more about your real estate projects. Please provide me with more details.';
     const finalMessage = message || defaultMessage;
     const encodedMessage = encodeURIComponent(finalMessage);

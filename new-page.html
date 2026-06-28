@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog Editor - EstateNama Admin</title>
+    <title>Page Editor - EstateNama Admin</title>
     <link rel="stylesheet" href="admin-styles.css">
     <link rel="stylesheet" href="admin-editor.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -42,48 +42,43 @@
         <!-- Main Content -->
         <main class="admin-main">
             <div class="page-header">
-                <h1 class="page-title">Add New Blog</h1>
-                <p class="page-subtitle">Create or edit a blog article</p>
+                <h1 class="page-title">Add New Page</h1>
+                <p class="page-subtitle">Create or edit a website page</p>
             </div>
 
             <div class="editor-container">
                 <!-- Editor Form (Left Column) -->
                 <div class="editor-form">
-                    <form id="blogForm" class="content-form">
+                    <form id="pageForm" class="content-form">
                         <div class="form-group">
-                            <label for="title">Blog Title *</label>
+                            <label for="title">Page Title *</label>
                             <input type="text" id="title" required>
                         </div>
 
                         <div class="form-group">
                             <label for="slug">URL Slug *</label>
                             <input type="text" id="slug" required>
-                            <small class="form-text">Auto-generated from title. Only lowercase letters, numbers, and hyphens.</small>
+                            <small class="form-text">Auto-generated from title. Used as /page/your-slug.</small>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="author">Author</label>
-                                <input type="text" id="author" value="Admin">
+                                <label for="sortOrder">Sort Order</label>
+                                <input type="number" id="sortOrder" value="0">
+                                <small class="form-text">Lower numbers appear first in navigation.</small>
                             </div>
 
                             <div class="form-group">
-                                <label for="category">Category</label>
-                                <select id="category">
-                                    <option value="">Select Category</option>
-                                    <option value="real-estate-news">Real Estate News</option>
-                                    <option value="real-estate">Real Estate</option>
-                                    <option value="investment">Investment</option>
-                                    <option value="market-trends">Market Trends</option>
-                                    <option value="property-tips">Property Tips</option>
-                                    <option value="success-stories">Success Stories</option>
-                                </select>
+                                <label class="checkbox-label" style="display:flex;align-items:center;gap:8px;margin-top:28px;">
+                                    <input type="checkbox" id="showInNav">
+                                    Show in navigation menu
+                                </label>
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label for="excerpt">Excerpt</label>
-                            <textarea id="excerpt" rows="3" placeholder="Brief description (helps SEO and shows in blog list)..."></textarea>
+                            <textarea id="excerpt" rows="3" placeholder="Brief description (helps SEO and previews)..."></textarea>
                         </div>
 
                         <div class="form-group">
@@ -101,7 +96,7 @@
                         <div class="form-group">
                             <label for="content">Content *</label>
                             <div id="contentToolbar" class="content-toolbar"></div>
-                            <textarea id="content" rows="15" required placeholder="Write your blog content here. Use the toolbar above to insert images, videos, headings, and more..."></textarea>
+                            <textarea id="content" rows="15" required placeholder="Write your page content here. Use the toolbar above to insert images, videos, headings, and more..."></textarea>
                         </div>
 
                         <div class="form-group">
@@ -120,7 +115,7 @@
                             </h2>
                             <div class="form-group">
                                 <label for="metaTitle">Meta Title</label>
-                                <input type="text" id="metaTitle" placeholder="Leave empty to use Blog Title">
+                                <input type="text" id="metaTitle" placeholder="Leave empty to use Page Title">
                                 <small class="form-text">Recommended: 50-60 characters</small>
                             </div>
 
@@ -134,7 +129,7 @@
                         <div class="form-actions">
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save"></i>
-                                Save Blog
+                                Save Page
                             </button>
                             <a href="admin-dashboard.html" class="btn btn-secondary">
                                 <i class="fas fa-times"></i>
@@ -173,7 +168,7 @@
         }
 
         // Initialize the editor
-        const editor = new AdminEditor('blog', 'blogForm');
+        const editor = new AdminEditor('page', 'pageForm');
 
         function logout() {
             auth.logout();

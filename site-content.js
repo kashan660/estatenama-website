@@ -126,14 +126,53 @@
         else container.insertAdjacentHTML('beforeend', html);
     }
 
-    // ---- Settings (contact info) ---------------------------------------
+    // ---- Settings (branding, contact, social, WhatsApp) ----------------
     function hydrateSettings(settings) {
         if (!settings) return;
+
+        // Logo (header + footer)
+        if (settings.site_logo) {
+            document.querySelectorAll('.logo-img, .footer-logo-img').forEach(function (img) {
+                img.src = settings.site_logo;
+            });
+        }
+
+        // Contact phone
         if (settings.contact_phone) {
             document.querySelectorAll('.phone-number').forEach(function (el) {
                 el.textContent = settings.contact_phone;
             });
         }
+
+        // Contact email
+        if (settings.contact_email) {
+            document.querySelectorAll('.contact-email-no-click').forEach(function (el) {
+                el.textContent = settings.contact_email;
+            });
+        }
+
+        // WhatsApp number — expose globally for openWhatsApp() (digits only)
+        if (settings.whatsapp_number) {
+            window.SITE_WHATSAPP = String(settings.whatsapp_number).replace(/\D/g, '');
+        }
+
+        // Social links — wire the footer icons (skip the WhatsApp one, it uses openWhatsApp)
+        var socialMap = {
+            'fa-facebook': settings.social_facebook,
+            'fa-instagram': settings.social_instagram,
+            'fa-linkedin': settings.social_linkedin
+        };
+        document.querySelectorAll('.social-links a').forEach(function (a) {
+            var icon = a.querySelector('i');
+            if (!icon) return;
+            Object.keys(socialMap).forEach(function (cls) {
+                if (icon.classList.contains(cls) && socialMap[cls]) {
+                    a.href = socialMap[cls];
+                    a.target = '_blank';
+                    a.rel = 'noopener';
+                }
+            });
+        });
     }
 
     // ---- Boot ----------------------------------------------------------

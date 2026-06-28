@@ -166,6 +166,10 @@ class AdminAPI {
     }
 
     // Blogs API
+    async getBlog(id) {
+        return await this.request(`/blogs/${id}`);
+    }
+
     async getBlogs() {
         return await this.request('/blogs');
     }
@@ -260,6 +264,10 @@ class AdminAPI {
     // Pages API
     async getPages() {
         return await this.request('/pages');
+    }
+
+    async getPage(id) {
+        return await this.request(`/pages/${id}`);
     }
 
     async createPage(pageData) {
