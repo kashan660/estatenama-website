@@ -177,9 +177,15 @@
 
     // ---- Boot ----------------------------------------------------------
     function boot() {
-        api('/api/sections').then(hydrateHero);
-        api('/api/projects').then(hydrateProjects);
+        // Settings (logo, contact, social, WhatsApp) apply to every page.
         api('/api/settings').then(hydrateSettings);
+        // Homepage-only hydration — skip the fetch when the target isn't present.
+        if (document.querySelector('.hero .hero-background')) {
+            api('/api/sections').then(hydrateHero);
+        }
+        if (document.querySelector('#projects .container')) {
+            api('/api/projects').then(hydrateProjects);
+        }
     }
 
     if (document.readyState === 'loading') {

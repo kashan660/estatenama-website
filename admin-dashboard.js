@@ -65,7 +65,7 @@ class AdminDashboard {
         });
 
         // Add buttons
-        document.getElementById('addPostBtn')?.addEventListener('click', () => this.showPostModal());
+        document.getElementById('addPostBtn')?.addEventListener('click', () => { window.location.href = 'new-post.html'; });
         document.getElementById('addBlogBtn')?.addEventListener('click', () => { window.location.href = 'new-blog.html'; });
         document.getElementById('addPageBtn')?.addEventListener('click', () => { window.location.href = 'new-page.html'; });
         document.getElementById('addProjectBtn')?.addEventListener('click', () => this.showProjectModal());
@@ -328,7 +328,7 @@ class AdminDashboard {
     }
 
     editPost(postId) {
-        this.showPostModal(postId);
+        window.location.href = 'new-post.html?id=' + encodeURIComponent(postId);
     }
 
     async deletePost(postId) {
