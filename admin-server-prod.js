@@ -6,6 +6,7 @@ const multer = require('multer');
 const cors = require('cors');
 const { put } = require('@vercel/blob');
 const db = require('./lib/db');
+const searchPing = require('./lib/search-ping');
 
 const app = express();
 
@@ -315,6 +316,7 @@ app.get('/api/admin/posts', authenticateAdmin, async (req, res) => {
 app.post('/api/admin/posts', authenticateAdmin, async (req, res) => {
     try {
         const newPost = await db.createPost(req.body);
+        pingSearchEngines('post', newPost);
         res.json(newPost);
     } catch (error) {
         console.error(error);
@@ -325,6 +327,7 @@ app.post('/api/admin/posts', authenticateAdmin, async (req, res) => {
 app.put('/api/admin/posts/:id', authenticateAdmin, async (req, res) => {
     try {
         const updatedPost = await db.updatePost(req.params.id, req.body);
+        pingSearchEngines('post', updatedPost);
         res.json(updatedPost);
     } catch (error) {
         res.status(500).json({ error: 'Failed to update post', detail: error.message, code: error.code });
@@ -363,6 +366,7 @@ app.get('/api/admin/blogs/:id', authenticateAdmin, async (req, res) => {
 app.post('/api/admin/blogs', authenticateAdmin, async (req, res) => {
     try {
         const newBlog = await db.createBlog(req.body);
+        pingSearchEngines('blog', newBlog);
         res.json(newBlog);
     } catch (error) {
         console.error(error);
@@ -376,6 +380,7 @@ app.post('/api/admin/blogs', authenticateAdmin, async (req, res) => {
 app.put('/api/admin/blogs/:id', authenticateAdmin, async (req, res) => {
     try {
         const updatedBlog = await db.updateBlog(req.params.id, req.body);
+        pingSearchEngines('blog', updatedBlog);
         res.json(updatedBlog);
     } catch (error) {
         if (error.code === 'ER_DUP_ENTRY') {
@@ -417,6 +422,7 @@ app.get('/api/admin/pages/:id', authenticateAdmin, async (req, res) => {
 app.post('/api/admin/pages', authenticateAdmin, async (req, res) => {
     try {
         const newPage = await db.createPage(req.body);
+        pingSearchEngines('page', newPage);
         res.json(newPage);
     } catch (error) {
         console.error(error);
@@ -430,6 +436,7 @@ app.post('/api/admin/pages', authenticateAdmin, async (req, res) => {
 app.put('/api/admin/pages/:id', authenticateAdmin, async (req, res) => {
     try {
         const updatedPage = await db.updatePage(req.params.id, req.body);
+        pingSearchEngines('page', updatedPage);
         res.json(updatedPage);
     } catch (error) {
         if (error.code === 'ER_DUP_ENTRY') {
@@ -608,6 +615,19 @@ app.put('/api/admin/settings', authenticateAdmin, async (req, res) => {
 // --- Server-Side Rendered SEO pages (clean URLs) ---
 
 const SITE_URL = process.env.SITE_URL || 'https://estatenama.com';
+
+// Notify search engines (Google Indexing API + IndexNow) when a published item
+// is created or updated. Best-effort, non-blocking, safe no-op when unconfigured.
+function pingSearchEngines(kind, item) {
+    try {
+        if (!item || !item.slug) return;
+        const published = item.status === 'published' || item.published === true;
+        if (!published) return;
+        searchPing.submitUrls(`${SITE_URL}/${kind}/${item.slug}`, new URL(SITE_URL).host);
+    } catch (e) {
+        console.error('pingSearchEngines error:', e.message);
+    }
+}
 
 // Escape for use inside HTML attributes / text
 function esc(str) {
@@ -836,6 +856,11 @@ app.get('/robots.txt', (req, res) => {
     res.type('text/plain').send(
         `User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /api/\n\nSitemap: ${SITE_URL}/sitemap.xml\n`
     );
+});
+
+// IndexNow key verification file (must be reachable at /<key>.txt with the key as body)
+app.get(`/${searchPing.INDEXNOW_KEY}.txt`, (req, res) => {
+    res.type('text/plain').send(searchPing.INDEXNOW_KEY);
 });
 
 // --- Sitemap (Public, clean URLs) ---

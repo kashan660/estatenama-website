@@ -48,6 +48,10 @@
       "dest": "/admin-server-prod.js"
     },
     {
+      "src": "/[^/]+\\.txt",
+      "dest": "/admin-server-prod.js"
+    },
+    {
       "src": "/blog/(.*)",
       "dest": "/admin-server-prod.js"
     },
