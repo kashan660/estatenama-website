@@ -56,6 +56,10 @@
       "dest": "/admin-server-prod.js"
     },
     {
+      "src": "/post/(.*)",
+      "dest": "/admin-server-prod.js"
+    },
+    {
       "src": "/api/admin/(.*)",
       "dest": "/admin-server-prod.js"
     },

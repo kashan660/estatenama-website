@@ -788,6 +788,49 @@ app.get('/page/:slug', async (req, res) => {
     }
 });
 
+// Post detail (SSR, SEO-complete)
+app.get('/post/:slug', async (req, res) => {
+    try {
+        const post = await db.getPostBySlug(req.params.slug);
+        const isPublished = post && (post.status === 'published' || post.published === true);
+        if (!post || !isPublished) {
+            return res.status(404).sendFile(path.join(__dirname, '404.html'));
+        }
+        const canonical = `${SITE_URL}/post/${post.slug}`;
+        const description = post.metaDescription || post.excerpt || stripHtml(post.content).slice(0, 160);
+        const image = post.featuredImage || `${SITE_URL}/images/homepage/home1.png`;
+        const published = post.publishedAt || post.createdAt;
+        const jsonLd = {
+            '@context': 'https://schema.org',
+            '@type': 'BlogPosting',
+            headline: post.title,
+            description,
+            image,
+            author: { '@type': 'Organization', name: post.author || 'Estate Nama' },
+            publisher: { '@type': 'Organization', name: 'Estate Nama', logo: { '@type': 'ImageObject', url: `${SITE_URL}/images/logos/logoe_statenama.png` } },
+            datePublished: published ? new Date(published).toISOString() : undefined,
+            dateModified: post.updatedAt ? new Date(post.updatedAt).toISOString() : undefined,
+            mainEntityOfPage: canonical
+        };
+        const dateStr = published ? new Date(published).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
+        res.send(renderSeoHtml({
+            title: post.metaTitle || `${post.title} - Estate Nama`,
+            description,
+            canonical,
+            image,
+            type: 'article',
+            author: post.author,
+            jsonLd,
+            headerTitle: post.title,
+            headerSubtitle: [post.category, dateStr].filter(Boolean).join(' • '),
+            bodyHtml: post.content || ''
+        }));
+    } catch (error) {
+        console.error('Post SSR error:', error);
+        res.status(500).send('Error loading post');
+    }
+});
+
 // robots.txt
 app.get('/robots.txt', (req, res) => {
     res.type('text/plain').send(
@@ -826,6 +869,11 @@ async function buildSitemap() {
     // Published pages (clean URLs)
     const pages = await db.getPagesPublic();
     pages.forEach(p => url(`/page/${p.slug}`, fmt(p.updatedAt), 'monthly', '0.6'));
+
+    // Published posts (clean URLs)
+    const posts = await db.getPosts();
+    posts.filter(p => p.status === 'published' || p.published === true)
+        .forEach(p => url(`/post/${p.slug}`, fmt(p.updatedAt), 'monthly', '0.6'));
 
     xml += '</urlset>';
     return xml;
