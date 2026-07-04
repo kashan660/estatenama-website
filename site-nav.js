@@ -27,7 +27,13 @@
     }
     // Absolute paths so links resolve from any URL depth (/, /post/x, /page/x, subfiles).
     function pageUrl(slug) { return '/page/' + encodeURIComponent(slug); }
-    function projectUrl(slug) { return '/project-details.html?project=' + encodeURIComponent(slug); }
+    // Prefer a project's custom menu link (e.g. a curated landing page); else the
+    // generic detail template. Root-relative links are normalized to absolute.
+    function projectUrl(project) {
+        var custom = project && project.link ? String(project.link).trim() : '';
+        if (custom) return /^(https?:)?\/\//.test(custom) || custom.charAt(0) === '/' ? custom : '/' + custom;
+        return '/project-details.html?project=' + encodeURIComponent(project.slug);
+    }
 
     // --- Header: inject dynamic Pages before the Contact item -------------
     function hydrateHeaderPages(pages) {
@@ -56,7 +62,7 @@
             menu.innerHTML =
                 '<li><a href="/index.html#projects" class="dropdown-link">All Projects</a></li>' +
                 projects.map(function (p) {
-                    return '<li><a class="dropdown-link" href="' + esc(projectUrl(p.slug)) + '">' + esc(p.title) + '</a></li>';
+                    return '<li><a class="dropdown-link" href="' + esc(projectUrl(p)) + '">' + esc(p.title) + '</a></li>';
                 }).join('');
         });
     }
@@ -77,7 +83,7 @@
         if (!Array.isArray(projects)) return;
         footerLists('Our Projects').forEach(function (ul) {
             ul.innerHTML = projects.map(function (p) {
-                return '<li><a href="' + esc(projectUrl(p.slug)) + '">' + esc(p.title) + '</a></li>';
+                return '<li><a href="' + esc(projectUrl(p)) + '">' + esc(p.title) + '</a></li>';
             }).join('');
         });
     }

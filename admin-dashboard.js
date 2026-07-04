@@ -803,6 +803,11 @@ Main Boulevard (50x60) - PKR 85 Lac | Commercial">${plotsText}</textarea>
                     <textarea id="projectPaymentPlan" rows="2" placeholder="48 Months | 20% Down Payment | Flexible Installments">${project?.paymentPlan || ''}</textarea>
                 </div>
                 <div class="form-group">
+                    <label for="projectLink">Menu Link (optional)</label>
+                    <input type="text" id="projectLink" name="link" value="${project?.link || ''}" placeholder="e.g. /faisal-town-projects.html — leave blank to use the standard details page">
+                    <small style="color:#666;">Where the header/footer menu points for this project. Blank = generic details page.</small>
+                </div>
+                <div class="form-group">
                     <label for="projectStatus">Status</label>
                     <select id="projectStatus">
                         <option value="active" ${(!project || project?.status === 'active') ? 'selected' : ''}>Active (visible)</option>
@@ -863,6 +868,7 @@ Main Boulevard (50x60) - PKR 85 Lac | Commercial">${plotsText}</textarea>
             features: formData.get('features') ? formData.get('features').split(',').map(f => f.trim()).filter(Boolean) : [],
             plots: this.parsePlots(document.getElementById('projectPlots').value),
             paymentPlan: document.getElementById('projectPaymentPlan').value,
+            link: formData.get('link') ? formData.get('link').trim() : '',
             status: document.getElementById('projectStatus').value
         };
 
