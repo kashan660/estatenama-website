@@ -9,40 +9,52 @@ function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('en-US', options);
 }
 
-// Normalize blog data from MySQL (snake_case) to frontend format (camelCase)
-function normalizeBlog(blog) {
+// Normalize a blog/post record (accepts snake_case or camelCase) to the frontend
+// shape. `type` ('blog' | 'post') drives the clean SSR URL each card links to.
+function normalizeItem(item, type) {
     return {
-        id: blog.id,
-        title: blog.title,
-        slug: blog.slug,
-        excerpt: blog.excerpt,
-        content: blog.content,
-        featuredImage: blog.featured_image || blog.featuredImage || blog.image,
-        image: blog.featured_image || blog.featuredImage || blog.image,
-        category: blog.category || 'Real Estate',
-        author: blog.author || 'Estate Nama',
-        metaDescription: blog.meta_description || blog.metaDescription,
-        status: blog.status,
-        date: blog.published_at || blog.date || blog.created_at || blog.createdAt,
-        createdAt: blog.created_at || blog.createdAt
+        id: item.id,
+        type: type,
+        // Link to the server-rendered, SEO-complete page (not the client-only viewer).
+        url: (type === 'post' ? '/post/' : '/blog/') + item.slug,
+        title: item.title,
+        slug: item.slug,
+        excerpt: item.excerpt,
+        content: item.content || '',
+        featuredImage: item.featured_image || item.featuredImage || item.image,
+        image: item.featured_image || item.featuredImage || item.image,
+        category: item.category || 'Real Estate',
+        author: item.author || 'Estate Nama',
+        metaDescription: item.meta_description || item.metaDescription,
+        status: item.status,
+        published: item.published,
+        date: item.published_at || item.publishedAt || item.date || item.created_at || item.createdAt,
+        createdAt: item.created_at || item.createdAt
     };
 }
 
-// Fetch blog posts from the server (API endpoints)
+// Fetch blogs AND posts from the API and merge them into one list.
 async function fetchBlogPosts() {
     try {
-        // Fetch blogs from API
-        const blogsResponse = await fetch('/api/blogs').catch(() => ({ ok: false }));
+        const [blogsRes, postsRes] = await Promise.all([
+            fetch('/api/blogs').catch(() => ({ ok: false })),
+            fetch('/api/posts').catch(() => ({ ok: false }))
+        ]);
 
         let allContent = [];
+        if (blogsRes.ok) {
+            const blogs = await blogsRes.json();
+            allContent = allContent.concat(blogs.map(b => normalizeItem(b, 'blog')));
+        }
+        if (postsRes.ok) {
+            const posts = await postsRes.json();
+            allContent = allContent.concat(posts.map(p => normalizeItem(p, 'post')));
+        }
 
-        if (blogsResponse.ok) {
-            const blogs = await blogsResponse.json();
-            allContent = blogs.map(normalizeBlog);
-        } else {
-            // Fallback to static JSON if API fails
+        // Fallback to static JSON only if both APIs failed
+        if (!allContent.length) {
             const staticBlogs = await fetch('/admin-data/blogs.json').then(res => res.ok ? res.json() : []).catch(() => []);
-            allContent = [...allContent, ...staticBlogs.map(normalizeBlog)];
+            allContent = staticBlogs.map(b => normalizeItem(b, 'blog'));
         }
 
         return allContent;
@@ -78,7 +90,7 @@ async function loadBlogPosts() {
         publishedPosts.sort((a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt));
 
         grid.innerHTML = publishedPosts.map(post => `
-            <article class="blog-card" onclick="window.location.href='blog-details.html?slug=${post.slug}'">
+            <article class="blog-card" onclick="window.location.href='${post.url}'">
                 <div class="blog-image">
                     <img src="${post.featuredImage || post.image || 'images/logos/logoe_statenama.png'}" alt="${post.title}" loading="lazy">
                     <div class="blog-category">${post.category || 'Real Estate'}</div>
@@ -88,7 +100,7 @@ async function loadBlogPosts() {
                         <span class="blog-date"><i class="far fa-calendar-alt"></i> ${formatDate(post.date || post.createdAt || new Date())}</span>
                     </div>
                     <h3 class="blog-title">${post.title}</h3>
-                    <p class="blog-excerpt">${post.excerpt || post.content.substring(0, 100) + '...'}</p>
+                    <p class="blog-excerpt">${post.excerpt || (post.content || '').substring(0, 100) + '...'}</p>
                     <div class="blog-footer">
                         <span class="read-more">Read Article <i class="fas fa-arrow-right"></i></span>
                     </div>
