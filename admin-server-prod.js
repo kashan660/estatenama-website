@@ -728,7 +728,7 @@ function renderSeoHtml({ title, description, canonical, image, type = 'article',
             </div>
         </div>
     </footer>
-    <script src="/nav-loader.js"></script>
+    <script src="/site-nav.js"></script>
 </body>
 </html>`;
 }
