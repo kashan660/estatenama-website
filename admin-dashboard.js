@@ -212,6 +212,17 @@ class AdminDashboard {
     }
 
     // Posts Management
+    // Clickable live-URL link for a content row. Published => opens the real
+    // page in a new tab; Draft => a disabled hint (drafts have no public URL yet).
+    contentViewLink(type, item) {
+        if (!item.slug) return '';
+        const url = `/${type}/${item.slug}`;
+        if (item.status === 'published') {
+            return `<a class="btn btn-sm btn-secondary" href="${url}" target="_blank" rel="noopener" title="Open live page: ${url}"><i class="fas fa-external-link-alt"></i> View</a>`;
+        }
+        return `<span class="btn btn-sm btn-secondary" style="opacity:.5;cursor:not-allowed;" title="Draft — publish to get a live URL"><i class="fas fa-eye-slash"></i> Draft</span>`;
+    }
+
     async loadPosts() {
         const tbody = document.getElementById('postsTableBody');
         if (!tbody) return;
@@ -226,6 +237,7 @@ class AdminDashboard {
                     <td>${new Date(post.date || post.createdAt).toLocaleDateString()}</td>
                     <td><span class="status ${post.status}">${post.status}</span></td>
                     <td>
+                        ${this.contentViewLink('post', post)}
                         <button class="btn btn-sm btn-secondary" onclick="adminDashboard.editPost('${post.id}')">
                             <i class="fas fa-edit"></i>
                         </button>
@@ -362,6 +374,7 @@ class AdminDashboard {
                     <td>${new Date(blog.date || blog.createdAt).toLocaleDateString()}</td>
                     <td><span class="status ${blog.status}">${blog.status}</span></td>
                     <td>
+                        ${this.contentViewLink('blog', blog)}
                         <button class="btn btn-sm btn-secondary" onclick="adminDashboard.editBlog('${blog.id}')">
                             <i class="fas fa-edit"></i>
                         </button>
@@ -535,11 +548,9 @@ class AdminDashboard {
                     <td>${page.title}</td>
                     <td><code>${page.slug}</code></td>
                     <td><span class="status ${page.status}">${page.status}</span></td>
-                    <td>${page.show_in_nav ? '<i class="fas fa-check" style="color: #27ae60;"></i>' : '<i class="fas fa-times" style="color: #e74c3c;"></i>'}</td>
+                    <td>${(page.showInNav || page.show_in_nav) ? '<i class="fas fa-check" style="color: #27ae60;"></i>' : '<i class="fas fa-times" style="color: #e74c3c;"></i>'}</td>
                     <td>
-                        <a href="page.html?slug=${page.slug}" target="_blank" class="btn btn-sm btn-info" title="View Page">
-                            <i class="fas fa-eye"></i>
-                        </a>
+                        ${this.contentViewLink('page', page)}
                         <button class="btn btn-sm btn-secondary" onclick="adminDashboard.editPage('${page.id}')">
                             <i class="fas fa-edit"></i>
                         </button>
